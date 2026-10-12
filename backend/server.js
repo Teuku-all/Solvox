@@ -6,6 +6,7 @@ const crypto=require('crypto');
 const fs=require('fs');
 const {Server}=require('socket.io');
 const questions=require('./questions');
+const singlePlayerRoutes=require('./routes/singlePlayer');
 
 const app=express();
 const server=http.createServer(app);
@@ -241,6 +242,7 @@ const FRONTEND_DIST=path.join(__dirname,'..','frontend','dist');
 app.use(express.json({limit:'128kb'}));
 
 app.use(express.static(FRONTEND_DIST));
+app.use('/api/single-player',singlePlayerRoutes);
 
 app.post('/api/questions/generate',(req,res)=>{
   const chapterId=cleanLevel(req.body?.chapterId);const lang=req.body?.lang==='en'?'en':'id';

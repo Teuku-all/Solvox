@@ -20,7 +20,7 @@ function load(src) {
   });
 }
 
-const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact, mirrored = false, attackDirection = -1 }, ref) {
+const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact, mirrored = false, attackDirection = -1, centered = false }, ref) {
   const asset = getBossAsset(boss.spriteId);
   const activeAsset = mirrored && asset?.mirror ? asset.mirror : asset;
   const direction = attackDirection < 0 ? -1 : 1;
@@ -125,7 +125,7 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
       }
 
       const dpr = Math.min(window.devicePixelRatio || 1.5, 2);
-      const logicalW = Math.round(size * 1.42);
+      const logicalW = Math.round(size * (centered ? 1 : 1.42));
       const logicalH = Math.round(size * 1.20);
       const pixelW = Math.round(logicalW * dpr);
       const pixelH = Math.round(logicalH * dpr);
@@ -135,10 +135,13 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
         canvas.height = pixelH;
       }
 
-      // The boss frame shrinks on mobile. Scale both the canvas and lunge motion
-      // from the actual responsive frame width so the renderer stays in-bounds.
-      const frameWidth = canvas.parentElement?.getBoundingClientRect().width || size;
-      const visualScale = clamp(frameWidth / size, 0.2, 1);
+      // The showcase scales from both frame dimensions so the complete sprite
+      // stays centered and visible on narrow screens. Battle keeps its lane fit.
+      const frameBounds = canvas.parentElement?.getBoundingClientRect();
+      const frameWidth = frameBounds?.width || size;
+      const visualScale = centered
+        ? clamp(Math.min(frameWidth / size, (frameBounds?.height || size * 1.2) / (size * 1.2)), 0.2, 1)
+        : clamp(frameWidth / size, 0.2, 1);
       canvas.style.width = `${logicalW * visualScale}px`;
       canvas.style.height = `${logicalH * visualScale}px`;
 
@@ -195,7 +198,7 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
       const fit = Math.min(size / image.width, (size * 1.20) / image.height) * 0.985;
       const w = image.width * fit;
       const h = image.height * fit;
-      const baseX = logicalW - w - Math.max(0, size * 0.012);
+      const baseX = centered ? (logicalW - w) / 2 : logicalW - w - Math.max(0, size * 0.012);
       const baseY = logicalH - h;
 
       const attackTotal = Math.max(activeTotal - activeStep, activeStep);
@@ -321,7 +324,7 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
       alive = false;
       cancelAnimationFrame(rafRef.current);
     };
-  }, [asset, activeAsset, boss, size]);
+  }, [asset, activeAsset, boss, centered, size]);
 
   useImperativeHandle(ref, () => ({
     play(action = 'attack', options = {}) {
@@ -353,7 +356,7 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
   );
 });
 
-const BossMonster = forwardRef(function BossMonster({ levelId, spriteId, size = 310, onImpact, mirrored = false, attackDirection = -1 }, ref) {
+const BossMonster = forwardRef(function BossMonster({ levelId, spriteId, size = 310, onImpact, mirrored = false, attackDirection = -1, centered = false }, ref) {
   const chapterBoss = getBoss(levelId);
   const boss = useMemo(() => spriteId && getBossAsset(spriteId)
     ? getBossBySpriteId(spriteId) || { ...chapterBoss, spriteId }
@@ -377,6 +380,7 @@ const BossMonster = forwardRef(function BossMonster({ levelId, spriteId, size = 
       onImpact={onImpact}
       mirrored={mirrored}
       attackDirection={attackDirection}
+      centered={centered}
     />
   );
 });

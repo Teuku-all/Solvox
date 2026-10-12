@@ -4,7 +4,7 @@ import { SolvoxUtilityArt } from './SolvoxUtilityArt';
 const DEVS = [
   { name: 'Teuku Al Jumanatul Ali', roleKey: 'developerRoleEngineering', copyKey: 'developerTeuku' },
   { name: 'Ahmad Daniel Chalid', roleKey: 'developerRoleDesign', copyKey: 'developerAhmad' },
-  { name: 'Yanni Zulhilda', roleKey: 'developerRoleContent', copyKey: 'developerYanni' },
+  { name: 'Yanni Zuhilda', roleKey: 'developerRoleContent', copyKey: 'developerYanni' },
 ];
 
 export default function AboutDevelopers({ t, lang, onBack }) {

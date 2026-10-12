@@ -17,7 +17,7 @@ const utilityArt = read('frontend/src/components/SolvoxUtilityArt.jsx');
 const profile = read('frontend/src/components/ProfilePanel.jsx');
 const battle = read('frontend/src/components/Battle.jsx');
 const battlePanel = read('frontend/src/components/BattleQuestionPanel.jsx');
-const solvoxQuestions = read('frontend/src/data/solvoxQuestions.js');
+const singlePlayerGame = read('backend/singlePlayerGame.js');
 const combatStage = read('frontend/src/components/CombatStage.jsx');
 const server = read('server.js');
 const apiServer = read('backend/server.js');
@@ -100,8 +100,8 @@ must(server.includes("require('./backend/server')") && apiServer.includes("app.g
 /* -------------------------------------------------------------------------- */
 must(!battle.includes('setPaused') && !battle.includes('rpg-pause-v29'), 'Battle pause control should be removed');
 must(battle.includes('battle-home-back') && !battle.includes('battle-feedback-top-v36'), 'Battle back/feedback controls are inconsistent');
-must(solvoxQuestions.match(/\"id\":/g)?.length === 50 && solvoxQuestions.match(/\"feedback\":/g)?.length === 50, 'SOLVOX question feedback pack must contain one feedback entry for all 50 questions');
-must(battle.includes('const learningFeedback = String(q.feedback || q.explanation ||'), 'Wrong-answer feedback must resolve from the active question content');
+must(JSON.parse(read('backend/solvoxQuestions.json')).length === 50 && singlePlayerGame.includes('getChapterQuestions'), 'Backend must own the complete single-player question pack');
+must(battle.includes('verdict.feedback') && singlePlayerGame.includes('FALLBACK_FEEDBACK'), 'Server-provided answer feedback must resolve for single-player Battle');
 must(battle.includes('{feedback.message}') && battle.includes('battle-mistake-copy'), 'Question-specific feedback must render inside the V41 mistake banner');
 must(battlePanel.includes('hint-rail') && battlePanel.includes('hint-reveal-btn'), 'Contextual hint rail is missing');
 must(!battlePanel.includes('hint-btn-v23') && !battlePanel.includes('hint-panel-v23'), 'Hint must not render inside the question panel');
@@ -151,7 +151,7 @@ must(responsive105.includes('.chapter-select') && responsive105.includes('overfl
 must(responsive105.includes('.battle-reference-arena') && responsive105.includes('touch-action: pan-y') && responsive105.includes('.settings-head') && responsive105.includes('filter:none!important'), 'V103 responsive battle/mobile/settings layer is incomplete');
 must(!exists('frontend/src/components/OrientationNotice.jsx') && !main.includes('OrientationNotice'), 'Legacy orientation blocker remains after portrait-responsive update');
 must(Array.isArray(englishQuestions) && englishQuestions.length === 50 && englishQuestions.every(q => q.text && q.feedback && Array.isArray(q.hints) && q.hints.length === 3), 'English question pack must contain 50 complete questions');
-must(read('frontend/src/data/questions.js').includes('getSolvoxQuestions(levelId, count, _lang)'), 'Single-player question loader is not language-aware');
+must(read('frontend/src/services/singlePlayerGame.js').includes("lang: lang === 'en' ? 'en' : 'id'") && singlePlayerGame.includes("lang === 'en' ? 'en' : 'id'"), 'Single-player question and answer APIs must support English and Indonesian');
 must(read('backend/question-generator.js').includes('packEn') && read('backend/question-generator.js').includes("lang === 'en' ? packEn : packId"), 'Multiplayer question generator is not language-aware');
 must(read('frontend/src/services/solvoxEvaluation.js').includes('CHAPTER_RULES_EN') && read('frontend/src/services/solvoxEvaluation.js').includes("result.lang === 'en'"), 'English chapter evaluation rules are missing');
 must(!css.includes('.home-v31') && !ui42.includes('.home-v31'), 'Legacy V31 Home CSS remains after the V77 rewrite');
@@ -212,7 +212,7 @@ must(read('frontend/index.html').includes('/assets/ui/brand/solvox-logo-v89.png'
 must(exists('frontend/src/services/sound.js') && read('frontend/src/services/sound.js').includes("playSound('correct'") || exists('frontend/src/services/sound.js'), 'Sound service missing');
 must(settings.includes("t('sound')") && settings.includes('setSoundEnabled'), 'Sound toggle is not wired into Settings');
 must(battle.includes('q.feedback') && !battle.includes('enhanceFeedback') && !exists('frontend/src/services/aiFeedback.js'), 'Gemini feedback integration should be removed; local question feedback remains active');
-must(exists('frontend/src/data/feedbackBank.js') && battle.includes('findFeedbackBankMatch'), 'Feedback bank is not wired into single-player Battle');
+must(exists('backend/feedbackBank.id.json') && exists('backend/feedbackBank.en.json') && singlePlayerGame.includes('feedbackMatch') && battle.includes('validateChapterAnswer'), 'Single-player answers and feedback must be resolved by the backend');
 must(evaluation.includes('eval-detail') && evaluation.includes('eval-question-full') && evaluation.includes('eval-summary-block'), 'V105 evaluation accordion/detail layout is missing');
 must(!read('frontend/src/services/solvoxEvaluation.js').includes("Keep Building"), 'Legacy English-only evaluation label remains');
 must(!evaluation.includes('EVALUASI SOAL SOLVOX.docx'), 'Evaluation UI leaks source filename');
@@ -307,7 +307,7 @@ const spriteCharacter = read('frontend/src/components/SpriteCharacter.jsx');
 checkBalancedDelimiters(spriteCharacter, 'frontend/src/components/SpriteCharacter.jsx');
 must(!combatStage.includes('vs-badge-v43') && !combatStage.includes('combat-center-v43'), 'Decorative VS arena marker still exists');
 must(spriteCharacter.includes('visualScale') && spriteCharacter.includes('parentElement?.getBoundingClientRect().width'), 'Player canvas is not responsive to fighter wrapper width');
-must(bossMonster.includes('visualScale') && bossMonster.includes('canvas.parentElement?.getBoundingClientRect().width'), 'Boss canvas is not responsive to fighter wrapper width');
+must(bossMonster.includes('visualScale') && bossMonster.includes('canvas.parentElement?.getBoundingClientRect()'), 'Boss canvas is not responsive to fighter wrapper dimensions');
 must(responsive105.includes('.battle-reference-arena') && responsive105.includes('height: 27dvh') && responsive105.includes('@media (max-width: 420px)'), 'V99 mobile battle sizing rules are missing');
 must(!responsive105.includes('.vs-badge-v43'), 'Responsive stylesheet still references removed VS badge');
 
@@ -339,7 +339,7 @@ must(bossData.includes("id: 'wolf'") && bossData.includes("id: 'wraith'"), 'Chap
 must(bossData.includes("3: {") && bossData.includes("4: {") && bossData.includes("5: {"), 'Chapter 3–5 boss slots missing');
 must(bossData.includes("id: 'equation-drake'") && bossData.includes("renderer: 'webp'"), 'Chapter 3 WebP boss data missing');
 must(bossMonster.includes('getBossAsset'), 'Shared boss asset renderer missing');
-must(bossMonster.includes('state.pending') && bossMonster.includes('attackElement') && bossMonster.includes('logicalW = Math.round(size * 1.42)'), 'Chapter 3 boss preload/element attack guard missing');
+must(bossMonster.includes('state.pending') && bossMonster.includes('attackElement') && bossMonster.includes('logicalW = Math.round(size * (centered ? 1 : 1.42))'), 'Chapter 3 boss preload/element attack guard missing');
 must(read('frontend/src/components/CombatStage.jsx').includes('levelId={levelId}'), 'Boss level ID is not passed to renderer');
 must(!exists('frontend/src/data/shadowWolfAssets.js'), 'Obsolete Shadow Wolf manifest remains');
 
@@ -396,7 +396,7 @@ must(spriteV62.includes('requestAnimationFrame(tick)') && spriteV62.includes('mo
 must(!spriteV62.includes('setInterval('), 'Traveler animation regressed to interval-based frame stepping');
 must(bossV62.includes('requestAnimationFrame(tick)') && bossV62.includes('asset-boss-canvas') && bossV62.includes('drawImage(image'), 'WebP boss smoothing layer is missing');
 must(!bossV62.includes('setInterval('), 'WebP boss animation regressed to interval-based frame stepping');
-must(multiV62.includes('mp-arena') && multiV62.includes('MultiplayerFighter') && multiV62.includes('data-combat-seq'), 'Multiplayer selected-fighter motion hooks are missing');
+must(multiV62.includes('multiplayer-arena') && multiV62.includes('MultiplayerFighter') && multiV62.includes('data-combat-seq'), 'Multiplayer selected-fighter motion hooks are missing');
 must(ui34V62.includes('.multi-page{height:100dvh') && ui34V62.includes('overflow-y:auto') && ui34V62.includes('scroll-behavior:smooth'), 'Multiplayer scroll container is missing');
 must(ui34V62.includes('@keyframes mpAttack') && ui34V62.includes('@keyframes mpHit') && ui34V62.includes('@keyframes mpDamage'), 'Multiplayer combat animation layer is incomplete');
 
@@ -459,7 +459,8 @@ must(settings.includes('flag-id-v94.png') && settings.includes('flag-en-v94.png'
 
 // V104 multiplayer arena guard
 const mp104 = read('frontend/src/components/Multiplayer.jsx');
-must(mp104.includes('MultiplayerFighter') && mp104.includes('mp-arena'), 'V120 multiplayer arena does not use the selected registered fighter sprites');
+must(mp104.includes('MultiplayerFighter') && mp104.includes('multiplayer-arena'), 'V120 multiplayer arena does not use the selected registered fighter sprites');
+must(mp104.includes("room-card multi-room--legacy multi-room ${room.status==='battle'?'is-battling':''}"), 'Battle room wrapper is missing its original layout classes');
 must(!mp104.includes('mp-fighter-v34') && !mp104.includes('mp-clash-v34'), 'Retired pixel multiplayer arena markup remains');
 must(exists('frontend/src/styles/ui-v104.css') && main.includes("import './styles/ui-v104.css';"), 'V104 multiplayer arena CSS is not wired');
 
@@ -521,7 +522,7 @@ must(multiplayerV117.includes("socket.on('connect_error',onConnectError)") && mu
 const multiplayerFighterV120 = read('frontend/src/components/MultiplayerFighter.jsx');
 const characterPickerV120 = read('frontend/src/components/CharacterPicker.jsx');
 must(characterPickerV120.includes('PLAYER_ASSETS.traveler.portrait') && characterPickerV120.includes('...Object.values(BOSSES)') && characterPickerV120.includes('getBossPreviewSrc'), 'Multiplayer picker is missing real player and boss sprite choices');
-must(multiplayerFighterV120.includes('PLAYER_ASSETS[characterId]') && multiplayerFighterV120.includes('getBossAsset(characterId)') && multiplayerV117.includes('findCharacter(p.character)'), 'Multiplayer character lookup/renderer wiring is incomplete');
+must(multiplayerFighterV120.includes('PLAYER_ASSETS[characterId]') && multiplayerFighterV120.includes('getBossAsset(characterId)') && multiplayerV117.includes('findCharacter(battlePlayers.player?.character)') && multiplayerV117.includes('findCharacter(battlePlayers.opponent?.character)'), 'Multiplayer character lookup/renderer wiring is incomplete');
 must(multiplayerFighterV120.includes('attackDirection') && multiplayerV117.includes('attackDirection={1}') && multiplayerV117.includes('attackDirection={-1}'), 'Multiplayer fighter facing direction is not tied to P1/P2 sides');
 must(multiplayerV117.includes('className="primary-btn multi-bot-btn"') && !multiplayerV117.includes('secondary-btn multi-bot-btn'), 'Play vs bot button should use the shared primary action styling');
 const multiplayerButtonStyles = read('frontend/src/styles/ui-v104.css');

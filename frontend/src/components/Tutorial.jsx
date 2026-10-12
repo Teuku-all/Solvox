@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import SolvoxUtilityArt from './SolvoxUtilityArt';
+import PixelIcon from './PixelIcon';
 
 const STEPS = [
   ['01','tutorialModeTitle','tutorialModeBody'],
@@ -11,9 +13,29 @@ const STEPS = [
 ];
 
 export default function Tutorial({ t, onClose }) {
-  return (
-    <div className="tutorial-backdrop" role="dialog" aria-modal="true" aria-labelledby="tutorial-title">
-      <section className="tutorial-card">
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') onCloseRef.current?.();
+    };
+
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, []);
+
+  return createPortal(
+    <div className="tutorial-backdrop" role="dialog" aria-modal="true" aria-labelledby="tutorial-title" onClick={onClose}>
+      <section className="tutorial-card" onClick={(event) => event.stopPropagation()}>
         <header className="tutorial-head">
           <div className="tutorial-kicker">{t('tutorialKicker')}</div>
           <div className="tutorial-title-wrap">
@@ -40,10 +62,14 @@ export default function Tutorial({ t, onClose }) {
         </div>
 
         <footer className="tutorial-footer">
-          <p>{t('tutorialTip')}</p>
+          <div className="tutorial-footer-tip">
+            <span className="tutorial-footer-icon" aria-hidden="true"><PixelIcon name="hint" size={18} /></span>
+            <p>{t('tutorialTip')}</p>
+          </div>
           <button className="primary-btn tutorial-action" type="button" onClick={onClose}>{t('tutorialGotIt')}</button>
         </footer>
       </section>
-    </div>
+    </div>,
+    document.body,
   );
 }

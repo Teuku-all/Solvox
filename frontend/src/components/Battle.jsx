@@ -4,7 +4,7 @@ import ArenaBackground from './ArenaBackground';
 import BattleQuestionPanel from './BattleQuestionPanel';
 import CombatStage from './CombatStage';
 import HitEffect from './HitEffect';
-import { generateQuestions, SAFE_QUESTION } from '../data/questions';
+import { loadChapterQuestions, validateChapterAnswer } from '../services/singlePlayerGame';
 import { evaluateSolvoxChapter } from '../services/solvoxEvaluation';
 import { LEVELS } from '../data/levels';
 import { PLAYER } from '../data/player';
@@ -13,23 +13,6 @@ import { getBossImpactMs, getBossPreviewSrc, getBossSequenceDurationMs } from '.
 import PixelIcon from './PixelIcon';
 import { SolvoxUtilityArt } from './SolvoxUtilityArt';
 import { playSound } from '../services/sound';
-import { findFeedbackBankMatch, getFeedbackFallback } from '../data/feedbackBank';
-
-/**
- * Normalise algebra answers so keyboard symbols and typed Unicode variants
- * compare consistently before the battle engine resolves an attempt.
- */
-const normalizeAnswer = (value) =>
-  String(value ?? '')
-    .toLowerCase()
-    .normalize('NFKC')
-    .replace(/×/g, '*')
-    .replace(/·/g, '*')
-    .replace(/−|–|—/g, '-')
-    .replace(/[²]/g, '^2')
-    .replace(/[³]/g, '^3')
-    .replace(/\s+/g, '')
-    .trim();
 
 export default function Battle({ levelId, playerId = 'traveler', lang, t, onComplete, onBack }) {
   const boss = getBoss(levelId);
@@ -43,6 +26,8 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
+  const [questionRequest, setQuestionRequest] = useState(0);
+  const [actionError, setActionError] = useState('');
   const [idx, setIdx] = useState(0);
   const [answer, setAnswer] = useState('');
   const [busy, setBusy] = useState(false);
@@ -150,32 +135,18 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     setLoading(true);
     setLoadError('');
 
-    try {
-      const localQuestions = generateQuestions(levelId, 10, lang);
-
-      if (!Array.isArray(localQuestions) || localQuestions.length < 10) {
-        throw new Error('local question pack is incomplete');
-      }
-
-      if (alive) setQuestions(localQuestions);
-    } catch (error) {
-      console.warn(
-        '[Battle] local question generation failed; using safe fallback',
-        error,
-      );
-
-      if (alive) {
-        setQuestions([SAFE_QUESTION[lang] || SAFE_QUESTION.id]);
-        setLoadError(t('questionFallback'));
-      }
-    } finally {
-      if (alive) setLoading(false);
-    }
+    loadChapterQuestions(levelId, lang)
+      .then((chapterQuestions) => { if (alive) setQuestions(chapterQuestions); })
+      .catch((error) => {
+        console.error('[Battle] server question load failed', error);
+        if (alive) { setQuestions([]); setLoadError(error.message || t('questionFallback')); }
+      })
+      .finally(() => { if (alive) setLoading(false); });
 
     return () => {
       alive = false;
     };
-  }, [levelId, lang]);
+  }, [levelId, lang, questionRequest]);
 
   /* ---------------------------- Persistence / UI -------------------------- */
   useEffect(() => {
@@ -224,29 +195,33 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   };
 
   /* ----------------------------- Answer flow ------------------------------ */
-  const submit = () => {
+  const submit = async () => {
     if (busy || !answer.trim() || endedRef.current) return;
 
     const now = Date.now();
     const elapsed = Math.max(1, Math.round((now - questionStartedAt) / 1000));
     const tracker = questionAttemptRef.current;
-    const normalized = normalizeAnswer(answer);
-    const acceptedAnswers = (Array.isArray(q.answer) ? q.answer : [q.answer]).map(normalizeAnswer);
-    const correctAnswer = Array.isArray(q.answer) ? String(q.answer[0]) : String(q.answer);
-    const isCorrect = acceptedAnswers.includes(normalized);
     const attemptNow = attempts + 1;
     const history = [...(tracker.answers || []), answer];
+    setActionError('');
+    let verdict;
+    try {
+      setBusy(true);
+      verdict = await validateChapterAnswer(q.id, answer, attemptNow, lang);
+    } catch (error) {
+      setActionError(error.message || t('questionFallback'));
+      setBusy(false);
+      return;
+    }
+    const isCorrect = Boolean(verdict.correct);
+    const correctAnswer = verdict.correctAnswer || '';
+    const bankMatch = verdict.feedbackBankMatched ? { id: verdict.feedbackBankRow, code: verdict.feedbackBankCode, errorType: verdict.errorType, feedback: verdict.feedback } : null;
 
     tracker.answers = history;
     tracker.wrongAttempts = (tracker.wrongAttempts || 0) + (isCorrect ? 0 : 1);
 
     setAttempts(attemptNow);
-    const bankMatch = isCorrect ? null : findFeedbackBankMatch(q.id ?? idx + 1, answer, lang);
-    const learningFeedback = String(q.feedback || q.explanation || '').trim();
-    const fallbackFeedback = getFeedbackFallback(lang, attemptNow);
-    const bankAwareFeedback = isCorrect
-      ? learningFeedback
-      : String(bankMatch?.feedback || fallbackFeedback || t('tryAgain')).trim();
+    const bankAwareFeedback = String(verdict.feedback || q.feedback || t('tryAgain')).trim();
 
     if (!isCorrect) {
       tracker.feedbackBankHistory = [
@@ -265,7 +240,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
       type: isCorrect ? 'correct' : 'wrong',
       title: isCorrect ? t('correct') : t('wrong'),
       message: isCorrect ? t('attackReady') : bankAwareFeedback,
-      errorTag: isCorrect ? null : (bankMatch?.errorType || q.errorTag),
+      errorTag: isCorrect ? null : (bankMatch?.errorType || verdict.errorType || q.errorTag),
       explanation: bankAwareFeedback || `${correctAnswer}`,
       nextStep: isCorrect
         ? t('feedbackNextStep')
@@ -280,14 +255,14 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     playSound(isCorrect ? 'correct' : 'wrong');
 
     if (isCorrect) {
-      handleCorrectAnswer({ elapsed, attemptNow, history, tracker });
+      handleCorrectAnswer({ elapsed, attemptNow, history, tracker, verdict });
       return;
     }
 
-    handleWrongAnswer({ elapsed, attemptNow, history, tracker, feedbackUsed: bankAwareFeedback, bankMatch });
+    handleWrongAnswer({ elapsed, attemptNow, history, tracker, feedbackUsed: bankAwareFeedback, bankMatch, verdict });
   };
 
-  const handleCorrectAnswer = ({ elapsed, attemptNow, history, tracker }) => {
+  const handleCorrectAnswer = ({ elapsed, attemptNow, history, tracker, verdict }) => {
     const correctNow = correct + 1;
 
     setCorrect(correctNow);
@@ -306,7 +281,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
         feedback: q.feedback,
         correct: true,
         answer,
-        correctAnswer: q.answer,
+        correctAnswer: verdict.correctAnswer,
         attempts: attemptNow,
         wrongAttempts: tracker.wrongAttempts,
         timeSec: elapsed,
@@ -316,7 +291,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
         feedbackBankHistory: [...(tracker.feedbackBankHistory || [])],
         feedbackBankMatched: (tracker.feedbackBankHistory || []).some((entry) => entry.matched),
         firstAttemptCorrect: tracker.wrongAttempts === 0,
-        explanation: q.explanation,
+        explanation: q.feedback,
       };
       const logs = [...questionLogs, log];
 
@@ -357,7 +332,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     }, 380);
   };
 
-  const handleWrongAnswer = ({ elapsed, attemptNow, history, tracker, feedbackUsed, bankMatch }) => {
+  const handleWrongAnswer = ({ elapsed, attemptNow, history, tracker, feedbackUsed, bankMatch, verdict }) => {
     const nextHp = Math.max(0, hp - 8);
 
     setHp(nextHp);
@@ -380,7 +355,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
         feedback: feedbackUsed,
         correct: false,
         answer,
-        correctAnswer: q.answer,
+        correctAnswer: verdict.correctAnswer || '',
         attempts: attemptNow,
         wrongAttempts: tracker.wrongAttempts,
         timeSec: elapsed,
@@ -393,7 +368,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
         feedbackBankRow: bankMatch?.id || [...(tracker.feedbackBankHistory || [])].reverse().find((entry) => entry.matched)?.row || null,
         unregisteredFeedbackAnswer: bankMatch ? null : answer,
         firstAttemptCorrect: false,
-        explanation: feedbackUsed || q.explanation,
+        explanation: feedbackUsed || q.feedback,
       };
 
       if (attemptNow >= 3 || nextHp <= 0) {
@@ -436,7 +411,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     }, bossAttackImpactMs);
   };
 
-  const q = questions[idx] || SAFE_QUESTION[lang] || SAFE_QUESTION.id;
+  const q = questions[idx];
   const maxEnemy = boss.hp;
 
   if (loading) {
@@ -447,6 +422,10 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
         <p>{t('freshPack')}</p>
         </div>
     );
+  }
+
+  if (loadError || !q) {
+    return <div className="loading-screen battle-load-error"><PixelIcon name="warning" size={24}/><h2>{t('questionFallback')}</h2><p>{loadError}</p><div><button type="button" onClick={()=>{setLoadError('');setQuestionRequest(value=>value+1);}}>{lang==='en'?'Try again':'Coba lagi'}</button><button type="button" onClick={onBack}>{t('backToMap')}</button></div></div>;
   }
 
   return (
@@ -529,6 +508,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
               <span>{loadError}</span>
             </div>
           )}
+          {actionError && <div className="question-fallback-banner" role="alert"><PixelIcon name="warning" size={14}/><span>{actionError}</span></div>}
 
           {feedback?.type === 'wrong' && (
             <aside className="battle-mistake-banner" role="alert" aria-live="polite">

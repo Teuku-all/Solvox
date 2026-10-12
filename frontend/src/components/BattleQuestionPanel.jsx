@@ -112,6 +112,8 @@ export default function BattleQuestionPanel({
   useHint,
   keypadVisible,
   onToggleKeypad,
+  showHintRail = true,
+  showAttemptCounter = true,
 }) {
   const progress = Math.round(((idx + 1) / totalRounds) * 100);
   const stageTitle = lang === 'en' ? meta?.titleEn : meta?.title;
@@ -123,7 +125,7 @@ export default function BattleQuestionPanel({
 
 
   return (
-    <section style={panelTheme} className={`battle-question-panel theme-level-${Number(levelId)} ${isStoryChapter ? 'is-story-chapter' : ''}`} aria-label={t('questionPanel')}>
+    <section style={panelTheme} className={`battle-question-panel theme-level-${Number(levelId)} ${isStoryChapter ? 'is-story-chapter' : ''} ${showHintRail ? '' : 'is-no-hint'}`} aria-label={t('questionPanel')}>
       <div className={`battle-question-main ${isStoryChapter ? 'is-story-main' : ''}`}>
         <header className="question-header">
           <div className="question-meta">
@@ -194,13 +196,11 @@ export default function BattleQuestionPanel({
             <PixelIcon name="keyboard" size={15} />
             <span>{keypadVisible ? t('hideKeyboard') : t('showKeyboard')}</span>
           </button>
-          <span className="attempts">
-            {t('attempt')}: {attempts}/3
-          </span>
+          {showAttemptCounter && <span className="attempts">{t('attempt')}: {attempts}/3</span>}
         </div>
       </div>
 
-      <aside className="hint-rail" aria-label={t('hint')}>
+      {showHintRail && <aside className="hint-rail" aria-label={t('hint')}>
         <div className="hint-rail-head">
           <span className="hint-rail-icon">
             <PixelIcon name="hint" size={15} />
@@ -237,7 +237,7 @@ export default function BattleQuestionPanel({
           <span>{t('revealHint')}</span>
           <em>−{hintCost} HP</em>
         </button>
-      </aside>
+      </aside>}
 
       <aside
         className={`battle-keypad-side ${keypadVisible ? 'is-visible' : 'is-hidden'}`}

@@ -59,7 +59,7 @@ export default function CharacterShowcase({ characters, value, onChange, t, leve
         <div className="character-stage-ground" aria-hidden="true" />
         <div className="character-stage-id"><PixelIcon name={selected.kind === 'boss' ? 'skull' : 'profile'} size={13} /><span>{t(selected.kind === 'boss' ? 'characterTypeBoss' : 'characterTypePlayer')}</span><b>{String(selectedIndex + 1).padStart(2, '0')}</b></div>
         <div className="character-stage-fighter" key={selected.id}>
-          <MultiplayerFighter characterId={selected.id} levelId={levelId} size={selected.kind === 'boss' ? 370 : 345} />
+          <MultiplayerFighter characterId={selected.id} levelId={levelId} size={selected.kind === 'boss' ? 350 : 345} centered={selected.kind === 'boss'} />
         </div>
         <div className="character-stage-name"><span>{t('selectedCharacter')}</span><strong>{t(selected.nameId)}</strong><small>{t(selected.roleId)}</small></div>
         <nav className="character-showcase-strip" aria-label={t('characterSelect')}>

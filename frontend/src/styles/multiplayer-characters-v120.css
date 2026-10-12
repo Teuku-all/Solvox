@@ -68,6 +68,58 @@
   text-transform: uppercase;
 }
 
+/* Compact room heading: keep match details here and let the picker show fighters. */
+.multiplayer .multi-room:not(.is-battling) .multi-room-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid rgba(151, 196, 197, .12);
+}
+
+.multiplayer .multi-room:not(.is-battling) .room-top-title {
+  display: grid;
+  justify-items: start;
+  gap: 5px;
+  min-width: 0;
+}
+
+.multiplayer .multi-room:not(.is-battling) .room-code {
+  margin: 0;
+  color: #f2ead6;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 900;
+  letter-spacing: .12em;
+  line-height: 1.1;
+}
+
+.multiplayer .multi-room:not(.is-battling) .match-meta {
+  max-width: min(42vw, 360px);
+  padding: 7px 10px;
+  border: 1px solid rgba(123, 203, 181, .16);
+  border-radius: 999px;
+  background: rgba(73, 147, 126, .08);
+  color: #a9c6b7;
+  font-size: .66rem;
+  line-height: 1.35;
+  text-align: right;
+}
+
+@media (max-width: 560px) {
+  .multiplayer .multi-room:not(.is-battling) .multi-room-heading {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+    padding-bottom: 11px;
+  }
+
+  .multiplayer .multi-room:not(.is-battling) .match-meta {
+    max-width: 100%;
+    justify-self: start;
+    text-align: left;
+  }
+}
+
 /* The picker is part of the created room lobby, below the player cards. */
 .multiplayer .multi-character-selection-lobby {
   position: relative;
@@ -160,64 +212,11 @@
   height: auto !important;
 }
 
-.mp-battle .mp-arena {
-  grid-template-columns: minmax(0, 1fr) 82px minmax(0, 1fr);
-  min-height: 385px;
-  gap: clamp(8px, 1.4vw, 16px);
-  padding: 20px clamp(14px, 2.2vw, 26px) 14px;
-}
-
-.mp-battle .mp-battle-side {
-  min-height: 330px;
-  padding: 13px 10px 8px;
-}
-
-.mp-character-name {
-  max-width: 100%;
-  margin-top: 3px;
-  color: var(--fighter-accent);
-  font-size: .65rem;
-  font-weight: 800;
-  line-height: 1.25;
-  text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.mp-battle .mp-sprite-frame {
-  width: min(100%, 330px);
-  min-height: 260px;
-}
-
-.mp-battle .mp-player-frame > div.sprite-wrap {
-  width: min(100%, 290px) !important;
-}
-
-.mp-battle .mp-boss-frame > div.asset-boss-sprite {
-  width: min(100%, 320px) !important;
-}
-
-.mp-battle-side[style*="--fighter-accent"] {
-  border-color: color-mix(in srgb, var(--fighter-accent) 26%, transparent);
-}
-
-.mp-battle-side[style*="--fighter-accent"] .mp-hp i {
-  background: linear-gradient(90deg, color-mix(in srgb, var(--fighter-accent) 72%, white), var(--fighter-accent));
-}
-
 @media (max-width: 820px) {
   .multiplayer .multi-character-selection-lobby .character-showcase {
     grid-template-columns: minmax(165px, .75fr) minmax(265px, 1.2fr) minmax(205px, .9fr);
   }
 
-  .mp-battle .mp-battle-side {
-    min-height: 280px;
-  }
-
-  .mp-battle .mp-sprite-frame {
-    min-height: 205px;
-  }
 }
 
 @media (max-width: 760px) {
@@ -238,16 +237,6 @@
 }
 
 @media (max-width: 560px) {
-  .multiplayer .multi-room .players {
-    grid-template-columns: 1fr;
-    width: min(380px, 100%);
-    margin-top: 16px;
-  }
-
-  .multiplayer .multi-room .p-card {
-    min-height: 176px;
-  }
-
   .multiplayer .multi-character-selection-lobby .character-showcase {
     grid-template-columns: 1fr;
     grid-template-rows: auto minmax(250px, 34dvh) auto;
@@ -257,31 +246,6 @@
     min-height: 250px;
   }
 
-  .mp-battle .mp-arena {
-    grid-template-columns: minmax(0, 1fr) 30px minmax(0, 1fr);
-    gap: 4px;
-    padding: 9px 5px 7px;
-  }
-
-  .mp-battle .mp-battle-side {
-    min-height: 0;
-    padding: 7px 4px 4px;
-  }
-
-  .mp-character-name {
-    font-size: .54rem;
-  }
-
-  .mp-battle .mp-sprite-frame {
-    min-height: 148px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mp-battle-side,
-  .mp-hp i {
-    transition: none !important;
-  }
 }
 
 /* Compact multiplayer header with a balanced back control. */
@@ -438,4 +402,127 @@
   .multiplayer .multi-header .multi-back-btn {
     transition: none;
   }
+}
+
+/* Multiplayer battle uses the exact full-window frame and two lane geometry from single player. */
+.multiplayer .multi-room.is-battling { position:static!important; display:contents!important; }
+.multiplayer .multi-room.is-battling>.multi-room-heading,
+.multiplayer .multi-room.is-battling>.room-status,
+.multiplayer .multi-room.is-battling>.mp-feedback-banner { display:none!important; }
+.multiplayer-battle-page {
+  position:fixed!important; inset:0!important; z-index:120!important;
+  width:100vw!important; height:100dvh!important; min-height:100dvh!important; max-height:100dvh!important;
+  margin:0!important; padding:0!important; overflow:hidden!important; background:#061315!important;
+}
+.multiplayer-battle-page .battle-world { position:relative; width:100%; height:100%; min-height:0; overflow:hidden; }
+.multiplayer-battle-page .battle-world>.arena-background { inset:0 0 calc(clamp(300px,34vh,350px) + 16px); }
+.multiplayer-battle-ui {
+  position:relative; z-index:5; display:grid; width:100%; height:100%; min-height:0;
+  padding:10px 12px!important; grid-template-rows:74px minmax(0,1fr) clamp(300px,34vh,350px)!important;
+  gap:8px!important; overflow:hidden; box-sizing:border-box;
+}
+.multiplayer-battle-ui .battle-top-rail { grid-row:1; grid-template-columns:44px minmax(210px,1fr) minmax(220px,300px) minmax(210px,1fr); }
+.multiplayer-battle-ui .hp-card,.multiplayer-battle-ui .hp-card-head,.multiplayer-battle-ui .hp-copy,.multiplayer-battle-ui .stage-crown { min-width:0; }
+.multiplayer-battle-ui .hp-copy small,.multiplayer-battle-ui .stage-crown>b { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.multiplayer-battle-ui .battle-reference-arena.multiplayer-arena {
+  position:relative; z-index:15; grid-row:2; width:100%; height:100%; min-width:0; min-height:0;
+  overflow:visible; border:0; border-radius:14px; background:transparent; box-shadow:none;
+}
+.multiplayer-battle-ui .multiplayer-combat-stage {
+  position:absolute; inset:0; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  align-items:end; padding:0 clamp(42px,6vw,96px); overflow:visible; pointer-events:none;
+}
+.multiplayer-battle-ui .multiplayer-combat-stage:before {
+  position:absolute; right:6%; bottom:2%; left:6%; height:29%; content:"";
+  border-bottom:1px solid rgba(97,219,205,.2);
+  background:radial-gradient(ellipse at 50% 100%,rgba(80,200,177,.16),transparent 64%); pointer-events:none;
+}
+.multiplayer-battle-ui .fighter-slot {
+  position:relative; display:flex; height:min(420px,100%); min-height:0; align-self:end;
+  align-items:flex-end; overflow:visible; pointer-events:none;
+}
+.multiplayer-battle-ui .fighter-player-slot { grid-column:1; justify-content:flex-start; overflow:visible; }
+.multiplayer-battle-ui .fighter-boss-slot { grid-column:2; justify-content:flex-end; }
+.multiplayer-battle-ui .fighter-player,.multiplayer-battle-ui .fighter-boss {
+  position:relative; display:flex; width:auto!important; height:auto; min-height:0; align-self:flex-end;
+  align-items:flex-end; justify-content:center; overflow:visible; transform:none!important; isolation:isolate;
+}
+.multiplayer-battle-ui .fighter-player { margin-left:clamp(10px,1.6vw,28px); }
+.multiplayer-battle-ui .mp-fighter-art { display:contents; }
+.multiplayer-battle-ui .fighter-player .sprite-wrap,.multiplayer-battle-ui .fighter-boss .sprite-wrap {
+  width:278px!important; min-height:0; aspect-ratio:278/317; margin:0!important; overflow:visible;
+}
+.multiplayer-battle-ui .fighter-player .asset-boss-sprite { width:278px!important; max-width:none; margin:0!important; }
+.multiplayer-battle-ui .fighter-boss .asset-boss-sprite { width:310px!important; max-width:none; aspect-ratio:5/6; margin:0!important; overflow:visible; }
+.multiplayer-battle-ui .fighter-shadow-anchor {
+  position:absolute; right:10%; bottom:0; left:10%; height:22px; border-radius:50%;
+  background:radial-gradient(ellipse,rgba(0,0,0,.52),transparent 70%); pointer-events:none;
+}
+.multiplayer-battle-ui .multiplayer-stage-center {
+  position:absolute; z-index:6; top:20%; left:50%; display:flex; flex-direction:column;
+  align-items:center; gap:7px; transform:translateX(-50%); color:#f0d690;
+  text-shadow:0 2px 14px #071416; pointer-events:none;
+}
+.multiplayer-battle-ui .multiplayer-stage-center>span {
+  display:grid; width:48px; height:48px; place-items:center; border:1px solid rgba(230,204,137,.62);
+  border-radius:50%; background:rgba(4,17,18,.54); box-shadow:0 0 28px rgba(230,204,137,.19); font-weight:1000;
+}
+.multiplayer-battle-ui .multiplayer-stage-center>small { padding:4px 8px; border-radius:999px; background:rgba(3,12,14,.62); color:#e7dfc1; font-size:.58rem; white-space:nowrap; }
+.multiplayer-battle-ui .battle-question-panel { grid-row:3; }
+.multiplayer-battle-ui .battle-question-panel.is-no-hint { grid-template-columns:minmax(0,1fr) minmax(250px,.48fr); }
+.multiplayer-battle-ui .battle-question-panel.is-no-hint .battle-keypad-side { grid-column:2; }
+.multiplayer-battle-ui .battle-mistake-banner { position:absolute; z-index:70; top:88px; left:50%; width:min(700px,calc(100% - 32px)); transform:translateX(-50%); }
+.multiplayer-battle-ui .hit-effect { z-index:60; }
+@media(max-width:1180px) {
+  .multiplayer-battle-ui .battle-top-rail { grid-template-columns:44px minmax(0,1fr) minmax(190px,.8fr) minmax(0,1fr); }
+}
+@media(max-width:900px) {
+  .multiplayer-battle-ui { grid-template-rows:68px minmax(0,1fr) 42vh!important; gap:6px!important; padding:7px!important; }
+  .multiplayer-battle-ui .battle-top-rail { grid-template-columns:38px minmax(0,1fr) minmax(155px,.8fr) minmax(0,1fr); gap:7px; }
+  .multiplayer-battle-ui .hp-card { padding-inline:7px; }
+  .multiplayer-battle-ui .hp-avatar { width:35px; height:35px; }
+  .multiplayer-battle-ui .hp-percent { display:none; }
+}
+@media(max-width:760px) {
+  .multiplayer-battle-ui { grid-template-rows:64px minmax(0,1fr) minmax(300px,40vh)!important; padding:8px!important; }
+  .multiplayer-battle-ui .battle-top-rail { grid-template-columns:34px minmax(0,1fr) minmax(0,1fr); height:64px; }
+  .multiplayer-battle-ui .stage-crown { display:none; }
+  .multiplayer-battle-ui .multiplayer-combat-stage { padding:0 clamp(10px,3vw,28px); }
+  .multiplayer-battle-ui .fighter-slot { height:100%; }
+  .multiplayer-battle-ui .fighter-player .sprite-wrap,.multiplayer-battle-ui .fighter-boss .sprite-wrap { width:clamp(150px,34vw,235px)!important; }
+  .multiplayer-battle-ui .fighter-player .asset-boss-sprite { width:clamp(160px,35vw,240px)!important; }
+  .multiplayer-battle-ui .fighter-boss .asset-boss-sprite { width:clamp(165px,37vw,250px)!important; }
+  .multiplayer-battle-ui .multiplayer-stage-center { top:13%; }
+  .multiplayer-battle-ui .multiplayer-stage-center>span { width:36px; height:36px; font-size:.72rem; }
+  .multiplayer-battle-ui .battle-question-panel { grid-template-columns:1fr; grid-template-rows:minmax(155px,1fr) 112px 142px; }
+  .multiplayer-battle-ui .battle-question-panel .battle-question-main { grid-column:1; grid-row:1; }
+  .multiplayer-battle-ui .battle-question-panel .hint-rail { grid-column:1; grid-row:2; }
+  .multiplayer-battle-ui .battle-question-panel .battle-keypad-side { grid-column:1; grid-row:3; }
+  .multiplayer-battle-ui .battle-question-panel.is-no-hint { grid-template-rows:minmax(155px,1fr) 142px; }
+  .multiplayer-battle-ui .battle-question-panel.is-no-hint .battle-keypad-side { grid-column:1; grid-row:2; }
+}
+@media(max-width:520px) {
+  .multiplayer-battle-ui { grid-template-rows:58px minmax(0,1fr) minmax(290px,42vh)!important; gap:6px!important; padding:6px!important; }
+  .multiplayer-battle-ui .battle-top-rail { grid-template-columns:30px minmax(0,1fr) minmax(0,1fr); height:58px; gap:5px; }
+  .multiplayer-battle-ui .hp-card { height:54px; padding:4px 5px; border-radius:10px; }
+  .multiplayer-battle-ui .hp-card-head { gap:5px; }
+  .multiplayer-battle-ui .hp-avatar { width:27px; height:27px; flex-basis:27px; }
+  .multiplayer-battle-ui .hp-copy small { font-size:.48rem; }
+  .multiplayer-battle-ui .hp-copy b { font-size:.68rem; }
+  .multiplayer-battle-ui .hp-track { height:4px; }
+  .multiplayer-battle-ui .hp-footer { display:none; }
+  .multiplayer-battle-ui .battle-home-back { width:30px; height:30px; }
+  .multiplayer-battle-ui .multiplayer-combat-stage { padding:0 2px; }
+  .multiplayer-battle-ui .fighter-player .sprite-wrap,.multiplayer-battle-ui .fighter-boss .sprite-wrap { width:clamp(105px,34vw,178px)!important; }
+  .multiplayer-battle-ui .fighter-player .asset-boss-sprite { width:clamp(115px,35vw,184px)!important; }
+  .multiplayer-battle-ui .fighter-boss .asset-boss-sprite { width:clamp(120px,37vw,190px)!important; }
+  .multiplayer-battle-ui .multiplayer-stage-center { top:14%; }
+  .multiplayer-battle-ui .multiplayer-stage-center>span { width:29px; height:29px; font-size:.58rem; }
+  .multiplayer-battle-ui .multiplayer-stage-center>small { padding:3px 5px; font-size:.46rem; }
+  .multiplayer-battle-ui .battle-question-panel { grid-template-rows:minmax(150px,1fr) 100px 132px; }
+  .multiplayer-battle-ui .battle-question-panel.is-no-hint { grid-template-rows:minmax(150px,1fr) 132px; }
+  .multiplayer-battle-ui .battle-mistake-banner { top:68px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .multiplayer-battle-ui .multiplayer-stage-center { scroll-behavior:auto; }
 }

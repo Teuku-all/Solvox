@@ -5,7 +5,7 @@ import BossMonster from './BossMonster';
 import SpriteCharacter from './SpriteCharacter';
 
 const MultiplayerFighter = forwardRef(function MultiplayerFighter(
-  { characterId, levelId, size, mirrored = false, attackDirection = 1, onImpact },
+  { characterId, levelId, size, mirrored = false, attackDirection = 1, onImpact, centered = false },
   ref,
 ) {
   const rendererRef = useRef(null);
@@ -26,7 +26,7 @@ const MultiplayerFighter = forwardRef(function MultiplayerFighter(
   return (
     <div className={className}>
       {isBoss ? (
-        <BossMonster ref={rendererRef} levelId={levelId} spriteId={safeCharacterId} size={size} mirrored={mirrored} attackDirection={attackDirection} onImpact={onImpact}/>
+        <BossMonster ref={rendererRef} levelId={levelId} spriteId={safeCharacterId} size={size} mirrored={mirrored} attackDirection={attackDirection} onImpact={onImpact} centered={centered}/>
       ) : (
         <SpriteCharacter ref={rendererRef} playerId={safeCharacterId} size={size} mirrored={mirrored} attackDirection={attackDirection} onImpact={onImpact}/>
       )}
