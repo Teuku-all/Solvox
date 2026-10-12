@@ -8,6 +8,7 @@ const SINGLE_PLAYER_CHARACTERS = Object.freeze([
 
 export default function SinglePlayerCharacterPicker({ value = 'traveler', onChange, t }) {
   const selectedIndex = Math.max(0, SINGLE_PLAYER_CHARACTERS.findIndex((item) => item.id === value));
+  const selected = SINGLE_PLAYER_CHARACTERS[selectedIndex];
   const previous = SINGLE_PLAYER_CHARACTERS[(selectedIndex - 1 + SINGLE_PLAYER_CHARACTERS.length) % SINGLE_PLAYER_CHARACTERS.length];
   const next = SINGLE_PLAYER_CHARACTERS[(selectedIndex + 1) % SINGLE_PLAYER_CHARACTERS.length];
   const selectedAsset = getPlayerAsset(selected.id);

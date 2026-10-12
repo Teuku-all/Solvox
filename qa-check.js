@@ -474,6 +474,7 @@ const combatV114 = read('frontend/src/components/CombatStage.jsx');
 must(playerAssetsV114.includes("asuka:") && playerAssetsV114.includes("/assets/characters/asuka"), 'V114 Asuka player asset is not registered');
 must(playerAssetsV114.includes("attack-asuka_12.webp") && playerAssetsV114.includes("hurt-asuka_08.webp") && playerAssetsV114.includes("die-asuka_05.webp"), 'V114 Asuka animation sequences are incomplete');
 must(pickerV114.includes('character-carousel') && pickerV114.includes("id: 'asuka'") && pickerV114.includes("id: 'traveler'"), 'V118 reference-inspired character carousel or character options are missing');
+must(pickerV114.includes('const selected = SINGLE_PLAYER_CHARACTERS[selectedIndex];') && pickerV114.includes('getPlayerAsset(selected.id)'), 'Single-player character selection must resolve the selected character before rendering Chapter 1');
 const characterScreenV118 = read('frontend/src/components/SinglePlayerCharacterSelect.jsx');
 const translationsV118 = read('frontend/src/services/i18n.js');
 must(characterScreenV118.includes('character-select-header') && characterScreenV118.includes('character-start-options') && characterScreenV118.includes('onStart?.(chapterId, playerId)'), 'V118 character screen layout or start handler is missing');
