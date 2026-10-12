@@ -6,7 +6,7 @@
 - Single-player allows up to three attempts per question. Wrong-answer feedback after the second attempt remains visible longer; a third incorrect answer advances to the next question unless the player's HP reaches zero or the chapter has ended.
 - Legacy V114 modal-only CSS was removed; the standalone character selection screen uses a more polished responsive card layout.
 
-Run `npm start` for the production app (builds the frontend and serves UI + API + multiplayer on port 3000). For development, `npm run dev` starts both the Socket.IO/API backend on port 3000 and Vite on port 5173; the Vite proxy forwards `/api` and `/socket.io` to the backend. Run `npm run qa` for static regression checks.
+For local use, run `npm run start:local` to build and start Solvox, or `npm run dev` for the Vite development server. For production hosting, use the build/start commands and persistence notes in [DEPLOYMENT.md](DEPLOYMENT.md). The Node server serves the frontend, API, and multiplayer Socket.IO connection from the same origin. Run `npm run qa` for static regression checks.
 
 ---
 

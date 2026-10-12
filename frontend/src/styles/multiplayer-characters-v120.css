@@ -121,7 +121,7 @@
 }
 
 /* The picker is part of the created room lobby, below the player cards. */
-.multiplayer .multi-character-selection-lobby {
+.multiplayer .multi-character-selection {
   position: relative;
   z-index: 5;
   width: 100%;
@@ -130,27 +130,27 @@
   box-shadow: 0 22px 55px rgba(0, 0, 0, .3), inset 0 1px rgba(255, 255, 255, .04);
 }
 
-.multiplayer .multi-character-selection-lobby .character-showcase-roster {
+.multiplayer .multi-character-selection .character-showcase-roster {
   z-index: 6;
 }
 
-.multiplayer .multi-character-selection-lobby .character-showcase-list {
+.multiplayer .multi-character-selection .character-showcase-list {
   position: relative;
   z-index: 7;
 }
 
-.multiplayer .multi-character-selection-lobby .character-showcase-choice {
+.multiplayer .multi-character-selection .character-showcase-choice {
   min-height: 54px;
   cursor: pointer;
   pointer-events: auto;
   touch-action: manipulation;
 }
 
-.multiplayer .multi-character-selection-lobby .character-showcase-choice.is-active .character-showcase-choice-index {
+.multiplayer .multi-character-selection .character-showcase-choice.is-active .character-showcase-choice-index {
   color: var(--character-accent);
 }
 
-.multiplayer .multi-character-selection-lobby .character-showcase-choice:focus-visible {
+.multiplayer .multi-character-selection .character-showcase-choice:focus-visible {
   position: relative;
   z-index: 8;
   outline: 2px solid var(--character-accent);
@@ -170,26 +170,26 @@
   opacity: .65;
 }
 
-.multiplayer .multi-character-selection-lobby .character-showcase-roster,
-.multiplayer .multi-character-selection-lobby .character-showcase-details {
+.multiplayer .multi-character-selection .character-showcase-roster,
+.multiplayer .multi-character-selection .character-showcase-details {
   padding: 14px;
 }
 
-.multiplayer .multi-character-selection-lobby .character-showcase-stage {
+.multiplayer .multi-character-selection .character-showcase-stage {
   background: radial-gradient(ellipse at 50% 58%, color-mix(in srgb, var(--character-accent) 12%, transparent), transparent 44%), linear-gradient(180deg, rgba(5, 21, 16, .12), rgba(4, 13, 12, .58));
 }
 
-.multiplayer .multi-character-selection-lobby .character-showcase {
+.multiplayer .multi-character-selection .character-showcase {
   grid-template-columns: minmax(185px, .8fr) minmax(300px, 1.35fr) minmax(225px, .9fr);
   min-height: 370px;
   max-height: 430px;
 }
 
-.multiplayer .multi-character-selection-lobby .character-showcase-stage {
+.multiplayer .multi-character-selection .character-showcase-stage {
   min-height: 370px;
 }
 
-.multiplayer .multi-character-selection-lobby .character-showcase-list {
+.multiplayer .multi-character-selection .character-showcase-list {
   max-height: 335px;
 }
 
@@ -213,36 +213,36 @@
 }
 
 @media (max-width: 820px) {
-  .multiplayer .multi-character-selection-lobby .character-showcase {
+  .multiplayer .multi-character-selection .character-showcase {
     grid-template-columns: minmax(165px, .75fr) minmax(265px, 1.2fr) minmax(205px, .9fr);
   }
 
 }
 
 @media (max-width: 760px) {
-  .multiplayer .multi-character-selection-lobby .character-showcase {
+  .multiplayer .multi-character-selection .character-showcase {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-rows: auto minmax(270px, 38dvh) auto;
     min-height: 0;
     max-height: none;
   }
 
-  .multiplayer .multi-character-selection-lobby .character-showcase-stage {
+  .multiplayer .multi-character-selection .character-showcase-stage {
     min-height: 270px;
   }
 
-  .multiplayer .multi-character-selection-lobby .character-showcase-list {
+  .multiplayer .multi-character-selection .character-showcase-list {
     max-height: none;
   }
 }
 
 @media (max-width: 560px) {
-  .multiplayer .multi-character-selection-lobby .character-showcase {
+  .multiplayer .multi-character-selection .character-showcase {
     grid-template-columns: 1fr;
     grid-template-rows: auto minmax(250px, 34dvh) auto;
   }
 
-  .multiplayer .multi-character-selection-lobby .character-showcase-stage {
+  .multiplayer .multi-character-selection .character-showcase-stage {
     min-height: 250px;
   }
 

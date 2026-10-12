@@ -96,7 +96,9 @@ function freshQuestions(levelId,lang){
   return {questions:questions.fallbackGenerate(levelId,TOTAL_QUESTIONS,lang),source:'local'};
 }
 
-const DATA_DIR=path.join(__dirname,'..','data');
+const DATA_DIR=process.env.SOLVOX_DATA_DIR
+  ? path.resolve(process.env.SOLVOX_DATA_DIR)
+  : path.join(__dirname,'..','data');
 const MATCH_LOG=path.join(DATA_DIR,'multiplayer.jsonl');
 function appendJsonLine(file,payload){fs.mkdirSync(DATA_DIR,{recursive:true});fs.appendFileSync(file,JSON.stringify(payload)+'\n');}
 function readJsonLines(file){if(!fs.existsSync(file))return [];return fs.readFileSync(file,'utf8').split(/\r?\n/).filter(Boolean).map(line=>{try{return JSON.parse(line)}catch{return null}}).filter(Boolean);}
@@ -252,9 +254,8 @@ app.post('/api/questions/generate',(req,res)=>{
 
 app.post('/api/feedback',(req,res)=>{
   try{
-    const d=path.join(__dirname,'..','data');
-    fs.mkdirSync(d,{recursive:true});
-    fs.appendFileSync(path.join(d,'feedback.jsonl'),JSON.stringify({type:'feedback',ts:new Date().toISOString(),...req.body})+'\\n');
+    fs.mkdirSync(DATA_DIR,{recursive:true});
+    fs.appendFileSync(path.join(DATA_DIR,'feedback.jsonl'),JSON.stringify({type:'feedback',ts:new Date().toISOString(),...req.body})+'\n');
     res.json({ok:true});
   }catch(e){res.status(500).json({ok:false,message:'Feedback gagal disimpan'});}
 });
@@ -307,7 +308,7 @@ app.get('/api/dashboard',(req,res)=>{
   }catch(e){res.status(500).json({ok:false,message:'Dashboard gagal dimuat'});}
 });
 
-app.get('/health',(req,res)=>res.json({ok:true,rooms:rooms.size,transport:'socket.io',turnDuration:TURN_MS,questionsPerChapter:TOTAL_QUESTIONS,questionEngine:'local'}));
+app.get('/health',(req,res)=>res.json({ok:true,rooms:rooms.size,transport:'socket.io',storage:'writable',turnDuration:TURN_MS,questionsPerChapter:TOTAL_QUESTIONS,questionEngine:'local'}));
 app.get('/api/characters',(req,res)=>res.json(Object.values(CHARACTERS)));
 app.get('/api/levels',(req,res)=>res.json(Object.entries(questions).filter(([id])=>/^\d+$/.test(id)).map(([id,q])=>({id:Number(id),title:q.title,titleEn:q.titleEn,icon:q.icon,difficulty:q.difficulty,totalQuestions:TOTAL_QUESTIONS}))));
 app.get('/api/lan',(req,res)=>res.json({port:PORT,hostnames:lanAddresses().map(ip=>`http://${ip}:${PORT}`)}));
@@ -370,4 +371,11 @@ function lanAddresses(){const nets=os.networkInterfaces(),out=[];for(const name 
 function sendSpa(req,res){return res.sendFile(path.join(FRONTEND_DIST,'index.html'));}
 app.get(['/','/index.html','/game.html'],sendSpa);
 app.get(/^(?!\/api(?:\/|$)).*/,sendSpa);
+try{
+  fs.mkdirSync(DATA_DIR,{recursive:true});
+  fs.accessSync(DATA_DIR,fs.constants.W_OK);
+}catch(error){
+  console.error(`[Solvox] Data directory is not writable: ${DATA_DIR}. Set SOLVOX_DATA_DIR to a writable persistent directory.`);
+  throw error;
+}
 server.listen(PORT,'0.0.0.0',()=>{console.log(`\nSolvox berjalan di port ${PORT}`);console.log(`Local : http://localhost:${PORT}`);for(const ip of lanAddresses())console.log(`LAN   : http://${ip}:${PORT}`);console.log(`Question engine: local deterministic generator | ${TOTAL_QUESTIONS} questions per chapter`);console.log(`Multiplayer: turn-based ${TURN_MS/1000}s per player, ${TOTAL_QUESTIONS} questions, reconnect ${ROOM_GRACE_MS/1000}s, bot mode enabled.`);});

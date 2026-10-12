@@ -7,3 +7,4 @@ frontend/dist/
 data/solvox-users.json*
 data/evaluation.jsonl
 data/multiplayer.jsonl
+data/feedback.jsonl

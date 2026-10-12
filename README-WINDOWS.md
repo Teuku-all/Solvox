@@ -14,10 +14,10 @@ This ZIP is intentionally flattened so the project root contains `package.json` 
 npm install
 ```
 
-5. Start the game:
+5. Build and start the game locally:
 
 ```powershell
-npm start
+npm run start:local
 ```
 
 6. Open:
@@ -37,12 +37,6 @@ If PowerShell reports `ENOENT` for `package.json`, the command is being run from
 Requirements: Node.js 18 LTS or newer.
 
 
-## Account system
+## Hosting
 
-On first launch, Solvox shows the account screen. Create a username/password or sign in to an existing account. The game will store progress on the server in `data\solvox-users.json`. Do not delete this file if you want to keep player accounts.
-
-For a fresh deployment, make sure the folder containing `package.json` is writable so the server can create the `data` file.
-
-## Feedback bank
-
-Gemini feedback has been removed. Battle feedback currently uses the bundled question feedback/explanation. The new feedback bank will be integrated after its schema/data is provided.
+For production hosting steps, including the required build command and persistent data directory, see [DEPLOYMENT.md](DEPLOYMENT.md).

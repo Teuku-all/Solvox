@@ -6,7 +6,8 @@
   "main": "server.js",
   "scripts": {
     "build": "npm run qa && npm --workspace frontend run build",
-    "start": "npm run build && node server.js",
+    "start": "node server.js",
+    "start:local": "npm run build && node server.js",
     "dev": "node scripts/dev.js",
     "qa": "node qa-check.js",
     "dev:frontend": "npm --workspace frontend run dev"

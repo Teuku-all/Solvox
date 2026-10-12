@@ -341,7 +341,7 @@ useEffect(()=>{
         <div className="room-top-title"><div className="eyebrow">{room.mode==='turn'?t('turnBased'):t('scoreDuel')}</div><div className="room-code">{room.code}</div></div>
         <div className="match-meta">{room.isBot? t('botReady') : `${t('questionSource')}: ${room.questionSource}`}</div>
       </div>
-      {room.status==='waiting'&&<section className="multi-character-selection multi-character-selection-lobby">
+      {room.status==='waiting'&&<section className="multi-character-selection">
         <div className="multi-character-selection-heading"><div><small>{t('yourFighter')}</small><h2>{t('characterSelect')}</h2></div><span>{t('multiplayerCharacterHint')}</span></div>
         <CharacterPicker value={char} onChange={changeMyCharacter} levelId={room.levelId||level} t={t}/>
       </section>}
