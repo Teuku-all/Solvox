@@ -2,11 +2,25 @@ import React from 'react';
 import { BOSSES } from '../data/bosses';
 import { getBossPreviewSrc } from '../data/bossAssets';
 import { PLAYER_ASSETS } from '../data/playerAssets';
-import PixelIcon from './PixelIcon';
+import CharacterShowcase from './CharacterShowcase';
 
 export const MULTIPLAYER_CHARACTERS = Object.freeze([
-  { id: 'traveler', nameId: 'characterTraveler', roleId: 'characterTravelerRole', portrait: PLAYER_ASSETS.traveler.portrait, accent: '#efbd52', kind: 'player' },
-  { id: 'asuka', nameId: 'characterAsuka', roleId: 'characterAsukaRole', portrait: PLAYER_ASSETS.asuka.portrait, accent: '#f17a83', kind: 'player' },
+  {
+    id: 'traveler',
+    nameId: 'characterTraveler',
+    roleId: 'characterTravelerRole',
+    portrait: PLAYER_ASSETS.traveler.portrait,
+    accent: '#efbd52',
+    kind: 'player',
+  },
+  {
+    id: 'asuka',
+    nameId: 'characterAsuka',
+    roleId: 'characterAsukaRole',
+    portrait: PLAYER_ASSETS.asuka.portrait,
+    accent: '#f17a83',
+    kind: 'player',
+  },
   ...Object.values(BOSSES).map((boss) => ({
     id: boss.spriteId,
     nameId: `character_${boss.spriteId}`,
@@ -22,36 +36,15 @@ export function findCharacter(characterId) {
     || MULTIPLAYER_CHARACTERS[0];
 }
 
-export default function CharacterPicker({ value = 'traveler', onChange, compact = false, t }) {
-  const selectedId = findCharacter(value).id;
-
+export default function CharacterPicker({ value = 'traveler', onChange, levelId = 1, t }) {
   return (
-    <div className={`character-picker ${compact ? 'compact' : ''}`} role="group" aria-label={t('characterSelect')}>
-      {MULTIPLAYER_CHARACTERS.map((character) => {
-        const selected = selectedId === character.id;
-        const name = t(character.nameId);
-        return (
-          <button
-            key={character.id}
-            type="button"
-            className={`character-choice ${selected ? 'selected' : ''}`}
-            style={{ '--character-accent': character.accent }}
-            onClick={() => onChange?.(character.id)}
-            aria-pressed={selected}
-            aria-label={`${name}, ${t(character.roleId)}`}
-            title={`${name} · ${t(character.roleId)}`}
-          >
-            <span className={`character-choice-icon ${character.kind === 'boss' ? 'is-boss' : ''}`}>
-              <img src={character.portrait} alt="" draggable="false" loading="lazy" />
-            </span>
-            <span className="character-choice-copy">
-              <strong>{name}</strong>
-              <small>{t(character.roleId)}</small>
-            </span>
-            {selected && <span className="character-check"><PixelIcon name="check" size={10}/></span>}
-          </button>
-        );
-      })}
-    </div>
+    <CharacterShowcase
+      characters={MULTIPLAYER_CHARACTERS}
+      value={findCharacter(value).id}
+      onChange={onChange}
+      t={t}
+      levelId={levelId}
+      className="multiplayer-character-showcase"
+    />
   );
 }

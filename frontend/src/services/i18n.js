@@ -196,3 +196,32 @@ Object.assign(T.en,{
   character_axiom:'Axiom',
   character_axiom_role:'Boss · Shadow Fortress Sovereign',
 });
+
+Object.assign(T.id,{
+  characterRosterEyebrow:'ROSTER PETARUNG',
+  characterRoster:'Daftar Karakter',
+  characterTypePlayer:'Petualang',
+  characterTypeBoss:'Boss',
+  characterHp:'HP',
+  characterDamage:'Serangan',
+  characterEnergy:'Energi',
+  characterElement:'Elemen',
+  characterRole:'Peran',
+  characterSkills:'Kemampuan',
+  characterSelectionNote:'Pilih petarung untuk melihat profil dan kemampuan sebelum masuk arena.',
+  multiplayerCharacterHint:'Pilih karakter pemain atau boss untuk digunakan di arena multiplayer.',
+});
+Object.assign(T.en,{
+  characterRosterEyebrow:'FIGHTER ROSTER',
+  characterRoster:'Character Roster',
+  characterTypePlayer:'Adventurer',
+  characterTypeBoss:'Boss',
+  characterHp:'HP',
+  characterDamage:'Damage',
+  characterEnergy:'Energy',
+  characterElement:'Element',
+  characterRole:'Role',
+  characterSkills:'Skills',
+  characterSelectionNote:'Choose a fighter to review its profile and abilities before entering the arena.',
+  multiplayerCharacterHint:'Choose a player character or boss to use in the multiplayer arena.',
+});

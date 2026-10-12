@@ -119,6 +119,7 @@ export default function Multiplayer({lang,onBack,t,playerName=''} ){
   const statusText=()=>{
     if(!room)return '';
     const map={WAITING_PLAYER:t('waitingPlayer'),WAITING:t('waitingReady'),GENERATING_QUESTIONS:t('generatingMatch'),READY_TO_BATTLE:t('battleReady'),TURN_CHANGED:room.currentTurnPlayerId===me?.id?t('turnYour'):t('turnOpponent'),TURN_TIMEOUT:t('timeUp'),TURN_CORRECT:t('correct'),TURN_WRONG:t('wrong'),BOTH_WRONG:t('bothMissed'),ROUND_RESOLVED:t('roundResolved'),NEW_ROUND:t('newRound'),MATCH_FINISHED:t('matchFinished'),DRAW:t('draw'),REMATCH_READY:t('rematchReady'),DISCONNECTED:t('disconnect')};
+    if(room.isBot&&room.status==='waiting')return t('botReady');
     return map[room.statusKey]||t('waiting');
   };
   const winnerName=room?.winnerName||(room?.winner&&room.winner!=='draw'?room.players?.find(p=>p.id===room.winner)?.name:null);
@@ -130,10 +131,15 @@ const opponentBattleImpact=()=>{playerBattleRef.current?.play('hurt')};
 const battlePlayers=useMemo(()=>{
   const list=Array.isArray(room?.players)?room.players:[];
   if(!list.length)return {player:null,opponent:null};
-  const local=list.find(p=>p.id===socket.id);
-  const opponent=list.find(p=>p.id!==local?.id);
-  return {player:local||list[0],opponent:opponent||list.find(p=>p!==local)||list[0]};
-},[room?.players,me?.id,socket.id]);
+  const local=list.find(p=>p.id===socket.id)
+    ||me
+    ||list.find(p=>p.name===name)
+    ||list[0];
+  const opponent=list.find(p=>p.id!==local.id)||null;
+  return {player:local,opponent};
+},[room?.players,me?.id,socket.id,name]);
+const battlePlayerCharacter=findCharacter(battlePlayers.player?.character);
+const battleOpponentCharacter=findCharacter(battlePlayers.opponent?.character);
 
 useEffect(()=>{
   if(room?.status!=='battle')return;
@@ -178,7 +184,10 @@ useEffect(()=>{
     const token=prepareRoomToken();
     runWhenConnected(()=>{setError('');socket.emit('room:join',{code:roomCode,name,character:char,lang,token})});
   };
-  const ready=()=>runWhenConnected(()=>socket.emit('player:ready',{ready:true}));
+  const ready=()=>runWhenConnected(()=>{
+    if(room?.status==='waiting')socket.emit('player:update',{character:char,name});
+    socket.emit('player:ready',{ready:true});
+  });
   const submit=()=>{if(!answer.trim())return;if(room?.mode==='turn'&&!current)return;const submittedAnswer=answer;runWhenConnected(()=>socket.emit('answer:submit',{answer:submittedAnswer}))};
   const useTurnHint=()=>{const nextHintCost=5*((me?.hintsUsed||0)+1);if(!room||room.status!=='battle'||room.mode!=='turn'||!current||!room.question?.hints?.length||Number(me?.hintsUsed||0)>=2)return;if(Number(me?.hp||0)<=nextHintCost){setAnswerInfo({correct:false,explanation:t('hintNotEnoughHp')});return;}socket.emit('turn:hint')};
   const changeMyCharacter=(next)=>{
@@ -218,9 +227,9 @@ useEffect(()=>{
     </div>
     <div className="multi-ambient" aria-hidden="true"><span/><i/><b/></div>
     <div className="multi-header">
-      <button className="multi-back-btn" type="button" onClick={leaveMultiplayer}><SolvoxUtilityArt name="back" size={28} className="solvox-back-art" /><span className="solvox-back-label">{t('back')}</span></button>
-      <div><div className="eyebrow">{GAME_META.title.toUpperCase()}</div><h1>{t('battleWithFriend')}</h1><p>{t('arenaTip')}</p></div>
-      <div className={`status-dot status-dot ${socketConnected ? '' : 'is-connecting'}`}><i/> {socketConnected ? t('online') : (lang==='en' ? 'Connecting…' : 'Menghubungkan…')}</div>
+      <button className="multi-back-btn" type="button" onClick={leaveMultiplayer} aria-label={t('back')} title={t('back')}><SolvoxUtilityArt name="back" size={20} className="solvox-back-art" /><span className="solvox-back-label">{t('back')}</span></button>
+      <div className="multi-header-copy"><div className="eyebrow">{GAME_META.title.toUpperCase()}</div><h1>{t('battleWithFriend')}</h1><p>{t('arenaTip')}</p></div>
+      <div className={`multi-connection-status status-dot ${socketConnected ? '' : 'is-connecting'}`} aria-live="polite"><i/> {socketConnected ? t('online') : (lang==='en' ? 'Connecting…' : 'Menghubungkan…')}</div>
     </div>
     {errText&&<div className="error-banner">{errText}</div>}
 
@@ -234,8 +243,6 @@ useEffect(()=>{
           <select value={level} onChange={e=>setLevel(Number(e.target.value))}>{[1,2,3,4,5].map(x=><option key={x} value={x}>Chapter {x}{x===5?' • '+t('finalBoss'):''}</option>)}</select>
           <div className="mode-choice"><button className={battleMode==='turn'?'active':''} onClick={()=>setBattleMode('turn')}>{t('turnBased')}</button><button className={battleMode==='score'?'active':''} onClick={()=>setBattleMode('score')}>{t('scoreDuel')}</button></div>
           <p className="mode-desc">{battleMode==='turn'?t('turnBasedDesc'):t('scoreDuelDesc')}</p><div className="tiebreak-note"><PixelIcon name="hint" size={14}/><span>{t('tieBreakHintRule')}</span></div>
-          <div className="picker-title"><strong>{t('yourFighter')}</strong><span>{t('characterSelect')}</span></div>
-          <CharacterPicker value={char} onChange={setChar} compact t={t}/>
           <div className="multi-actions"><button className="primary-btn" onClick={()=>create(false)}>{t('create')}</button><button className="primary-btn multi-bot-btn" onClick={()=>create(true)}>{t('playVsBot')}</button></div>
         </div>
 
@@ -245,8 +252,6 @@ useEffect(()=>{
           <p className="card-subtitle">{t('joinArenaDesc')}</p>
           <input value={code} maxLength={8} onChange={e=>setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g,''))} placeholder="AJM-OOOO"/>
           <input value={name} onChange={e=>setName(e.target.value)} placeholder={t('name')}/>
-          <div className="picker-title"><strong>{t('yourFighter')}</strong><span>{t('characterSelect')}</span></div>
-          <CharacterPicker value={char} onChange={setChar} compact t={t}/>
           <button className="primary-btn" onClick={join}>{t('join')}</button>
         </div>
       </div>
@@ -309,11 +314,14 @@ useEffect(()=>{
 
     {room&&<div className="room-card multi-room--legacy multi-room">
       <div className="room-top"><div><div className="eyebrow">{room.mode==='turn'?t('turnBased'):t('scoreDuel')}</div><div className="room-code">{room.code}</div></div><div className="match-meta">{room.isBot? t('botReady') : `${t('questionSource')}: ${room.questionSource}`}</div></div>
+      {room.status==='waiting'&&<section className="multi-character-selection multi-character-selection-lobby">
+        <div className="multi-character-selection-heading"><div><small>{t('yourFighter')}</small><h2>{t('characterSelect')}</h2></div><span>{t('multiplayerCharacterHint')}</span></div>
+        <CharacterPicker value={char} onChange={changeMyCharacter} levelId={room.levelId||level} t={t}/>
+      </section>}
       <div className="players">{room.players?.map((p,index)=>{
         const c=findCharacter(p.character);
         return <div className={`p-card p-card ${p.id===me?.id?'mine':''}`} key={p.id} style={{'--fighter-accent':c.accent,'--attack-distance':index===0?'56px':'-56px'}}>
           <div className="player-number">{index===0?t('player1'):t('player2')}</div><div className="p-avatar"><img src={c.portrait} alt="" draggable="false"/></div><b>{p.name}</b><span>{t(c.nameId)} · {room.mode==='turn'?`${p.hp} HP`:p.score+' '+t('score')}</span><small>{p.ready?t('ready'):t('waiting')}</small>
-          {p.id===me?.id&&room.status==='waiting'&&<CharacterPicker value={p.character} onChange={changeMyCharacter} compact t={t}/>}
         </div>;
       })}</div>
       <div className="room-status">{statusText()}</div>
@@ -324,18 +332,20 @@ useEffect(()=>{
       {room.status==='waiting'&&<button className="primary-btn wide-action" onClick={ready}><PixelIcon name="check" size={16}/><span>{t('ready')}</span></button>}
       {room.status==='generating'&&<div className="match-loading">✨ {t('generatingMatch')}</div>}
 {room.status==='battle'&&room.question&&<div className="mp-battle--legacy mp-battle--shell mp-battle"><div className="mp-arena" data-combat-seq={room.combatEvent?.seq||''}>
-  <div className={`mp-battle-side mp-battle-player ${room.mode==='turn'&&current?'is-active':''} ${room.combatEvent?.playerId===battlePlayers.player?.id?'is-attacking':''} ${room.combatEvent?.targetPlayerId===battlePlayers.player?.id?'is-hit':''}`} style={{'--fighter-accent':findCharacter(battlePlayers.player?.character).accent}}>
+  <div className={`mp-battle-side mp-battle-player ${room.mode==='turn'&&current?'is-active':''} ${room.combatEvent?.playerId===battlePlayers.player?.id?'is-attacking':''} ${room.combatEvent?.targetPlayerId===battlePlayers.player?.id?'is-hit':''}`} style={{'--fighter-accent':battlePlayerCharacter.accent}}>
     <div className="mp-role">{t('yourFighter')}</div>
     <div className="mp-fighter-name">{battlePlayers.player?.name||name}</div>
-    <div className="mp-sprite-frame mp-player-frame"><span className="mp-ground-shadow" aria-hidden="true"/><MultiplayerFighter ref={playerBattleRef} characterId={battlePlayers.player?.character} levelId={room.levelId||level} size={270} mirrored={findCharacter(battlePlayers.player?.character).kind==='boss'} attackDirection={1} onImpact={playerBattleImpact}/></div>
+    <div className="mp-character-name">{t(battlePlayerCharacter.nameId)}</div>
+    <div className="mp-sprite-frame mp-player-frame"><span className="mp-ground-shadow" aria-hidden="true"/><MultiplayerFighter ref={playerBattleRef} characterId={battlePlayerCharacter.id} levelId={room.levelId||level} size={270} mirrored={battlePlayerCharacter.kind==='boss'} attackDirection={1} onImpact={playerBattleImpact}/></div>
     <div className="mp-hp"><i style={{width:`${Math.max(0,Math.min(100,battlePlayers.player?.hp??100))}%`}}/></div>
     <small>{battlePlayers.player?.hp??100} HP</small>
   </div>
   <div className="mp-arena-center" aria-hidden="true"><span>VS</span><i/><b>CHAPTER {room.levelId||level}</b></div>
-  <div className={`mp-battle-side mp-battle-boss ${room.combatEvent?.playerId===battlePlayers.opponent?.id?'is-attacking':''} ${room.combatEvent?.targetPlayerId===battlePlayers.opponent?.id?'is-hit':''}`} style={{'--fighter-accent':findCharacter(battlePlayers.opponent?.character).accent}}>
+  <div className={`mp-battle-side mp-battle-boss ${room.combatEvent?.playerId===battlePlayers.opponent?.id?'is-attacking':''} ${room.combatEvent?.targetPlayerId===battlePlayers.opponent?.id?'is-hit':''}`} style={{'--fighter-accent':battleOpponentCharacter.accent}}>
     <div className="mp-role is-boss">{t('opponent')}</div>
     <div className="mp-fighter-name">{battlePlayers.opponent?.name||t('player2')}</div>
-    <div className="mp-sprite-frame mp-boss-frame"><span className="mp-ground-shadow" aria-hidden="true"/><MultiplayerFighter ref={opponentBattleRef} characterId={battlePlayers.opponent?.character} levelId={room.levelId||level} size={300} mirrored={findCharacter(battlePlayers.opponent?.character).kind==='player'} attackDirection={-1} onImpact={opponentBattleImpact}/></div>
+    <div className="mp-character-name">{t(battleOpponentCharacter.nameId)}</div>
+    <div className="mp-sprite-frame mp-boss-frame"><span className="mp-ground-shadow" aria-hidden="true"/><MultiplayerFighter ref={opponentBattleRef} characterId={battleOpponentCharacter.id} levelId={room.levelId||level} size={300} mirrored={battleOpponentCharacter.kind==='player'} attackDirection={-1} onImpact={opponentBattleImpact}/></div>
     <div className="mp-hp"><i style={{width:`${Math.max(0,Math.min(100,battlePlayers.opponent?.hp??100))}%`}}/></div>
     <small>{battlePlayers.opponent?.hp??100} HP</small>
   </div>
