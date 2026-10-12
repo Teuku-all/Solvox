@@ -1,0 +1,24 @@
+{
+  "name": "solvox-v62",
+  "version": "4.3.0",
+  "private": true,
+  "description": "Solvox — local bilingual math adventure, question-specific feedback bank, mobile battle polish, evaluation, and multiplayer.",
+  "main": "server.js",
+  "scripts": {
+    "build": "npm run qa && npm --workspace frontend run build",
+    "start": "npm run build && node server.js",
+    "dev": "node scripts/dev.js",
+    "qa": "node qa-check.js",
+    "dev:frontend": "npm --workspace frontend run dev"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "workspaces": [
+    "frontend"
+  ]
+}

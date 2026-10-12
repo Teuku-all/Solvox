@@ -1,0 +1,1105 @@
+/* V100 — responsive desktop + portrait-mobile source of truth. */
+/* V99 — adaptive desktop + portrait-mobile layout layer, using V91 as the geometry reference.
+   This file changes geometry only. Gameplay logic, panel hierarchy, and assets
+   remain owned by their current components/stylesheets. */
+
+html, body, #root { min-height: 100%; }
+html, body { overflow-x: hidden; }
+body { min-width: 320px; }
+.app-shell { min-height: 100dvh; width: 100%; overflow-x: hidden; }
+
+/* V91 — mobile document-scroll contract.
+   Legacy V42 fixed the document to a viewport and nested scrolling became unreliable
+   on touch browsers. Mobile now scrolls the document itself; page-specific containers
+   remain normal-flow surfaces instead of competing scroll roots. */
+@media (max-width: 700px) {
+  html, body, #root {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: auto !important;
+    touch-action: pan-y;
+  }
+  body {
+    min-width: 320px !important;
+  }
+  .app-shell {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100dvh !important;
+    overflow: visible !important;
+  }
+  .mode-select,
+  .chapter-select,
+  .multi-page,
+  .battle-reference {
+    height: auto !important;
+    min-height: 100dvh !important;
+    overflow: visible !important;
+    touch-action: pan-y;
+  }
+  .mode-select-backdrop,
+  .chapter-select-bg,
+  .battle-world > .arena-background {
+    pointer-events: none !important;
+  }
+}
+
+/* Shared modal safety on narrow screens. */
+@media (max-width: 700px) {
+  .modal-backdrop,
+  .profile-overlay { padding: 10px !important; align-items: flex-start !important; }
+  .settings-card,
+  .feedback-card,
+  .eval-card,
+  .profile-panel {
+    width: 100% !important;
+    max-width: none !important;
+    max-height: calc(100dvh - 20px) !important;
+    margin: 0 !important;
+  }
+
+  .global-bar {
+    min-height: 58px !important;
+    padding-inline: 10px !important;
+  }
+  .global-brand img { width: 74px !important; max-height: 42px !important; }
+  .global-brand span { display: none !important; }
+  .global-actions { gap: 6px !important; }
+  .global-action { width: 42px !important; min-height: 42px !important; padding: 8px !important; }
+  .global-action span { display: none !important; }
+
+  /* Home remains the V77 menu composition, but gains safe touch spacing. */
+  .home-menu-nav { padding: 22px 18px 28px !important; }
+  .home-menu-item { min-height: 50px !important; padding-left: 25px !important; font-size: clamp(24px, 7vw, 30px) !important; }
+
+  /* Mode select: one card at a time, portrait-first. */
+  .mode-select {
+    min-height: 100dvh !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .mode-select-shell {
+    min-height: 100dvh !important;
+    height: auto !important;
+    justify-content: flex-start !important;
+    padding: 88px 0 28px !important;
+  }
+  .mode-select-grid { gap: 12px !important; }
+  .mode-card {
+    min-height: 270px !important;
+    padding: 18px !important;
+  }
+  .mode-card-copy { width: 58% !important; min-height: 230px !important; }
+  .mode-card-copy h2 { font-size: clamp(23px, 7vw, 28px) !important; }
+  .mode-card-copy p { font-size: 11px !important; }
+
+  /* Chapter select: keep artwork legible and make the grid scroll naturally. */
+  .chapter-select {
+    min-height: 100dvh !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .chapter-select-top { position: relative !important; }
+  .chapter-select-grid {
+    height: auto !important;
+    min-height: 0 !important;
+    padding-bottom: 30px !important;
+  }
+  .chapter-card { min-height: 390px !important; }
+
+  /* Single-player battle: portrait-first, compact arena, natural page scroll. */
+  .battle-reference {
+    height: auto !important;
+    min-height: 100dvh !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  .battle-world {
+    height: auto !important;
+    min-height: 100dvh !important;
+    overflow: visible !important;
+  }
+  .battle-ui {
+    min-height: 100dvh !important;
+    height: auto !important;
+    grid-template-rows: auto minmax(210px, 27dvh) auto !important;
+    gap: 7px !important;
+    padding: 7px !important;
+    overflow: visible !important;
+  }
+  .battle-world > .arena-background {
+    inset: 0 0 auto 0 !important;
+    height: 410px !important;
+  }
+  .battle-world > .arena-background .arena-background-media { object-position: center bottom !important; }
+
+  .battle-top-rail {
+    height: auto !important;
+    grid-template-columns: 36px minmax(0, 1fr) minmax(0, 1fr) !important;
+    grid-template-areas:
+      'back stage stage'
+      'player player boss' !important;
+    align-items: stretch !important;
+    gap: 5px !important;
+  }
+  .battle-top-rail > .battle-home-back {
+    grid-area: back; width: 34px !important; height: 34px !important;
+    align-self: center !important; justify-self: center !important;
+  }
+  .battle-top-rail > .hp-player { grid-area: player; }
+  .battle-top-rail > .stage-crown { grid-area: stage; min-width: 0 !important; height: 44px !important; }
+  .battle-top-rail > .hp-boss { grid-area: boss; }
+  .hp-card { height: 48px !important; padding: 5px 7px !important; }
+  .hp-avatar { width: 24px !important; height: 24px !important; }
+  .hp-copy small { font-size: 6px !important; }
+  .hp-copy b { font-size: 9px !important; }
+  .hp-percent { font-size: 9px !important; }
+  .hp-footer { display: none !important; }
+  .stage-crown span { font-size: 6px !important; }
+  .stage-crown b { font-size: 11px !important; }
+
+  .battle-reference-arena {
+    grid-row: 2 !important;
+    min-height: 210px !important;
+    height: 27dvh !important;
+    max-height: 250px !important;
+    border-radius: 12px !important;
+  }
+  .battle-reference-arena .combat-stage {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    min-height: 100% !important;
+    padding: 0 3vw !important;
+    align-items: end !important;
+  }
+  .battle-reference-arena .fighter-slot { height: 100% !important; min-height: 0 !important; }
+  .battle-reference-arena .player-lane-shift { margin-left: 4px !important; }
+  .battle-reference-arena .combat-stage[data-level="3"] .fighter-boss { margin-bottom: 8px !important; }
+
+  /* Question dock: one scrollable page, fixed controls inside each section. */
+  .battle-question-panel {
+    grid-row: 3 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto auto !important;
+    overflow: visible !important;
+  }
+  .battle-question-panel .battle-question-main {
+    grid-column: 1 !important; grid-row: 1 !important;
+    min-height: 280px !important; height: auto !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--panel-border-soft, rgba(110,213,201,.12)) !important;
+  }
+  .battle-question-panel .hint-rail {
+    grid-column: 1 !important; grid-row: 2 !important;
+    min-height: 150px !important; height: auto !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--panel-border-soft, rgba(110,213,201,.12)) !important;
+  }
+  .battle-question-panel .battle-keypad-side {
+    grid-column: 1 !important; grid-row: 3 !important;
+    min-height: 0 !important; height: auto !important;
+  }
+  .battle-mistake-banner { position: relative !important; top: auto !important; left: auto !important; right: auto !important; margin: 0 !important; width: 100% !important; }
+  .battle-mistake-tag { grid-column: 2; justify-self: start; }
+
+  /* Mobile multiplayer: vertical cards and full-width battle controls. */
+  .multi-page { min-height: 100dvh !important; height: auto !important; padding: 72px 10px 24px !important; overflow: visible !important; }
+  .multi-header { position: relative !important; top: auto !important; }
+  .multi-grid { grid-template-columns: 1fr !important; width: 100% !important; margin: 14px auto !important; }
+  .players { grid-template-columns: 1fr !important; }
+  
+  
+  
+  .mp-question label { grid-template-columns: 1fr !important; }
+  .mp-question label button { width: 100% !important; }
+
+  /* Evaluation / profile / settings / feedback. */
+  .eval-hero { grid-template-columns: 1fr !important; text-align: center !important; }
+  .eval-hero .medal { grid-row: auto !important; justify-self: center !important; }
+  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .eval-grid { grid-template-columns: 1fr !important; }
+  .eval-actions { justify-content: stretch !important; }
+  .eval-actions > * { flex: 1 1 100% !important; }
+  .profile-panel-head.utility-profile-head { grid-template-columns: 76px minmax(0, 1fr) auto !important; gap: 10px !important; }
+  .profile-hero { grid-template-columns: 1fr !important; }
+  .profile-grid { grid-template-columns: 1fr !important; }
+  .profile-bottom-grid { grid-template-columns: 1fr !important; }
+  .feedback-category { grid-template-columns: 1fr 1fr !important; }
+  .settings-row { flex-direction: column !important; align-items: stretch !important; gap: 10px !important; }
+  .language-switch--legacy { width: 100% !important; min-width: 0 !important; }
+}
+
+@media (max-width: 480px) {
+  .battle-ui { padding: 5px !important; gap: 6px !important; }
+  .battle-reference-arena { min-height: 195px !important; height: 25dvh !important; max-height: 220px !important; }
+  .battle-reference-arena .combat-stage { padding-inline: 2vw !important; }
+  .battle-question-panel .battle-question-main { min-height: 265px !important; }
+  .battle-question-panel .question-text { font-size: clamp(18px, 6.2vw, 23px) !important; }
+  .battle-question-panel .keypad-key { min-height: 40px !important; }
+}
+
+@media (max-width: 360px) {
+  .battle-reference-arena { min-height: 180px !important; height: 23dvh !important; max-height: 200px !important; }
+  .battle-top-rail { gap: 4px !important; }
+  .hp-card { height: 44px !important; }
+  .battle-question-panel .battle-question-main { min-height: 250px !important; }
+  .battle-question-panel .hint-rail { min-height: 140px !important; }
+}
+
+
+@media (orientation: portrait) and (min-width: 701px) and (max-width: 1000px) {
+  .battle-reference {
+    height: auto !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+  }
+  .battle-world { height: auto !important; overflow: visible !important; }
+  .battle-ui { height: auto !important; min-height: 100dvh !important; grid-template-rows: auto 340px auto !important; overflow: visible !important; }
+  .battle-question-panel { height: auto !important; }
+  .battle-question-panel { grid-template-columns: 1.15fr .72fr 1fr !important; }
+}
+
+/* V82 — Multiplayer header follows the scroll container instead of sticking to the viewport. */
+.multi-header {
+  width: min(1180px, 100%);
+  margin-inline: auto;
+}
+@media (max-width: 760px) {
+  .multi-header {
+    padding: 14px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+}
+@media (max-width: 520px) {
+  .multi-header {
+    padding: 12px;
+    border-radius: 10px;
+  }
+  .multi-back-btn,
+  .mode-select-back,
+  .chapter-select-back {
+    min-height: 44px;
+  }
+}
+
+
+/* V91 — mobile fighter sizing + touch-first question surface.
+   Desktop geometry remains unchanged; portrait scales the fighters a little
+   larger than V88 while keeping both bodies fully inside the arena. */
+@media (max-width: 700px) {
+  .battle-reference-arena .combat-stage {
+    padding-inline: clamp(8px, 4vw, 18px) !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  }
+  .battle-reference-arena .fighter-player .sprite-wrap {
+    width: clamp(84px, 27vw, 118px) !important;
+    min-height: 0 !important;
+  }
+  .battle-reference-arena .fighter-boss .asset-boss-sprite {
+    width: clamp(94px, 31vw, 132px) !important;
+    min-width: 0 !important;
+  }
+  .battle-reference-arena .fighter-slot {
+    min-height: 0 !important;
+    height: 100% !important;
+  }
+  .battle-reference-arena .fighter-player,
+  .battle-reference-arena .fighter-boss {
+    max-width: 100%;
+  }
+  .battle-reference-arena .combat-stage[data-level="3"] .fighter-boss {
+    margin-bottom: clamp(10px, 2vh, 18px) !important;
+  }
+
+  .battle-question-panel .battle-question-main {
+    min-height: 238px !important;
+  }
+  .battle-question-panel .question-header {
+    min-height: 40px !important;
+    padding-block: 6px !important;
+  }
+  .battle-question-panel .question-content {
+    padding-block: 10px !important;
+  }
+  .battle-question-panel .question-kicker {
+    font-size: 8px !important;
+    line-height: 1.15 !important;
+  }
+  .battle-question-panel .question-context,
+  .battle-question-panel .question-concept {
+    font-size: 8px !important;
+    line-height: 1.25 !important;
+  }
+  .battle-question-panel .question-text {
+    font-size: clamp(17px, 5.7vw, 22px) !important;
+    line-height: 1.12 !important;
+    margin-top: 5px !important;
+    margin-bottom: 6px !important;
+  }
+  .battle-question-panel .question-answer {
+    padding: 5px 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .battle-reference-arena .fighter-player .sprite-wrap {
+    width: clamp(78px, 29vw, 108px) !important;
+  }
+  .battle-reference-arena .fighter-boss .asset-boss-sprite {
+    width: clamp(88px, 33vw, 122px) !important;
+  }
+  .battle-question-panel .battle-question-main {
+    min-height: 225px !important;
+  }
+  .battle-question-panel .question-text {
+    font-size: clamp(16px, 5.5vw, 20px) !important;
+    line-height: 1.10 !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .battle-reference-arena .fighter-player .sprite-wrap {
+    width: clamp(72px, 30vw, 96px) !important;
+  }
+  .battle-reference-arena .fighter-boss .asset-boss-sprite {
+    width: clamp(82px, 34vw, 108px) !important;
+  }
+  .battle-question-panel .battle-question-main {
+    min-height: 214px !important;
+  }
+}
+
+
+/* V91 — bottom breathing room so portrait swipes have a real continuation area. */
+@media (max-width: 700px) {
+  .mode-select-shell { padding-bottom: 42px !important; }
+  .chapter-select-grid { padding-bottom: 56px !important; }
+  .multi-page { padding-bottom: 56px !important; }
+  .battle-reference { padding-bottom: 20px !important; }
+}
+
+
+/* --------------------------------------------------------------------------
+   V99 — current-project integration layer
+   V91 geometry is preserved as the mobile reference. These rules add only the
+   components/assets introduced after V91, plus a responsive video background
+   contract so 4:1 arena media adapts to the mobile battle frame.
+   -------------------------------------------------------------------------- */
+
+/* Keep current mode art beside the copy on portrait screens. */
+@media (max-width: 900px) {
+  .mode-card-art {
+    top: 50% !important;
+    right: 1% !important;
+    bottom: auto !important;
+    width: 39% !important;
+    transform: translateY(-50%) !important;
+  }
+  .mode-card.multi .mode-card-art {
+    right: .5% !important;
+    width: 41% !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .mode-card {
+    min-height: 250px !important;
+    padding: 16px !important;
+  }
+  .mode-card-copy {
+    width: 57% !important;
+    min-height: 218px !important;
+  }
+  .mode-card-art {
+    width: 40% !important;
+    right: -1% !important;
+    top: 50% !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+  }
+  .mode-card.multi .mode-card-art {
+    width: 42% !important;
+    right: -2% !important;
+  }
+  .mode-card-art img { width: 100% !important; }
+}
+
+@media (max-width: 420px) {
+  .mode-card {
+    min-height: 222px !important;
+    padding: 14px !important;
+  }
+  .mode-card-copy {
+    width: 58% !important;
+    min-height: 198px !important;
+  }
+  .mode-card-copy h2 { font-size: clamp(18px, 6vw, 23px) !important; }
+  .mode-card-copy p { font-size: 9.5px !important; }
+  .mode-card-art { width: 39% !important; }
+  .mode-card.multi .mode-card-art { width: 41% !important; }
+}
+
+/* Chapter cards remain compact enough for phones while the document scrolls naturally. */
+@media (max-width: 700px) {
+  .chapter-card { min-height: 270px !important; }
+  .chapter-card-art { height: 56% !important; }
+}
+@media (max-width: 420px) {
+  .chapter-card { min-height: 244px !important; }
+  .chapter-card-art { height: 58% !important; }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive arena background
+   - the arena itself remains the same logical area;
+   - the video/image is fitted to that area on phones rather than retaining
+     desktop overscan (103% + scale), which previously made 4:1 videos feel
+     too zoomed/cropped on narrow screens.
+   -------------------------------------------------------------------------- */
+@media (max-width: 700px) {
+  .battle-world > .arena-background {
+    inset: 0 0 auto 0 !important;
+    height: clamp(300px, calc(108px + 30dvh), 390px) !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    border-radius: 0 !important;
+  }
+  .battle-world > .arena-background .arena-background-media {
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: var(--bg-mobile-object-position, center bottom) !important;
+    transform: none !important;
+  }
+  .battle-world > .arena-background .arena-vignette { opacity: .54 !important; }
+}
+
+@media (max-width: 480px) {
+  .battle-world > .arena-background {
+    height: clamp(284px, calc(102px + 29dvh), 350px) !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .battle-world > .arena-background {
+    height: clamp(270px, calc(98px + 28dvh), 325px) !important;
+  }
+}
+
+/* Current modal/About-Us safety from V96/V97, without replacing the V91 flow model. */
+@media (max-width: 760px) {
+  .modal-backdrop,
+  .profile-overlay {
+    align-items: flex-start !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+  }
+  .settings-card,
+  .feedback-card,
+  .eval-card,
+  .profile-panel,
+  .about-developers-card {
+    width: min(100%, calc(100vw - 20px)) !important;
+    max-width: calc(100vw - 20px) !important;
+    max-height: calc(100dvh - 20px) !important;
+    overflow: auto !important;
+    margin: 10px auto !important;
+  }
+  .about-page { min-height: 100dvh !important; overflow: visible !important; }
+  .about-shell { width: min(100%, calc(100vw - 20px)) !important; }
+}
+
+/* Current settings + touch safety. */
+@media (max-width: 760px) {
+  .global-brand img { width: 62px !important; max-height: 34px !important; }
+  .global-action { min-width: 40px !important; min-height: 40px !important; }
+  .settings-about-btn { width: 100% !important; max-width: none !important; min-height: 44px !important; }
+  .settings-close-btn { width: 100% !important; }
+  button, input, textarea, select { max-width: 100%; min-width: 0; }
+  .stage-crown b,
+  .battle-question-panel .question-text,
+  .about-shell h1,
+  .about-card h2,
+  .multi-header h1 { overflow-wrap: anywhere; }
+}
+
+/* Keep decorative media behind touch surfaces on narrow devices. */
+@media (max-width: 760px) {
+  .mode-select-backdrop,
+  .chapter-select-bg,
+  .battle-world > .arena-background,
+  .multi-home-bg,
+  .about-bg { pointer-events: none !important; }
+}
+
+
+/* ==========================================================================
+   V100 — final dynamic polish
+   - Mobile mistake banner remains above the arena and is never reflowed into
+     the grid, preventing the V99 mobile stacking collision.
+   - Chapter 3 uses an exact 4:1 media crop so the wide arena reads naturally.
+   - Chapter cards, global brand, language buttons and multiplayer back control
+     follow the visible frame on narrow screens without adding new scroll roots.
+   ========================================================================== */
+@media (max-width: 700px) {
+  /* Feedback warning: overlay, not grid child. */
+  .battle-mistake-banner {
+    position: absolute !important;
+    top: clamp(72px, 10.5vh, 92px) !important;
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    max-width: none !important;
+    min-height: 52px !important;
+    grid-template-columns: 28px minmax(0,1fr) !important;
+    gap: 8px !important;
+    padding: 8px 10px !important;
+    z-index: 90 !important;
+    margin: 0 !important;
+    pointer-events: none !important;
+    box-shadow: 0 16px 32px rgba(0,0,0,.38), inset 0 1px rgba(255,255,255,.05) !important;
+  }
+  .battle-mistake-icon { width: 28px !important; height: 28px !important; }
+  .battle-mistake-heading b { font-size: 10px !important; }
+  .battle-mistake-heading span { font-size: 7px !important; }
+  .battle-mistake-copy p { font-size: 9px !important; line-height: 1.35 !important; }
+  .battle-mistake-tag { display: none !important; }
+
+  /* Chapter art: scale the artwork down instead of shrinking the readable text. */
+  .chapter-card { min-height: 238px !important; padding: 0 13px 13px !important; }
+  .chapter-card-art { left: 14%; right: 14%; top: 5%; height: 50% !important; filter: drop-shadow(0 11px 18px rgba(0,0,0,.36)) !important; }
+  .chapter-card-art img { object-fit: contain !important; object-position: center center !important; }
+  .chapter-card-copy { min-height: 96px !important; }
+  .chapter-card-copy strong { font-size: clamp(16px, 5vw, 22px) !important; max-width: 15ch !important; }
+  .chapter-card-copy em { font-size: 8px !important; margin-top: 5px !important; }
+  .chapter-card-progress { margin-top: 9px !important; }
+  .chapter-card-meter { margin-top: 5px !important; }
+
+  /* Multiplayer back control: sit slightly higher and tighter. */
+  .multi-header .multi-back-btn {
+    transform: translateY(-4px) !important;
+    padding: 6px 8px !important;
+    min-height: 40px !important;
+  }
+  .multi-header .multi-back-btn .solvox-back-art { width: 23px !important; height: 23px !important; }
+  .multi-header .solvox-back-label { font-size: .62rem !important; line-height: 1 !important; }
+
+  /* Global brand: fit precisely inside the 58px mobile bar. */
+  .global-bar {
+    min-height: 58px !important;
+    height: 58px !important;
+    padding: 8px 9px !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+  }
+  .global-brand,
+  .global-brand.is-compact { width: 84px !important; max-width: 84px !important; height: 38px !important; display: flex !important; align-items: center !important; overflow: hidden !important; }
+  .global-brand img { width: 100% !important; height: auto !important; max-height: 36px !important; object-fit: contain !important; }
+}
+
+@media (max-width: 420px) {
+  .global-bar { height: 54px !important; min-height: 54px !important; }
+  .global-brand,
+  .global-brand.is-compact { width: 76px !important; max-width: 76px !important; height: 34px !important; }
+  .global-brand img { max-height: 32px !important; }
+  .multi-header .multi-back-btn { transform: translateY(-3px) !important; }
+}
+
+/* Exact 4:1 Chapter 3 media: preserve its wide composition on desktop and phone. */
+.battle-world > .arena-background[data-level="3"] .arena-background-media { object-fit: cover !important; }
+@media (max-width: 700px) {
+  .battle-world > .arena-background[data-level="3"] { height: clamp(235px, 31vw, 290px) !important; }
+  .battle-world > .arena-background[data-level="3"] .arena-background-media { object-fit: cover !important; object-position: center center !important; }
+}
+
+/* Icon-only language picker: asset is the visible affordance; text remains
+   available to screen readers/tooltips through aria-label/title in JSX. */
+.language-switch--legacy,
+.language-switch { display: grid !important; grid-template-columns: repeat(2, 54px) !important; gap: 8px !important; min-width: 0 !important; }
+.language-switch--legacy button,
+.language-switch button {
+  width: 54px !important;
+  height: 52px !important;
+  min-width: 54px !important;
+  min-height: 52px !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 4px !important;
+  border-radius: 10px !important;
+  text-align: center !important;
+}
+.language-switch--legacy button img,
+.language-switch button img { width: 38px !important; height: 30px !important; border-radius: 6px !important; object-fit: contain !important; }
+.language-switch--legacy button span,
+.language-switch button span { display: none !important; }
+@media (max-width: 560px) {
+  .language-switch--legacy,
+  .language-switch { grid-template-columns: repeat(2, 50px) !important; }
+  .language-switch--legacy button,
+  .language-switch button { width: 50px !important; min-width: 50px !important; height: 48px !important; min-height: 48px !important; }
+  .language-switch--legacy button img,
+  .language-switch button img { width: 34px !important; height: 28px !important; }
+}
+
+
+/* V102 — Profile/Feedback/Settings icon discipline, tutorial support, and mobile-safe headers. */
+.feedback-head{display:block!important;grid-template-columns:none!important;gap:0!important;padding-bottom:4px!important}
+.feedback-head h2{margin:4px 0 0!important}
+.feedback-head .eyebrow{display:block}
+
+.settings-head{display:grid!important;grid-template-columns:42px minmax(0,1fr)!important;align-items:center!important;gap:10px!important;min-width:0!important}
+.settings-head-art{width:38px!important;height:38px!important;display:block!important;object-fit:contain!important;flex:none!important;filter:none!important;box-shadow:none!important;border:1px solid rgba(176,220,168,.18);border-radius:10px;padding:3px;background:rgba(10,28,19,.48);overflow:hidden}
+.settings-head h2{min-width:0!important;overflow-wrap:anywhere!important}
+
+.profile-panel-head.utility-profile-head.dashboard-head{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:start!important;gap:12px!important;width:100%!important;min-width:0!important}
+.profile-panel-head.utility-profile-head.dashboard-head .dashboard-head-copy{min-width:0!important;width:100%!important}
+.profile-panel-head.utility-profile-head.dashboard-head .dashboard-head-copy h2,.profile-panel-head.utility-profile-head.dashboard-head .dashboard-head-copy p{max-width:100%!important;overflow-wrap:anywhere!important}
+.profile-avatar-text{font-family:var(--font-display-solvox,system-ui,sans-serif)!important;font-size:1.05rem!important;font-weight:900!important;letter-spacing:.06em!important;color:#d8efbd!important;background:radial-gradient(circle at 35% 28%,rgba(117,223,151,.22),transparent 55%),linear-gradient(180deg,#12322b,#07161a)!important;border:1px solid rgba(164,218,148,.24)!important;box-shadow:inset 0 1px rgba(255,255,255,.05),0 8px 20px rgba(0,0,0,.24)!important}
+.profile-card-title{min-width:0!important}
+.profile-card-title>span:last-child{min-width:0!important;overflow-wrap:anywhere!important}
+.profile-card-mark{display:inline-grid!important;place-items:center!important;min-width:34px!important;height:22px!important;padding:0 6px!important;border-radius:999px!important;border:1px solid rgba(172,221,145,.18)!important;background:rgba(66,139,88,.10)!important;color:#cfe9ae!important;font-family:var(--font-display-solvox,system-ui,sans-serif)!important;font-size:.46rem!important;line-height:1!important;letter-spacing:.08em!important;font-weight:900!important;white-space:nowrap!important}
+.profile-mark-status{display:inline-grid!important;place-items:center!important;width:20px!important;height:20px!important;border-radius:6px!important;border:1px solid rgba(174,222,153,.15)!important;background:rgba(80,144,91,.08)!important;font-family:system-ui,sans-serif!important;font-size:.74rem!important;line-height:1!important}
+
+@media(max-width:760px){
+  .settings-head{grid-template-columns:36px minmax(0,1fr)!important;gap:8px!important}
+  .settings-head-art{width:34px!important;height:34px!important}
+  .profile-panel-head.utility-profile-head.dashboard-head{grid-template-columns:minmax(0,1fr) auto!important;gap:8px!important;padding:0 0 10px!important}
+  .profile-panel-head.utility-profile-head.dashboard-head .dashboard-head-copy h2{font-size:1.15rem!important;line-height:1.08!important}
+  .profile-panel-head.utility-profile-head.dashboard-head .dashboard-head-copy p{font-size:.70rem!important;line-height:1.42!important}
+  .profile-close-btn{width:30px!important;height:30px!important}
+  .profile-avatar-text{width:64px!important;height:64px!important;font-size:.92rem!important}
+  .profile-card-mark{min-width:30px!important;height:20px!important;font-size:.42rem!important;padding-inline:5px!important}
+}
+@media(max-width:420px){
+  .settings-head{grid-template-columns:34px minmax(0,1fr)!important;gap:7px!important}
+  .settings-head-art{width:32px!important;height:32px!important}
+  .profile-panel-head.utility-profile-head.dashboard-head .dashboard-head-copy h2{font-size:1.02rem!important}
+  .profile-panel-head.utility-profile-head.dashboard-head .dashboard-head-copy p{font-size:.64rem!important}
+  .profile-avatar-text{width:58px!important;height:58px!important;font-size:.82rem!important}
+}
+
+/* Home tutorial expansion: portrait screens can scroll if the fifth menu item exceeds the viewport. */
+@media (max-width: 640px){
+  .home-menu{min-height:100dvh!important;height:auto!important;overflow-x:hidden!important;overflow-y:auto!important;touch-action:pan-y!important}
+  .home-menu-nav{min-height:auto!important}
+}
+
+
+/* ==========================================================================
+   V105 — mobile flexibility, feedback visibility, and compact evaluation.
+   This is the only active responsive layer after V105.
+   ========================================================================== */
+
+@media (max-width: 760px) {
+  /* Keep the mistake feedback readable and above the arena, not below it. */
+  .battle-mistake-banner {
+    position: sticky !important;
+    top: 8px !important;
+    left: auto !important;
+    right: auto !important;
+    width: calc(100% - 16px) !important;
+    margin: 8px auto !important;
+    min-height: 54px !important;
+    grid-template-columns: 30px minmax(0, 1fr) !important;
+    z-index: 96 !important;
+    pointer-events: none !important;
+  }
+  .battle-mistake-copy p { font-size: clamp(10px, 2.7vw, 12px) !important; line-height: 1.42 !important; }
+  .battle-mistake-heading b { font-size: clamp(10px, 2.7vw, 12px) !important; }
+  .battle-mistake-tag { display: inline-flex !important; max-width: 46vw !important; font-size: 7px !important; }
+
+  /* Multiplayer battle: one readable vertical flow on phones. */
+  .multi-page { padding: 74px 10px 56px !important; }
+  .multi-header { grid-template-columns: auto minmax(0,1fr) !important; }
+  .multi-header > div:nth-child(2) { min-width: 0 !important; }
+  .multi-grid, .players { grid-template-columns: 1fr !important; }
+  .mp-battle .mp-arena { grid-template-columns: minmax(0,1fr) 30px minmax(0,1fr) !important; min-height: 238px !important; }
+  .mp-sprite-frame { min-height: 134px !important; }
+  .mp-player-frame>div.sprite-wrap { width: min(100%, 140px) !important; }
+  .mp-boss-frame>div.asset-boss-sprite { width: min(100%, 150px) !important; }
+  .mp-fighter-name { font-size: clamp(9px, 2.6vw, 11px) !important; }
+  .mp-hp { width: min(100%, 120px) !important; }
+  .mp-question h2 { font-size: clamp(18px, 5.5vw, 24px) !important; line-height: 1.2 !important; }
+  .mp-question p { font-size: .75rem !important; }
+  .multi-actions { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+}
+
+@media (max-width: 460px) {
+  .multi-actions { grid-template-columns: 1fr !important; }
+  .mp-battle .mp-arena { min-height: 220px !important; grid-template-columns: minmax(0,1fr) 24px minmax(0,1fr) !important; }
+  .mp-sprite-frame { min-height: 118px !important; }
+  .mp-player-frame>div.sprite-wrap { width: min(100%, 122px) !important; }
+  .mp-boss-frame>div.asset-boss-sprite { width: min(100%, 132px) !important; }
+  .mp-arena-center span { font-size: 15px !important; }
+}
+
+/* Evaluation modal uses the document itself on mobile, so long reports remain readable. */
+@media (max-width: 760px) {
+  .modal-backdrop { padding: 8px !important; align-items: flex-start !important; }
+  .eval-card--detailed { width: min(100%, 100vw - 16px) !important; max-height: none !important; overflow: visible !important; margin: 8px auto 18px !important; padding: 16px !important; }
+  .eval-summary { grid-template-columns: 1fr !important; gap: 14px !important; }
+  .eval-score { width: 100% !important; }
+  .eval-metrics { grid-template-columns: 1fr 1fr !important; }
+  .eval-detail-body { padding: 12px !important; }
+  .eval-answer-grid { grid-template-columns: 1fr !important; }
+  .eval-actions { grid-template-columns: 1fr !important; }
+}
+
+/* ==========================================================================
+   V106 — mobile battle flow / feedback anchor / touch-safe layout
+   --------------------------------------------------------------------------
+   The mobile battle now has one deterministic vertical flow:
+     1. HUD (back + player/boss HP)
+     2. learning feedback, only when a mistake exists
+     3. combat arena
+     4. question / hint / keypad dock
+   Feedback is a real grid row rather than an overlay, so it can never cover
+   fighters, the question, or the HP bars. Sizes use dvh/dvw/clamp so the same
+   layout remains usable on small phones, large phones, and tablets.
+   ========================================================================== */
+
+@media (max-width: 760px) {
+  .battle-reference {
+    width: 100%;
+    min-height: 100dvh !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    padding-bottom: max(18px, env(safe-area-inset-bottom)) !important;
+  }
+
+  .battle-world {
+    width: 100%;
+    min-height: 100dvh !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .battle-ui,
+  .battle-ui.has-feedback {
+    width: 100%;
+    min-height: 100dvh !important;
+    height: auto !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto minmax(clamp(195px, 27dvh, 285px), auto) auto !important;
+    gap: clamp(6px, 1.8vw, 10px) !important;
+    padding: max(6px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left)) !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Without feedback the second row collapses completely; with feedback it
+     expands naturally to the banner's content height. */
+  .battle-ui:not(.has-feedback) {
+    grid-template-rows: auto 0 minmax(clamp(195px, 27dvh, 285px), auto) auto !important;
+  }
+
+  .battle-top-rail {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    height: auto !important;
+    grid-template-columns: 36px minmax(0, 1fr) minmax(0, 1fr) !important;
+    grid-template-areas:
+      'back stage stage'
+      'player player boss' !important;
+    gap: clamp(5px, 1.5vw, 8px) !important;
+    align-items: stretch !important;
+  }
+
+  .battle-top-rail > * { min-width: 0 !important; }
+  .battle-home-back {
+    width: clamp(32px, 9vw, 38px) !important;
+    height: clamp(32px, 9vw, 38px) !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    border-radius: 9px !important;
+  }
+
+  .stage-crown {
+    width: 100% !important;
+    height: clamp(42px, 11vw, 48px) !important;
+    min-height: 42px !important;
+    padding: 5px 10px !important;
+    border-radius: 11px !important;
+  }
+  .stage-crown span { font-size: clamp(5.5px, 1.7vw, 7px) !important; }
+  .stage-crown b {
+    max-width: 100%;
+    font-size: clamp(9px, 2.8vw, 12px) !important;
+    line-height: 1.08 !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hp-card {
+    width: 100% !important;
+    height: clamp(44px, 12vw, 52px) !important;
+    min-height: 44px !important;
+    padding: 5px 7px !important;
+    border-radius: 10px !important;
+  }
+  .hp-card-head {
+    grid-template-columns: clamp(22px, 6.5vw, 28px) minmax(0, 1fr) auto !important;
+    gap: 5px !important;
+  }
+  .hp-avatar {
+    width: clamp(22px, 6.5vw, 28px) !important;
+    height: clamp(22px, 6.5vw, 28px) !important;
+    border-radius: 7px !important;
+  }
+  .hp-copy { min-width: 0 !important; }
+  .hp-copy small {
+    font-size: clamp(5.5px, 1.6vw, 7px) !important;
+    line-height: 1 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hp-copy b {
+    font-size: clamp(8px, 2.5vw, 10px) !important;
+    line-height: 1.05 !important;
+    white-space: nowrap;
+  }
+  .hp-percent { font-size: clamp(7px, 2.1vw, 9px) !important; }
+  .hp-track { height: 5px !important; margin-top: 3px !important; }
+  .hp-footer { display: none !important; }
+
+  /* The feedback banner is now physically below the HUD/HP cards. */
+  .battle-mistake-banner {
+    position: relative !important;
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    inset: auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: clamp(7px, 2vw, 10px) clamp(8px, 2.5vw, 12px) !important;
+    box-sizing: border-box !important;
+    grid-template-columns: 28px minmax(0, 1fr) !important;
+    gap: 7px !important;
+    border-radius: 10px !important;
+    z-index: 30 !important;
+    pointer-events: none !important;
+    box-shadow: 0 10px 24px rgba(0,0,0,.26), inset 0 1px rgba(255,255,255,.05) !important;
+  }
+  .battle-mistake-icon {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  .battle-mistake-heading { gap: 6px !important; margin-bottom: 2px !important; }
+  .battle-mistake-heading b { font-size: clamp(9px, 2.8vw, 11px) !important; }
+  .battle-mistake-heading span { font-size: clamp(6px, 1.8vw, 8px) !important; }
+  .battle-mistake-copy p {
+    font-size: clamp(8px, 2.5vw, 10.5px) !important;
+    line-height: 1.38 !important;
+    overflow-wrap: anywhere;
+  }
+  .battle-mistake-tag {
+    display: none !important;
+  }
+
+  .battle-reference-arena {
+    grid-column: 1 !important;
+    grid-row: 3 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: clamp(195px, 27dvh, 285px) !important;
+    height: clamp(195px, 27dvh, 285px) !important;
+    max-height: 285px !important;
+    margin: 0 !important;
+    border-radius: 12px !important;
+    overflow: visible !important;
+  }
+
+  .battle-reference-arena .combat-stage {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 0 clamp(6px, 3vw, 18px) !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    align-items: end !important;
+  }
+
+  .battle-reference-arena .fighter-slot {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-width: 100% !important;
+  }
+  .battle-reference-arena .fighter-player .sprite-wrap {
+    width: clamp(74px, 27vw, 116px) !important;
+    max-width: 100% !important;
+  }
+  .battle-reference-arena .fighter-boss .asset-boss-sprite {
+    width: clamp(84px, 31vw, 128px) !important;
+    max-width: 100% !important;
+  }
+
+  .battle-question-panel {
+    grid-column: 1 !important;
+    grid-row: 4 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto auto !important;
+    overflow: visible !important;
+    border-radius: 12px !important;
+  }
+  .battle-question-panel .battle-question-main {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: clamp(220px, 30dvh, 285px) !important;
+    height: auto !important;
+  }
+  .battle-question-panel .hint-rail {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    min-height: clamp(120px, 18dvh, 165px) !important;
+    height: auto !important;
+  }
+  .battle-question-panel .battle-keypad-side {
+    grid-column: 1 !important;
+    grid-row: 3 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+  }
+
+  .battle-question-panel .question-header {
+    min-height: 40px !important;
+    padding: 6px 9px !important;
+  }
+  .battle-question-panel .question-meta { min-width: 0 !important; gap: 4px !important; }
+  .battle-question-panel .question-chip {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  .battle-question-panel .question-chip.is-title {
+    max-width: min(42vw, 180px) !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .battle-question-panel .question-content {
+    min-width: 0 !important;
+    padding: 9px 12px !important;
+    overflow-wrap: anywhere !important;
+  }
+  .battle-question-panel .question-text {
+    max-width: 100% !important;
+    font-size: clamp(16px, 5.5vw, 22px) !important;
+    line-height: 1.12 !important;
+    overflow-wrap: anywhere !important;
+  }
+  .battle-question-panel .question-answer {
+    min-width: 0 !important;
+    padding: 5px 9px !important;
+    gap: 6px !important;
+  }
+  .battle-question-panel .answer-shell {
+    min-width: 0 !important;
+  }
+  .battle-question-panel .battle-answer-input {
+    min-width: 0 !important;
+    font-size: 16px !important; /* prevents iOS zoom */
+  }
+  .battle-question-panel .attack-btn {
+    flex: 0 1 clamp(108px, 30vw, 132px) !important;
+    min-width: 0 !important;
+  }
+  .battle-question-panel .question-tools {
+    min-width: 0 !important;
+    padding: 5px 9px !important;
+    gap: 6px !important;
+  }
+  .battle-question-panel .keypad-key {
+    min-width: 0 !important;
+    min-height: 42px !important;
+    touch-action: manipulation !important;
+  }
+
+  /* Safe horizontal overflow prevention for every active battle surface. */
+  .battle-ui img,
+  .battle-ui canvas,
+  .battle-ui button,
+  .battle-ui input,
+  .battle-ui textarea,
+  .battle-ui select {
+    max-width: 100%;
+  }
+}
+
+/* Extra-small phones: preserve tap targets while reducing decorative density. */
+@media (max-width: 380px) {
+  .battle-ui,
+  .battle-ui.has-feedback {
+    gap: 5px !important;
+    padding-inline: 5px !important;
+  }
+  .battle-top-rail {
+    grid-template-columns: 32px minmax(0, 1fr) minmax(0, 1fr) !important;
+  }
+  .battle-home-back { width: 30px !important; height: 30px !important; }
+  .stage-crown { height: 40px !important; min-height: 40px !important; }
+  .hp-card { height: 43px !important; min-height: 43px !important; }
+  .battle-reference-arena {
+    min-height: 180px !important;
+    height: 23dvh !important;
+    max-height: 210px !important;
+  }
+  .battle-reference-arena .fighter-player .sprite-wrap { width: clamp(68px, 27vw, 92px) !important; }
+  .battle-reference-arena .fighter-boss .asset-boss-sprite { width: clamp(76px, 31vw, 104px) !important; }
+  .battle-question-panel .battle-question-main { min-height: 212px !important; }
+  .battle-question-panel .hint-rail { min-height: 115px !important; }
+  .battle-question-panel .attack-btn { flex-basis: 104px !important; }
+}
+
+/* Landscape phones/tablets: keep the battle arena visible instead of letting
+   the portrait stack consume the entire short viewport. */
+@media (max-width: 900px) and (orientation: landscape) {
+  .battle-reference,
+  .battle-world { min-height: 100dvh !important; }
+  .battle-ui,
+  .battle-ui.has-feedback {
+    grid-template-rows: auto auto minmax(180px, 34dvh) auto !important;
+    min-height: 100dvh !important;
+  }
+  .battle-ui:not(.has-feedback) {
+    grid-template-rows: auto 0 minmax(180px, 34dvh) auto !important;
+  }
+  .battle-top-rail {
+    grid-template-columns: 36px minmax(0, 1fr) minmax(0, 1fr) !important;
+    grid-template-areas: 'back player boss' 'stage stage stage' !important;
+  }
+  .battle-top-rail > .battle-home-back { grid-area: back; }
+  .battle-top-rail > .hp-player { grid-area: player; }
+  .battle-top-rail > .hp-boss { grid-area: boss; }
+  .battle-top-rail > .stage-crown { grid-area: stage; height: 34px !important; min-height: 34px !important; }
+  .battle-reference-arena {
+    min-height: 180px !important;
+    height: 34dvh !important;
+    max-height: 260px !important;
+  }
+  .battle-question-panel .battle-question-main { min-height: 210px !important; }
+  .battle-question-panel .hint-rail { min-height: 110px !important; }
+}
