@@ -38,7 +38,24 @@ export default function App(){
   useEffect(()=>{save(state);},[state]);
   useEffect(()=>{ document.documentElement.lang=lang==='en'?'en':'id'; },[lang]);
   useEffect(()=>{ localStorage.setItem(PLAYER_STORAGE,playerId); },[playerId]);
-  const reset=()=>{if(confirm(t('resetConfirm'))){const next={...DEFAULT,profile:{...DEFAULT.profile,createdAt:Date.now()}};setState(next);localStorage.removeItem(STORAGE);localStorage.removeItem(PLAYER_LOCK_STORAGE);localStorage.removeItem(PLAYER_STORAGE);setPlayerSelectionLocked(false);setPlayerId('traveler');setScreen('home')}};
+  const reset=()=>{
+    if(!confirm(t('resetConfirm')))return;
+    const next={...DEFAULT,profile:{...DEFAULT.profile,createdAt:Date.now()}};
+    save(next);
+    LEGACY_STORAGES.forEach((key)=>localStorage.removeItem(key));
+    localStorage.removeItem(PLAYER_LOCK_STORAGE);
+    localStorage.setItem(PLAYER_STORAGE,'traveler');
+    setState(next);
+    setPlayerSelectionLocked(false);
+    setPlayerId('traveler');
+    setLevel(1);
+    setEvaluation(null);
+    setFeedback(false);
+    setSettings(false);
+    setProfileOpen(false);
+    setTutorialOpen(false);
+    setScreen('home');
+  };
   const allChaptersCompleted=normalizeCompleted(state.completedLevels).length===LEVELS.length;
   const launchBattle=(chapterId)=>{
     setLevel(chapterId);
