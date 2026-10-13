@@ -139,7 +139,7 @@ Object.assign(T.en,{
 Object.assign(T.id,{
   chooseCharacterHint:'Pilih karakter yang akan kamu gunakan di seluruh pertarungan single player.',
   selectedCharacter:'Karakter terpilih',
-  characterTraveler:'The Traveler',
+  characterTraveler:'Kazura',
   characterTravelerRole:'Petualang utama',
   characterAsuka:'Asuka',
   characterAsukaRole:'Pejuang cepat',
@@ -147,7 +147,7 @@ Object.assign(T.id,{
 Object.assign(T.en,{
   chooseCharacterHint:'Choose the character you will use throughout single-player battles.',
   selectedCharacter:'Selected character',
-  characterTraveler:'The Traveler',
+  characterTraveler:'Kazura',
   characterTravelerRole:'Main adventurer',
   characterAsuka:'Asuka',
   characterAsukaRole:'Agile fighter',

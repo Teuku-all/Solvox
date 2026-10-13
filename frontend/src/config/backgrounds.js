@@ -6,3 +6,9 @@ export const BACKGROUNDS = {
   4: { type:'video', src:'/assets/backgrounds/level4/chapter4-arena.mp4', poster:'/assets/backgrounds/level4/chapter4-video-poster.jpg', objectPosition:'center center', mobileObjectPosition:'center bottom', brightness:.94, saturation:1.02, scale:1.0 },
   5: { type:'video', src:'/assets/backgrounds/level5/chapter5-arena.mp4', poster:'/assets/backgrounds/level5/chapter5-video-poster.jpg', objectPosition:'center center', mobileObjectPosition:'center bottom', brightness:.84, saturation:.96, scale:1.0 },
 };
+
+// Dedicated selection art; battle environments remain chapter-specific.
+export const CHARACTER_SELECT_BACKGROUND = Object.freeze({
+  desktop: '/assets/backgrounds/character%20select/character-select-bg-desktop.webp',
+  mobile: '/assets/backgrounds/character%20select/character-select-bg-mobile.webp',
+});

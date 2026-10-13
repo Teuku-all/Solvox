@@ -1,6 +1,7 @@
 /**
  * Player sprite registry. Single-player can swap characters without changing
- * the combat renderer; multiplayer keeps using the default traveler.
+ * the combat renderer. The legacy traveler ID belongs to Kazura and stays
+ * stable for existing saves and multiplayer messages.
  */
 const freezeSequence = (frames, step, impactFrame = null) =>
   Object.freeze({ frames: Object.freeze(frames), step, impactFrame });
@@ -9,7 +10,7 @@ const freezeSequences = (sequences) => Object.freeze(sequences);
 
 const PLAYER_MIRRORS = Object.freeze({
   traveler: Object.freeze({
-    base: '/assets/characters/traveler/mirror',
+    base: '/assets/characters/kazura/mirror',
     sequences: freezeSequences({
       idle: freezeSequence(['idle_01.webp','idle_02.webp','idle_03.webp','idle_04.webp','idle_05.webp','idle_06.webp'], 150),
       attack: freezeSequence(['attack_01.webp','attack_02.webp','attack_03.webp','attack_04.webp','attack_05.webp','attack_06.webp','attack_07.webp'], 82, 5),
@@ -34,9 +35,14 @@ export const PLAYER_ASSETS = Object.freeze({
     id: 'traveler',
     nameId: 'characterTraveler',
     roleId: 'characterTravelerRole',
-    base: '/assets/characters/traveler',
+    base: '/assets/characters/kazura',
     mirror: PLAYER_MIRRORS.traveler,
-    portrait: '/assets/characters/traveler/idle/01.png',
+    portrait: '/assets/characters/kazura/idle/01.png',
+    selectionIdle: Object.freeze({
+      folder: 'kazura-front',
+      referenceSize: Object.freeze({ width: 313, height: 710 }),
+      sequence: freezeSequence(['idle-kazura-01.webp','idle-kazura-02.webp','idle-kazura-03.webp','idle-kazura-04.webp','idle-kazura-05.webp','idle-kazura-06.webp'], 150),
+    }),
     referenceSize: Object.freeze({ width: 160, height: 160 }),
     frameFocus: Object.freeze({ idle: 0.5, attack: 0.5, hurt: 0.5, die: 0.5 }),
     sequences: Object.freeze({
@@ -54,6 +60,11 @@ export const PLAYER_ASSETS = Object.freeze({
     mirror: PLAYER_MIRRORS.asuka,
     sequenceFolders: Object.freeze({ idle: 'idle-asuka', attack: 'attack-asuka', hurt: 'hurt-asuka', die: 'die-asuka' }),
     portrait: '/assets/characters/asuka/idle-asuka/idle-asuka_01.webp',
+    selectionIdle: Object.freeze({
+      folder: 'asuka-front',
+      referenceSize: Object.freeze({ width: 310, height: 705 }),
+      sequence: freezeSequence(['idle-asuka-01.webp','idle-asuka-02.webp','idle-asuka-03.webp','idle-asuka-04.webp','idle-asuka-05.webp','idle-asuka-06.webp'], 150),
+    }),
     referenceSize: Object.freeze({ width: 343, height: 365 }),
     // The supplied attack canvas contains a long beam to the right. Focus the
     // renderer on Asuka's body so the effects can extend without shrinking the

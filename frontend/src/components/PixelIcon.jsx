@@ -57,7 +57,7 @@ const RASTER = {
   shield:'/assets/ui/reference/shield-icon.png',
   energy:'/assets/ui/reference/energy-icon.png',
   lock:'/assets/ui/reference/lock-icon.png',
-  pixelNinja:'/assets/characters/traveler/idle/01.png',
+  pixelNinja:'/assets/characters/kazura/idle/01.png',
 };
 
 export default function PixelIcon({name,size=18,title,className=''}){

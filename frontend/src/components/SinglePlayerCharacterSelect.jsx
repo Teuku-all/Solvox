@@ -1,57 +1,91 @@
-import React, { useState } from 'react';
-import { LEVELS } from '../data/levels';
-import { getPlayerAsset } from '../data/playerAssets';
-import PixelIcon from './PixelIcon';
+import React, { useEffect, useRef, useState } from 'react';
+import { CHARACTER_SELECT_BACKGROUND } from '../config/backgrounds';
 import SinglePlayerCharacterPicker from './SinglePlayerCharacterPicker';
-import SolvoxBrandLogo from './SolvoxBrandLogo';
+import '../styles/single-player-cinematic.css';
 
-export default function SinglePlayerCharacterSelect({ levelId, playerId = 'traveler', onPlayerChange, onBack, onStart, t, lang }) {
-  const [launching, setLaunching] = useState(false);
-  const level = LEVELS.find((item) => item.id === Number(levelId)) || LEVELS[0];
-  const selectedCharacter = getPlayerAsset(playerId);
+const ENVIRONMENT = CHARACTER_SELECT_BACKGROUND;
+const TRANSITION_MS = 1250;
 
-  const handleStart = () => {
-    if (launching) return;
+export default function SinglePlayerCharacterSelect({ levelId, onStart, t }) {
+  const sceneRef = useRef(null);
+  const lockedRef = useRef(false);
+  const timerRef = useRef(null);
+  const startRef = useRef(onStart);
+  const [selectedId, setSelectedId] = useState(null);
+  const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  useEffect(() => { startRef.current = onStart; }, [onStart]);
+  useEffect(() => () => clearTimeout(timerRef.current), []);
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReducedMotion(media.matches);
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+
+  useEffect(() => {
+    const scene = sceneRef.current;
+    if (reducedMotion || selectedId) {
+      scene.style.setProperty('--pointer-x', '0px');
+      scene.style.setProperty('--pointer-y', '0px');
+      return;
+    }
+    let raf = 0;
+    let x = 0;
+    let y = 0;
+    let targetX = 0;
+    let targetY = 0;
+    const tick = () => {
+      x += (targetX - x) * 0.08;
+      y += (targetY - y) * 0.08;
+      scene.style.setProperty('--pointer-x', `${x.toFixed(3)}px`);
+      scene.style.setProperty('--pointer-y', `${y.toFixed(3)}px`);
+      raf = Math.abs(targetX - x) + Math.abs(targetY - y) > 0.01 ? requestAnimationFrame(tick) : 0;
+    };
+    const schedule = () => { if (!raf) raf = requestAnimationFrame(tick); };
+    const move = (event) => {
+      if (event.pointerType !== 'mouse' || lockedRef.current) return;
+      const bounds = scene.getBoundingClientRect();
+      targetX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 6;
+      targetY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 4;
+      schedule();
+    };
+    const reset = () => { targetX = 0; targetY = 0; schedule(); };
+    scene.addEventListener('pointermove', move);
+    scene.addEventListener('pointerleave', reset);
+    return () => {
+      cancelAnimationFrame(raf);
+      scene.removeEventListener('pointermove', move);
+      scene.removeEventListener('pointerleave', reset);
+    };
+  }, [reducedMotion, selectedId]);
+
+  const selectCharacter = (characterId) => {
+    // App owns campaign persistence and eligibility. Only commit once, at the cut.
     const chapterId = Number(levelId);
-    if (!Number.isInteger(chapterId) || chapterId < 1 || chapterId > LEVELS.length) return;
-    setLaunching(true);
-    onStart?.(chapterId, playerId);
-  };
-
-  const handleCancel = () => {
-    if (!launching) onBack?.();
+    if (lockedRef.current || chapterId !== 1 || !['traveler', 'asuka'].includes(characterId)) return;
+    lockedRef.current = true;
+    setSelectedId(characterId);
+    timerRef.current = setTimeout(() => {
+      startRef.current?.(chapterId, characterId);
+    }, reducedMotion ? 0 : TRANSITION_MS);
   };
 
   return (
-    <div className="character-select-screen">
-      <div className="character-select-atmosphere" aria-hidden="true">
-        <video autoPlay loop muted playsInline preload="metadata" poster="/assets/home/home-background-cinematic-poster.jpg">
-          <source src="/assets/home/home-background-cinematic.mp4" type="video/mp4" />
-        </video>
-        <div className="character-select-atmosphere-shade" />
-      </div>
-
-      <header className="character-select-header">
-        <button className="character-select-back" type="button" onClick={handleCancel} disabled={launching}>
-          <PixelIcon name="back" size={16} /><span>{t('back')}</span>
-        </button>
-        <div className="character-select-brand"><SolvoxBrandLogo compact /></div>
-        <div className="character-select-heading"><small>{t('singleAdventure')}</small><h1>{t('characterSelectTitle')}</h1><p>{t('chooseCharacterHint')}</p></div>
-        <div className="character-select-chapter" aria-label={`${t('chapter')} ${level.id}`}>
-          <small>{t('chapter')} {level.id}</small>
-          <strong>{lang === 'en' ? level.titleEn : level.title}</strong>
+    <main ref={sceneRef} className="sp-cinema" data-selected={selectedId || undefined} aria-labelledby="sp-cinema-title" aria-busy={Boolean(selectedId)}>
+      <div className="sp-cinema-camera">
+        <div className="sp-cinema-environment" aria-hidden="true">
+          <picture>
+            <source media="(max-width: 1050px) and (orientation: portrait)" srcSet={ENVIRONMENT.mobile} />
+            <img src={ENVIRONMENT.desktop} alt="" fetchPriority="high" />
+          </picture>
         </div>
-      </header>
-
-      <main className="character-select-main">
-        <SinglePlayerCharacterPicker value={playerId} onChange={onPlayerChange} t={t} levelId={level.id} />
-        <section className="character-start-panel" aria-label={t('gameStartPrompt')}>
-          <p className="character-start-caption">{t('selectedCharacter')}: <strong>{t(selectedCharacter.nameId)}</strong></p>
-          <button className="character-start-button" type="button" disabled={launching} aria-busy={launching} onClick={handleStart}>
-            <PixelIcon name="play" size={15} /><span>{launching ? t('loading') : t('playNow')}</span><PixelIcon name="right" size={14} />
-          </button>
-        </section>
-      </main>
-    </div>
+        <div className="sp-cinema-light" aria-hidden="true" />
+        <SinglePlayerCharacterPicker selectedId={selectedId} onSelect={selectCharacter} reducedMotion={reducedMotion} t={t} />
+        <div className="sp-cinema-foreground" aria-hidden="true" />
+      </div>
+      <h1 id="sp-cinema-title">CHOOSE YOUR CHARACTER</h1>
+      <div className="sp-cinema-curtain" aria-hidden="true" />
+    </main>
   );
 }
