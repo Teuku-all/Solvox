@@ -1154,7 +1154,7 @@
   overflow: visible;
 }
 .battle-reference-arena .fighter-boss .asset-boss-sprite {
-  width: 310px !important;
+  width: 350px !important;
   aspect-ratio: 5 / 6;
   max-width: none;
   margin: 0 !important;
@@ -1189,7 +1189,7 @@
   }
   .battle-reference-arena .fighter-slot { height: min(390px, 100%); }
   .battle-reference-arena .fighter-player .sprite-wrap { width: 250px !important; min-height: 285px; }
-  .battle-reference-arena .fighter-boss .asset-boss-sprite { width: 285px !important; }
+  .battle-reference-arena .fighter-boss .asset-boss-sprite { width: 320px !important; }
 }
 
 @media (max-width: 900px) {
@@ -1203,7 +1203,7 @@
   .hp-track { height: 7px; margin-top: 3px; }
   .battle-reference-arena .fighter-slot { height: min(330px, 100%); min-height: 245px; }
   .battle-reference-arena .fighter-player .sprite-wrap { width: 210px !important; min-height: 240px; }
-  .battle-reference-arena .fighter-boss .asset-boss-sprite { width: 235px !important; }
+  .battle-reference-arena .fighter-boss .asset-boss-sprite { width: 270px !important; }
 }
 
 

@@ -2,6 +2,7 @@ import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {io} from 'socket.io-client';
 import CharacterPicker, { findCharacter } from './CharacterPicker';
 import PixelIcon from './PixelIcon';
+import SolvoxBrandLogo from './SolvoxBrandLogo';
 import MultiplayerFighter from './MultiplayerFighter';
 import ArenaBackground from './ArenaBackground';
 import BattleQuestionPanel from './BattleQuestionPanel';
@@ -12,7 +13,7 @@ import {LEVELS} from '../data/levels';
 import { playSound } from '../services/sound';
 import {apiJson} from '../services/api';
 
-export default function Multiplayer({lang,onBack,t,playerName=''} ){
+export default function Multiplayer({lang,onBack,t,playerName='',onBattleStateChange,dashboardOnly=false}){
   const [socket]=useState(()=>io({autoConnect:false}));
   const [socketConnected,setSocketConnected]=useState(false);
   const roomRef=useRef(null);
@@ -42,10 +43,12 @@ export default function Multiplayer({lang,onBack,t,playerName=''} ){
   useEffect(()=>{if(playerName)setName(playerName)},[playerName]);
   useEffect(()=>{loadDashboard();},[]);
   useEffect(()=>{
+    if(dashboardOnly)return;
     const events=['room:created','room:update','game:start','game:generating','turn:next','turn:answer','turn:hint-used','round:resolved','round:next','score:answer','game:finished','rematch:ready','player:left','player:disconnected','room:reconnected'];
     const storedToken=()=>localStorage.getItem('solvox.mpToken')||localStorage.getItem('numericore.mpToken')||localStorage.getItem('aljabarmaster.mpToken')||'';
     const handler=r=>{
       roomRef.current=r||null;
+      onBattleStateChange?.(r?.status==='battle');
       setRoom(r);
       if(r?.code){
         localStorage.setItem('solvox.mpRoomCode',r.code);
@@ -102,9 +105,10 @@ export default function Multiplayer({lang,onBack,t,playerName=''} ){
       events.forEach(e=>socket.off(e,handler));
       socket.off('connect',onConnect);socket.off('disconnect',onDisconnect);socket.off('connect_error',onConnectError);
       socket.off('answer:result',onAnswerResult);socket.off('hint:result',onHintResult);socket.off('room:error',onRoomError);
+      onBattleStateChange?.(false);
       socket.disconnect();
     };
-  },[socket]);
+  },[socket,onBattleStateChange,dashboardOnly]);
   useEffect(()=>{
     if(!room)return;
     setAnswerInfo(null);
@@ -129,6 +133,7 @@ export default function Multiplayer({lang,onBack,t,playerName=''} ){
     return map[room.statusKey]||t('waiting');
   };
   const winnerName=room?.winnerName||(room?.winner&&room.winner!=='draw'?room.players?.find(p=>p.id===room.winner)?.name:null);
+const didWin=Boolean(me&&((room?.winner&&room.winner===me.id)||room?.winnerName===me.name));
 const playerBattleRef=useRef(null);
 const opponentBattleRef=useRef(null);
 const getArenaLungeDistance=()=>{const width=window.innerWidth||1280;return width<=380?68:width<=520?82:width<=760?96:112};
@@ -234,6 +239,10 @@ useEffect(()=>{
   };
 
   const myStats=dashboard?.players?.find(p=>String(p.name).trim().toLowerCase()===String(name).trim().toLowerCase());
+  const rankedPlayers=useMemo(()=>[...(dashboard?.players||[])].sort((a,b)=>((Number(b.totalScore)||Number(b.avgScore)||0)-(Number(a.totalScore)||Number(a.avgScore)||0))||(Number(b.accuracy)||0)-(Number(a.accuracy)||0)),[dashboard?.players]);
+  const myRank=rankedPlayers.findIndex(p=>String(p.name).trim().toLowerCase()===String(name).trim().toLowerCase());
+  const leaderboardScore=(player)=>Number(player?.totalScore)||Number(player?.avgScore)||0;
+  const maxLeaderboardScore=Math.max(1,...rankedPlayers.map(leaderboardScore));
   const bestAccuracy=Math.max(...(dashboard?.players||[]).map(p=>p.accuracy||0),0);
   const totalWins=(dashboard?.players||[]).reduce((n,p)=>n+(p.wins||0),0);
   const badges=[
@@ -243,7 +252,7 @@ useEffect(()=>{
     myStats?.avgScore>=700&&'COMBO MASTER'
   ].filter(Boolean);
 
-  return <div className="multi-page multiplayer">
+  return <div className={`multi-page multiplayer ${room?.status==='battle'?'is-battling':''} ${dashboardOnly?'dashboard-only':''}`}>
     <div className="multi-home-bg" aria-hidden="true">
       <video autoPlay loop muted playsInline preload="metadata" poster="/assets/home/home-background-v83-poster.jpg">
         <source src="/assets/home/home-background-v83.mp4" type="video/mp4" />
@@ -251,14 +260,14 @@ useEffect(()=>{
     </div>
     <div className="multi-ambient" aria-hidden="true"><span/><i/><b/></div>
     <div className="multi-header">
-      <button className="multi-back-btn" type="button" onClick={leaveMultiplayer} aria-label={t('back')} title={t('back')}><SolvoxUtilityArt name="back" size={20} className="solvox-back-art" /><span className="solvox-back-label">{t('back')}</span></button>
-      <div className="multi-header-copy"><div className="eyebrow">{GAME_META.title.toUpperCase()}</div><h1>{t('battleWithFriend')}</h1><p>{t('arenaTip')}</p></div>
-      <div className={`multi-connection-status status-dot ${socketConnected ? '' : 'is-connecting'}`} aria-live="polite"><i/> {socketConnected ? t('online') : (lang==='en' ? 'Connecting…' : 'Menghubungkan…')}</div>
+      <button className="multi-back-btn" type="button" onClick={dashboardOnly?onBack:leaveMultiplayer} aria-label={t('back')} title={t('back')}><SolvoxUtilityArt name="back" size={20} className="solvox-back-art" /><span className="solvox-back-label">{t('back')}</span></button>
+      <div className="multi-header-copy"><div className="eyebrow">{GAME_META.title.toUpperCase()}</div><h1>{dashboardOnly?(lang==='en'?'Multiplayer Leaderboard':'Papan Peringkat Multiplayer'):t('battleWithFriend')}</h1><p>{dashboardOnly?t('dashboardHint'):t('arenaTip')}</p></div>
+      {!dashboardOnly&&<div className={socketConnected?"multi-connection-status status-dot":"multi-connection-status status-dot is-connecting"} aria-live="polite"><i/> {socketConnected ? t('online') : (lang==='en' ? 'Connecting...' : 'Menghubungkan...')}</div>}
     </div>
     {errText&&<div className="error-banner">{errText}</div>}
 
     {!room&&<>
-      <div className="multi-grid">
+      {!dashboardOnly&&<div className="multi-grid">
         <div className="multi-card host-card">
           <div className="player-slot-label"><span>{t('player1')}</span><b>{t('host')}</b></div>
           <h2><PixelIcon name="sword" size={18}/><span>{t('createArena')}</span></h2>
@@ -278,62 +287,53 @@ useEffect(()=>{
           <input value={name} onChange={e=>setName(e.target.value)} placeholder={t('name')}/>
           <button className="primary-btn" onClick={join}>{t('join')}</button>
         </div>
-      </div>
+      </div>}
 
-      <div className="dashboard-card--legacy dashboard-card">
-        <div className="dashboard-head--legacy dashboard-head--summary">
-          <div>
-            <div className="eyebrow">{t('dashboard')}</div>
-            <h2>{t('dashboardHint')}</h2>
-          </div>
-          <div className="dashboard-spark"><PixelIcon name="crown" size={24}/></div>
-        </div>
-        {dashboardLoading && !dashboard ? (
-          <div className="dashboard-empty--legacy">{t('loading')}</div>
-        ) : dashboard?.summary?.playerEntries ? (
-          <>
-            <div className="dashboard-hero-row">
-              <div className="dashboard-identity">
-                <div className="dashboard-avatar">{String(name || 'P').slice(0, 1).toUpperCase()}</div>
-                <div>
-                  <span>{t('dashboardPlayer')}</span>
-                  <strong>{name}</strong>
-                  <small>{badges.length ? badges.join(' • ') : t('dashboardMomentum')}</small>
-                </div>
-              </div>
-              <div className="dashboard-best">
-                <span>{t('dashboardTopAccuracy')}</span>
-                <b>{bestAccuracy}%</b>
-                <small>{totalWins} {t('wins')}</small>
-              </div>
+      <section className="leaderboard-card">
+        {dashboardLoading && !dashboard ? <div className="leaderboard-loading">{t('loading')}</div> : dashboard?.summary?.playerEntries ? <>
+          <header className="leaderboard-header">
+            <div className="leaderboard-heading"><span className="leaderboard-heading-mark" aria-hidden="true">‹</span><div><span className="leaderboard-eyebrow">SOLVOX ARENA</span><h2>{lang==='en'?'LEADERBOARD':'PAPAN PERINGKAT'}</h2></div></div>
+            <SolvoxBrandLogo compact className="leaderboard-brand" />
+            <div className="leaderboard-header-meta"><span>{lang==='en'?'ALL TIME':'SEMUA WAKTU'}</span><span className="leaderboard-online"><i/>{dashboard.summary.uniquePlayers} {lang==='en'?'PLAYERS':'PEMAIN'}</span></div>
+          </header>
+          <section className="leaderboard-podium" aria-label={lang==='en'?'Top three players':'Tiga pemain teratas'}>
+            {[1,0,2].map((index)=>{
+              const player=rankedPlayers[index];
+              if(!player)return <div className="leaderboard-podium-empty" key={`empty-${index}`}/>;
+              const rank=index+1;
+              const initials=String(player.name||'?').trim().split(/\s+/).slice(0,2).map(part=>part[0]).join('').toUpperCase();
+              return <article className={`leaderboard-podium-card rank-${rank}`} key={player.name}>
+                <span className="leaderboard-medal" aria-label={`${lang==='en'?'Rank':'Peringkat'} ${rank}`}>{rank===1?'★':rank}</span>
+                <div className="leaderboard-avatar">{initials}</div>
+                <strong className="leaderboard-player-name">{player.name}</strong>
+                <small className="leaderboard-player-handle">@{String(player.name||'player').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,16)||'player'}</small>
+                <b className="leaderboard-points">{leaderboardScore(player).toLocaleString(lang==='en'?'en-US':'id-ID')} <small>PTS</small></b>
+                <span className="leaderboard-player-meta">{player.matches} {t('matchesPlayed')} · {player.wins} {t('wins')}</span>
+              </article>;
+            })}
+          </section>
+          <section className="leaderboard-list" aria-label={lang==='en'?'Player rankings':'Peringkat pemain'}>
+            <div className="leaderboard-list-head"><span>{lang==='en'?'RANK & PLAYER':'PERINGKAT & PEMAIN'}</span><span>{lang==='en'?'TOTAL POINTS':'TOTAL POIN'}</span></div>
+            <div className="leaderboard-list-scroll">
+              {rankedPlayers.slice(3).filter(player=>String(player.name).trim().toLowerCase()!==String(name).trim().toLowerCase()).map((player)=>{
+                const rank=rankedPlayers.indexOf(player)+1;
+                const initials=String(player.name||'?').trim().split(/\s+/).slice(0,2).map(part=>part[0]).join('').toUpperCase();
+                const score=leaderboardScore(player);
+                return <article className="leaderboard-row" key={player.name}>
+                  <span className="leaderboard-row-rank">{rank}</span><span className="leaderboard-row-avatar">{initials}</span>
+                  <span className="leaderboard-row-copy"><strong>{player.name}</strong><small>@{String(player.name||'player').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,16)||'player'}</small></span>
+                  <span className="leaderboard-row-score"><b>{score.toLocaleString(lang==='en'?'en-US':'id-ID')} <small>PTS</small></b><i><span style={{width:`${Math.max(5,score/maxLeaderboardScore*100)}%`}}/></i></span>
+                </article>;
+              })}
             </div>
-            <div className="dashboard-metrics--legacy dashboard-metrics">
-              <div><span>{t('matchesPlayed')}</span><b>{myStats?.matches || 0}</b></div>
-              <div><span>{t('avgAccuracy')}</span><b>{myStats?.accuracy || 0}%</b></div>
-              <div><span>{t('wins')}</span><b>{myStats?.wins || 0}</b></div>
-              <div><span>{t('dashboardTotalScore')}</span><b>{myStats?.avgScore || 0}</b></div>
-              <div><span>{t('avgHints')}</span><b>{myStats?.avgHints || 0}</b></div>
-            </div>
-            <div className="dashboard-table-wrap--legacy dashboard-table-wrap">
-              <table>
-                <thead><tr><th>#</th><th>{t('player')}</th><th>{t('matchesPlayed')}</th><th>{t('avgAccuracy')}</th><th>{t('wins')}</th><th>{t('draws')}</th><th>{t('losses')}</th><th>{t('avgHints')}</th></tr></thead>
-                <tbody>{dashboard.players.map((p, i) => (
-                  <tr key={p.name}>
-                    <td><span className={`rank-chip rank-${i + 1}`}>{i + 1}</span></td>
-                    <td><strong>{p.name}</strong></td><td>{p.matches}</td><td>{p.accuracy}%</td><td>{p.wins}</td><td>{p.draws}</td><td>{p.losses}</td><td>{p.avgHints || 0}</td>
-                  </tr>
-                ))}</tbody>
-              </table>
-            </div>
-          </>
-        ) : (
-          <div className="dashboard-empty--legacy dashboard-empty">
-            <div><PixelIcon name="chart" size={28}/></div>
-            <b>{t('dashboardEmpty')}</b>
-            <span>{t('startMatchForStats')}</span>
-          </div>
-        )}
-      </div>
+            {myStats&&myRank>=3&&<div className="leaderboard-self-row">
+              <span className="leaderboard-row-rank">{myRank+1}</span><span className="leaderboard-row-avatar">{String(name||'?').trim().split(/\s+/).slice(0,2).map(part=>part[0]).join('').toUpperCase()}</span>
+              <span className="leaderboard-row-copy"><strong>{name} <em>{lang==='en'?'YOU':'KAMU'}</em></strong><small>@{String(name||'player').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,16)||'player'}</small></span>
+              <span className="leaderboard-row-score"><b>{leaderboardScore(myStats).toLocaleString(lang==='en'?'en-US':'id-ID')} <small>PTS</small></b><i><span style={{width:`${Math.max(5,leaderboardScore(myStats)/maxLeaderboardScore*100)}%`}}/></i></span>
+            </div>}
+          </section>
+        </> : <div className="leaderboard-empty"><div><PixelIcon name="chart" size={28}/></div><b>{t('dashboardEmpty')}</b><span>{t('startMatchForStats')}</span></div>}
+      </section>
     </>}
 
     {room&&<div className={`room-card multi-room--legacy multi-room ${room.status==='battle'?'is-battling':''}`}>
@@ -403,7 +403,30 @@ useEffect(()=>{
     </div>
   </div>
 </div>}
-{room.status==='finished'&&<div className="match-result"><div className="result-emblem"><PixelIcon name={winnerName?'trophy':'star'} size={48}/></div><h2>{winnerName?`${winnerName} — ${t('matchFinished')}`:t('draw')}</h2><p>{room.players?.map(p=>`${p.name}: ${room.mode==='turn'?p.hp+' HP':' '+p.score+' '+t('score')} • ${p.hintsUsed||0} ${t('hints')}`).join(' • ')}</p><div className="match-pedagogy">{room.finishSummary?.[me?.id]||statusText()}</div><section className="match-evaluation" aria-label={t('matchEvaluation')}><h3>{t('matchEvaluation')}</h3><div className="match-evaluation-grid">{room.players?.map(p=>{const answered=Number(p.answered||0);const correct=Number(p.correct||0);const accuracy=answered?Math.round(correct/answered*100):0;return <article key={p.id}><b>{p.name}</b><span>{correct}/{answered} {t('correct')} · {accuracy}% {t('accuracy')}</span><small>{room.mode==='turn'?`${p.hp} HP · `:`${p.score} ${t('score')} · `}{p.hintsUsed||0} ${t('hints')}</small></article>;})}</div></section><div className="match-result-actions"><button className="secondary-btn" onClick={()=>setShowMatchReview(v=>!v)}><PixelIcon name="book" size={14}/><span>{showMatchReview?t('close'):t('viewSolution')}</span></button>{room.players?.length===2?<button className="primary-btn" onClick={()=>runWhenConnected(()=>socket.emit('rematch'))}><PixelIcon name="retry" size={16}/><span>{t('rematch')}</span></button>:<button className="primary-btn" onClick={leaveMultiplayer}><SolvoxUtilityArt name="back" size={18}/><span>{t('back')}</span></button>}</div>{showMatchReview&&room.decisiveQuestion&&<div className="match-review"><span>{t('questionReview')}</span><h3>{room.decisiveQuestion.text}</h3><b>{t('expected')}: {room.decisiveQuestion.answer}</b><p>{room.decisiveQuestion.explanation}</p><small>{room.decisiveQuestion.concept}</small></div>}</div>}
+{room.status==='finished'&&<div className={`match-result ${winnerName?(didWin?'is-win':'is-loss'):'is-draw'}`}>
+  <div className="result-status-pill"><i/>{didWin?(lang==='en'?'VICTORY':'KEMENANGAN'):winnerName?(lang==='en'?'MATCH COMPLETE':'PERTANDINGAN SELESAI'):(lang==='en'?'DRAW':'SERI')}</div>
+  <div className="result-emblem"><PixelIcon name={winnerName?'trophy':'star'} size={42}/></div>
+  <h2>{winnerName?(didWin?(lang==='en'?'Victory!':'Kamu Menang!'):`${winnerName} — ${t('matchFinished')}`):t('draw')}</h2>
+  <p className="result-subtitle">{lang==='en'?'Match results and player performance':'Hasil pertandingan dan performa pemain'}</p>
+  <div className="result-score-strip">{room.players?.map(p=><div className={p.id===me?.id?'is-self':''} key={p.id}><span>{p.name}{p.id===me?.id&&<small>{lang==='en'?'YOU':'KAMU'}</small>}</span><b>{room.mode==='turn'?`${p.hp} HP`:`${p.score} ${t('score')}`}</b><small>{p.hintsUsed||0} {t('hints')}</small></div>)}</div>
+  <div className="match-pedagogy"><span className="result-pedagogy-icon"><PixelIcon name="spark" size={15}/></span><span>{room.finishSummary?.[me?.id]||statusText()}</span></div>
+  <section className="match-evaluation" aria-label={t('matchEvaluation')}>
+    <div className="result-section-heading"><span><small>{lang==='en'?'PERFORMANCE':'RINGKASAN'}</small><h3>{t('matchEvaluation')}</h3></span><PixelIcon name="chart" size={19}/></div>
+    <div className="match-evaluation-grid">{room.players?.map(p=>{
+      const answered=Number(p.answered||0);const correct=Number(p.correct||0);const accuracy=answered?Math.round(correct/answered*100):0;const portrait=findCharacter(p.character).portrait;
+      return <article className={`${p.id===me?.id?'is-self':''} ${p.id===room.winner?'is-winner':''}`} key={p.id}>
+        <div className="result-eval-player"><span><img src={portrait} alt=""/></span><b>{p.name}</b>{p.id===room.winner&&<i><PixelIcon name="crown" size={13}/></i>}</div>
+        <div className="result-eval-stats"><span><b>{correct}<small>/{answered}</small></b><small>{t('correct')}</small></span><span><b>{accuracy}%</b><small>{t('accuracy')}</small></span></div>
+        <div className="result-eval-footer"><span>{room.mode==='turn'?`${p.hp} HP`:`${p.score} ${t('score')}`}</span><span>{p.hintsUsed||0} {t('hints')}</span></div>
+      </article>;
+    })}</div>
+  </section>
+  <div className="match-result-actions">
+    <button className="secondary-btn result-review-btn" onClick={()=>setShowMatchReview(v=>!v)}><PixelIcon name="book" size={15}/><span>{showMatchReview?t('close'):t('viewSolution')}</span></button>
+    {room.players?.length===2?<button className="primary-btn result-rematch-btn" onClick={()=>runWhenConnected(()=>socket.emit('rematch'))}><PixelIcon name="retry" size={16}/><span>{t('rematch')}</span></button>:<button className="primary-btn result-rematch-btn" onClick={leaveMultiplayer}><SolvoxUtilityArt name="back" size={18}/><span>{t('back')}</span></button>}
+  </div>
+  {showMatchReview&&room.decisiveQuestion&&<div className="match-review"><span>{t('questionReview')}</span><h3>{room.decisiveQuestion.text}</h3><b>{t('expected')}: {room.decisiveQuestion.answer}</b><p>{room.decisiveQuestion.explanation}</p><small>{room.decisiveQuestion.concept}</small></div>}
+</div>}
     </div>}
   </div>;
 }

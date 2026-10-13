@@ -1,0 +1,231 @@
+/* Multiplayer lobby: clearer type hierarchy and a restrained jade / champagne palette. */
+.multiplayer .multi-grid {
+  width: min(1120px, 100%);
+  gap: clamp(14px, 2vw, 22px) !important;
+  margin: clamp(18px, 3vw, 30px) auto !important;
+  align-items: stretch;
+}
+
+.multiplayer .multi-card {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  padding: clamp(20px, 2.6vw, 30px) !important;
+  overflow: hidden;
+  border: 1px solid rgba(184, 213, 195, .17) !important;
+  border-radius: 14px !important;
+  background: linear-gradient(145deg, rgba(13, 29, 31, .96), rgba(7, 17, 20, .96)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .055), 0 22px 55px rgba(0, 0, 0, .3) !important;
+  transition: border-color .22s ease, transform .22s ease, box-shadow .22s ease;
+}
+
+.multiplayer .multi-card::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 28px;
+  width: 76px;
+  height: 2px;
+  background: linear-gradient(90deg, #c9b878, rgba(201, 184, 120, 0));
+}
+
+.multiplayer .multi-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(185, 211, 163, .32) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 26px 60px rgba(0, 0, 0, .36) !important;
+}
+
+.multiplayer .player-slot-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  color: #9eada5 !important;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.multiplayer .player-slot-label b {
+  padding: 6px 10px;
+  border: 1px solid rgba(200, 185, 126, .24);
+  border-radius: 999px;
+  background: rgba(200, 185, 126, .08);
+  color: #d4c58f !important;
+  font-size: .63rem;
+  font-weight: 750;
+  letter-spacing: .1em;
+}
+
+.multiplayer .multi-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+  color: #f0f2e9 !important;
+  font-size: clamp(1.18rem, 2vw, 1.45rem);
+  font-weight: 750;
+  letter-spacing: -.035em;
+  line-height: 1.25;
+}
+
+.multiplayer .multi-card h2 svg {
+  flex: 0 0 auto;
+  color: #c8b878;
+}
+
+.multiplayer .card-subtitle {
+  min-height: 2.8em;
+  margin: 0 0 20px;
+  color: #9daaa3 !important;
+  font-size: .88rem;
+  line-height: 1.6;
+}
+
+.multiplayer .multi-card input,
+.multiplayer .multi-card select {
+  width: 100%;
+  min-height: 48px;
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(171, 199, 183, .17);
+  border-radius: 9px;
+  outline: none;
+  background: rgba(3, 12, 14, .66);
+  color: #eef2e9;
+  font-size: .9rem;
+  letter-spacing: .01em;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.multiplayer .multi-card input::placeholder {
+  color: #718078;
+}
+
+.multiplayer .multi-card input:focus,
+.multiplayer .multi-card select:focus {
+  border-color: rgba(164, 194, 133, .68);
+  background: rgba(5, 17, 17, .9);
+  box-shadow: 0 0 0 3px rgba(164, 194, 133, .1);
+}
+
+.multiplayer .multi-card select option {
+  background: #102022;
+  color: #eef2e9;
+}
+
+.multiplayer .mode-choice {
+  gap: 8px;
+  margin: 4px 0 10px;
+  padding: 4px;
+  border: 1px solid rgba(171, 199, 183, .12);
+  border-radius: 10px;
+  background: rgba(2, 10, 12, .45);
+}
+
+.multiplayer .mode-choice button {
+  min-height: 42px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: #9ba9a1;
+  font-size: .79rem;
+  font-weight: 650;
+  transition: color .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.multiplayer .mode-choice button:hover {
+  color: #e7ece2;
+}
+
+.multiplayer .mode-choice button.active {
+  border-color: rgba(175, 197, 143, .25);
+  background: linear-gradient(135deg, rgba(129, 157, 106, .22), rgba(161, 144, 91, .12));
+  color: #e5e9d9;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .06);
+}
+
+.multiplayer .mode-desc,
+.multiplayer .tiebreak-note {
+  color: #8f9e95;
+  font-size: .78rem;
+  line-height: 1.55;
+}
+
+.multiplayer .tiebreak-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 0 18px;
+  padding: 10px 12px;
+  border: 1px solid rgba(200, 185, 126, .14);
+  border-radius: 8px;
+  background: rgba(200, 185, 126, .045);
+}
+
+.multiplayer .tiebreak-note svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: #c8b878;
+}
+
+.multiplayer .multi-card > .primary-btn,
+.multiplayer .multi-actions > .primary-btn {
+  min-height: 46px;
+  border: 1px solid rgba(191, 199, 145, .34);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #71865d, #4e6957 58%, #405e59);
+  color: #fbfcf5;
+  font-size: .84rem;
+  font-weight: 750;
+  letter-spacing: .015em;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .22), inset 0 1px rgba(255, 255, 255, .12);
+  transition: filter .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+.multiplayer .multi-card > .primary-btn:hover:not(:disabled),
+.multiplayer .multi-actions > .primary-btn:hover:not(:disabled) {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+  box-shadow: 0 11px 24px rgba(0, 0, 0, .3), inset 0 1px rgba(255, 255, 255, .16);
+}
+
+.multiplayer .multi-actions {
+  gap: 10px;
+}
+
+.multiplayer .multi-actions > .multi-bot-btn {
+  border-color: rgba(200, 185, 126, .25);
+  background: linear-gradient(135deg, #75694b, #625c43 58%, #4d5748);
+}
+
+@media (max-width: 620px) {
+  .multiplayer .multi-grid {
+    gap: 12px !important;
+    margin-top: 14px !important;
+  }
+
+  .multiplayer .multi-card {
+    padding: 19px 16px !important;
+  }
+
+  .multiplayer .card-subtitle {
+    min-height: 0;
+    margin-bottom: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .multiplayer .multi-card,
+  .multiplayer .multi-card input,
+  .multiplayer .multi-card select,
+  .multiplayer .mode-choice button,
+  .multiplayer .multi-card > .primary-btn,
+  .multiplayer .multi-actions > .primary-btn {
+    transition: none;
+  }
+}

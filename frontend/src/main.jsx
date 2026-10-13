@@ -22,6 +22,11 @@ import './styles/tutorial-v102.css';
 import './styles/evaluation-v105.css';
 import './styles/responsive-v105.css';
 import './styles/multiplayer-characters-v120.css';
+import './styles/multiplayer-lobby-v121.css';
+import './styles/leaderboard-v122.css';
+import './styles/multiplayer-result-v123.css';
+import './styles/home-profile-v125.css';
+import './styles/profile-screen-v126.css';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>

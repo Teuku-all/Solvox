@@ -56,7 +56,7 @@ const CombatStage = forwardRef(function CombatStage({ levelId, playerId, onHit }
       <div className="fighter-slot fighter-boss-slot">
         <div className="fighter-boss">
           <div className="fighter-shadow-anchor" aria-hidden="true" />
-          <BossMonster ref={bossRef} levelId={levelId} size={310} />
+          <BossMonster ref={bossRef} levelId={levelId} size={350} />
         </div>
       </div>
     </div>

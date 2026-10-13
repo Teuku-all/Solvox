@@ -4,18 +4,18 @@ import SolvoxBrandLogo from './SolvoxBrandLogo';
 const NAV_ITEMS = [
   { id: 'play', labelKey: 'homeMain' },
   { id: 'tutorial', labelKey: 'homeTutorial' },
-  { id: 'profile', labelKey: 'homeDashboard' },
+  { id: 'dashboard', labelKey: 'homeDashboard' },
   { id: 'settings', labelKey: 'homeSettings' },
   { id: 'feedback', labelKey: 'homeFeedback' },
 ];
 
-export default function HomeMenu({ onMain, onTutorial, onSettings, onFeedback, onProfile, t }) {
+export default function HomeMenu({ onMain, onTutorial, onSettings, onFeedback, onDashboard, onProfile, profileName, t }) {
   const [activeNav, setActiveNav] = useState('play');
   const activate = (id) => {
     setActiveNav(id);
     if (id === 'play') return onMain?.();
     if (id === 'tutorial') return onTutorial?.();
-    if (id === 'profile') return onProfile?.();
+    if (id === 'dashboard') return onDashboard?.();
     if (id === 'settings') return onSettings?.();
     if (id === 'feedback') return onFeedback?.();
   };
@@ -36,6 +36,12 @@ export default function HomeMenu({ onMain, onTutorial, onSettings, onFeedback, o
         </video>
         <div className="home-menu-shade" />
       </div>
+
+      <button className="home-profile-trigger" type="button" onClick={onProfile} aria-label={t('profileTitle')} title={t('profileTitle')}>
+        <span className="home-profile-avatar">{String(profileName||'P').trim().slice(0,1).toUpperCase()}</span>
+        <span className="home-profile-trigger-copy"><small>{t('profileTitle')}</small><b>{profileName||'Player'}</b></span>
+        <span className="home-profile-trigger-arrow" aria-hidden="true">⌄</span>
+      </button>
 
       <aside className="home-menu-nav" aria-label={t('menu')}>
         <div className="home-menu-brand" aria-label="Solvox">
