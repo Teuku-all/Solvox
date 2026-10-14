@@ -1,4 +1,19 @@
-﻿# Hosting Solvox
+# Hosting Solvox
+
+## Recommended setup for Vercel + Render
+
+The Vercel project serves the static frontend. Run the Node server (API and Socket.IO) as one persistent web service, for example on Render. Multiplayer rooms are held in server memory, so the API and Socket.IO connections must reach the same running server process.
+
+1. Create a Render web service from this repository using the included `render.yaml` blueprint. Wait until its `/health` endpoint returns `ok: true`.
+2. Set `FRONTEND_ORIGIN` on Render to the exact Vercel site origin, such as `https://your-game.vercel.app` (no trailing slash). For preview deployments, include each allowed origin separated by commas.
+3. Set these Vercel environment variables to the Render service URL, with no trailing slash:
+   - `VITE_API_URL=https://your-game-server.onrender.com`
+   - `VITE_SOCKET_URL=https://your-game-server.onrender.com`
+4. Redeploy the Vercel frontend so the URLs are included in its build.
+
+The frontend defaults to same-origin `/api` and Socket.IO paths when these variables are unset, which keeps local development and the single-server deployment working. Do not deploy the backend as a Vercel Function or split it across serverless instances: active rooms are process-local.
+
+The included `vercel.json` builds and serves only the frontend. The Render service runs the backend and serves the built app too, so it can also host the entire game by itself if desired.
 
 Solvox needs one long-running Node.js web service. That process serves the built frontend, the `/api` endpoints, and Socket.IO multiplayer from the same origin. Deploy the repository as a web service with WebSocket support; a static-only site or serverless function setup will not run multiplayer correctly.
 

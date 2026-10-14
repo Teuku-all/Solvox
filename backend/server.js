@@ -102,6 +102,18 @@ const DATA_DIR=process.env.SOLVOX_DATA_DIR
     ? path.join(os.tmpdir(),'solvox-data')
     : path.join(__dirname,'..','data');
 const MATCH_LOG=path.join(DATA_DIR,'multiplayer.jsonl');
+const allowedOrigins=(process.env.FRONTEND_ORIGIN||'').split(',').map(origin=>origin.trim()).filter(Boolean);
+app.use((req,res,next)=>{
+  const origin=req.headers.origin;
+  if(origin&&(allowedOrigins.length===0||allowedOrigins.includes(origin))){
+    res.setHeader('Access-Control-Allow-Origin',origin);
+    res.setHeader('Vary','Origin');
+    res.setHeader('Access-Control-Allow-Methods','GET,POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers','Content-Type');
+  }
+  if(req.method==='OPTIONS')return res.sendStatus(204);
+  next();
+});
 function appendJsonLine(file,payload){fs.mkdirSync(DATA_DIR,{recursive:true});fs.appendFileSync(file,JSON.stringify(payload)+'\n');}
 function readJsonLines(file){if(!fs.existsSync(file))return [];return fs.readFileSync(file,'utf8').split(/\r?\n/).filter(Boolean).map(line=>{try{return JSON.parse(line)}catch{return null}}).filter(Boolean);}
 function recordFinishedMatch(room){if(room.recorded||!room.startedAt||room.players.length<2)return;room.recorded=true;const winnerToken=room.winner;const finishedAt=Date.now();room.players.filter(player=>!player.isBot).forEach(player=>{const answered=Math.max(0,Number(player.answered)||0);const correct=Math.max(0,Number(player.correct)||0);appendJsonLine(MATCH_LOG,{type:'multiplayer_match',ts:new Date(finishedAt).toISOString(),matchId:room.code,levelId:room.levelId,mode:room.mode,userId:player.userId||null,player:player.name,opponent:room.players.find(p=>p.token!==player.token)?.name||'—',answered,correct,accuracy:answered?Math.round(correct/answered*100):0,score:Number(player.score)||0,hpRemaining:Number(player.hp)||0,wins:winnerToken===player.token?1:0,draw:winnerToken==='draw'?1:0,losses:winnerToken!==player.token&&winnerToken!=='draw'?1:0,durationSec:Math.max(0,Math.round((finishedAt-room.startedAt)/1000)),totalQuestions:room.totalQuestions,hintsUsed:Number(player.hintsUsed)||0,decisiveQuestion:room.decisiveQuestion?.id||null,decisiveConcept:room.decisiveQuestion?.concept||null});});}

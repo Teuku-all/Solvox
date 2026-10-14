@@ -14,7 +14,7 @@ import { playCharacterAttack, playSound } from '../services/sound';
 import {apiJson} from '../services/api';
 
 export default function Multiplayer({lang,onBack,t,playerName='',onBattleStateChange,dashboardOnly=false}){
-  const [socket]=useState(()=>io({autoConnect:false}));
+  const [socket]=useState(()=>io(import.meta.env.VITE_SOCKET_URL || undefined,{autoConnect:false}));
   const [socketConnected,setSocketConnected]=useState(false);
   const roomRef=useRef(null);
   const pendingActionRef=useRef(null);
