@@ -10,7 +10,7 @@ import HitEffect from './HitEffect';
 import { SolvoxUtilityArt } from './SolvoxUtilityArt';
 import {GAME_META} from '../config/game';
 import {LEVELS} from '../data/levels';
-import { playSound } from '../services/sound';
+import { playCharacterAttack, playSound } from '../services/sound';
 import {apiJson} from '../services/api';
 
 export default function Multiplayer({lang,onBack,t,playerName='',onBattleStateChange,dashboardOnly=false}){
@@ -179,8 +179,10 @@ useEffect(()=>{
   const distance=getArenaLungeDistance();
   if(event.playerId===battlePlayers.player?.id){
     playerBattleRef.current?.play('attack',{distance});
+    playCharacterAttack(battlePlayers.player?.character);
   }else{
     opponentBattleRef.current?.play('attack',{distance});
+    playCharacterAttack(battlePlayers.opponent?.character);
   }
   setBattleImpact({side:event.playerId===battlePlayers.player?.id?'boss':'player',amount:room?.mode==='score'?100:(event.damage||10),seq:event.seq});
   const impactTimer=setTimeout(()=>setBattleImpact(current=>current?.seq===event.seq?null:current),850);

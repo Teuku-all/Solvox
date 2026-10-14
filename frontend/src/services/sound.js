@@ -1,4 +1,5 @@
 const STORAGE_KEY = 'solvox.sound.enabled';
+const MAX_BATTLE_AUDIO_MS = 3000;
 
 function enabled() {
   return localStorage.getItem(STORAGE_KEY) !== '0';
@@ -6,11 +7,55 @@ function enabled() {
 
 let ctx = null;
 const audioCache = new Map();
+const playbackStopTimers = new Map();
+let homeMusic = null;
+let homeMusicWanted = false;
+let unlockHandler = null;
 
 const SOUND_FILES = Object.freeze({
   playerAttack: '/assets/audio/player-attack.mp3',
   chapter1BossAttack: '/assets/audio/chapter1-boss-attack.mp3',
+  wraithAttack: '/assets/audio/wraith-attack.mp3',
+  dragonAttack: '/assets/audio/dragon-attack.mp3',
+  titanAttack: '/assets/audio/titan-attack.mp3',
+  chapter5BossAttack: '/assets/audio/chapter5-boss-attack.mp3',
 });
+
+function playHomeMusic() {
+  if (!homeMusicWanted || !enabled()) return;
+  if (!homeMusic) {
+    homeMusic = new Audio('/assets/audio/home-theme.mp3');
+    homeMusic.preload = 'auto';
+    homeMusic.loop = true;
+    homeMusic.volume = 0.32;
+    homeMusic.addEventListener('error', () => {
+      console.warn('[Solvox audio] Could not load /assets/audio/home-theme.mp3', homeMusic.error?.code);
+    }, { once: true });
+  }
+  const result = homeMusic.play();
+  if (result?.catch) result.catch((error) => {
+    console.warn('[Solvox audio] Could not play /assets/audio/home-theme.mp3', error);
+  });
+}
+
+export function setHomeMusicActive(active) {
+  homeMusicWanted = Boolean(active);
+  if (homeMusicWanted) {
+    playHomeMusic();
+    if (!unlockHandler) {
+      unlockHandler = () => playHomeMusic();
+      window.addEventListener('pointerdown', unlockHandler);
+      window.addEventListener('keydown', unlockHandler);
+    }
+  } else {
+    homeMusic?.pause();
+    if (unlockHandler) {
+      window.removeEventListener('pointerdown', unlockHandler);
+      window.removeEventListener('keydown', unlockHandler);
+      unlockHandler = null;
+    }
+  }
+}
 
 function playAudioFile(kind, volume = 0.72) {
   if (!enabled()) return;
@@ -21,18 +66,32 @@ function playAudioFile(kind, volume = 0.72) {
   if (!audio) {
     audio = new Audio(src);
     audio.preload = 'auto';
+    audio.addEventListener('error', () => {
+      console.warn(`[Solvox audio] Could not load ${src}`, audio.error?.code);
+    }, { once: true });
     audioCache.set(kind, audio);
   }
 
   try {
+    const previousStopTimer = playbackStopTimers.get(kind);
+    if (previousStopTimer) window.clearTimeout(previousStopTimer);
     audio.pause();
-    audio.currentTime = 0;
+    if (audio.readyState > 0) audio.currentTime = 0;
     audio.volume = Math.max(0, Math.min(1, volume));
     const result = audio.play();
-    if (result?.catch) result.catch(() => {});
-  } catch {
-    // Browsers can reject/restrict audio playback; the synthesized fallback
-    // below still keeps the existing sound system functional.
+    const stopAtThreeSeconds = () => {
+      const timer = window.setTimeout(() => {
+        audio.pause();
+        playbackStopTimers.delete(kind);
+      }, MAX_BATTLE_AUDIO_MS);
+      playbackStopTimers.set(kind, timer);
+    };
+    if (result?.then) result.then(stopAtThreeSeconds).catch((error) => {
+      console.warn(`[Solvox audio] Could not play ${src}`, error);
+    });
+    else stopAtThreeSeconds();
+  } catch (error) {
+    console.warn(`[Solvox audio] Could not start ${src}`, error);
   }
 }
 
@@ -65,6 +124,35 @@ function tone({ frequency = 440, duration = 0.1, volume = 0.045, type = 'sine', 
 
 export function setSoundEnabled(value) {
   localStorage.setItem(STORAGE_KEY, value ? '1' : '0');
+  if (value) playHomeMusic();
+  else {
+    homeMusic?.pause();
+    audioCache.forEach((audio) => audio.pause());
+    playbackStopTimers.forEach((timer) => window.clearTimeout(timer));
+    playbackStopTimers.clear();
+  }
+}
+
+export function playBossAttack(levelId) {
+  const soundByChapter = {
+    1: 'chapter1BossAttack',
+    2: 'wraithAttack',
+    3: 'dragonAttack',
+    4: 'titanAttack',
+    5: 'chapter5BossAttack',
+  };
+  playSound(soundByChapter[Number(levelId)] || 'attack');
+}
+
+export function playCharacterAttack(characterId) {
+  const soundByCharacter = {
+    wraith: 'wraithAttack',
+    'equation-drake': 'dragonAttack',
+    titan: 'titanAttack',
+    axiom: 'chapter5BossAttack',
+  };
+  const sound = soundByCharacter[characterId];
+  if (sound) playSound(sound);
 }
 
 export function isSoundEnabled() {
@@ -79,6 +167,12 @@ export function playSound(kind = 'click') {
       break;
     case 'chapter1BossAttack':
       playAudioFile('chapter1BossAttack', 0.78);
+      break;
+    case 'wraithAttack':
+    case 'dragonAttack':
+    case 'titanAttack':
+    case 'chapter5BossAttack':
+      playAudioFile(kind, 0.78);
       break;
     case 'correct':
       tone({ frequency: 523.25, glideTo: 659.25, duration: 0.14, type: 'triangle', volume: 0.055 });

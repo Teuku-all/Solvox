@@ -17,6 +17,7 @@ import {LEVELS, isUnlocked} from './data/levels';
 import {T} from './services/i18n';
 import {summarizePerformance} from './services/evaluation';
 import {GAME_META} from './config/game';
+import {setHomeMusicActive} from './services/sound';
 
 const STORAGE='solvox.progress.v1';
 const PLAYER_STORAGE='solvox.singlePlayer.character.v1';
@@ -36,6 +37,11 @@ export default function App(){
   const [state,setState]=useState(load),[screen,setScreen]=useState('home'),[level,setLevel]=useState(1),[playerId,setPlayerId]=useState(()=>localStorage.getItem(PLAYER_STORAGE)||'traveler'),[playerSelectionLocked,setPlayerSelectionLocked]=useState(()=>localStorage.getItem(PLAYER_LOCK_STORAGE)==='1'),[battleSession,setBattleSession]=useState(0),[evaluation,setEvaluation]=useState(null),[feedback,setFeedback]=useState(false),[settings,setSettings]=useState(false),[profileOpen,setProfileOpen]=useState(false),[tutorialOpen,setTutorialOpen]=useState(false),[multiplayerBattle,setMultiplayerBattle]=useState(false),[lang,setLang]=useState(()=>localStorage.getItem('solvox.lang')||localStorage.getItem('numericore.lang')||localStorage.getItem('aljabarmaster.lang')||'id');
   const t=(k,vars)=>{let value=T[lang]?.[k] ?? T.id?.[k] ?? k; if(vars) Object.entries(vars).forEach(([name,val])=>{value=value.replaceAll(`{${name}}`,String(val))}); return value;};
   useEffect(()=>{save(state);},[state]);
+  useEffect(()=>{
+    const inBattle=(screen==='battle'&&!evaluation)||(screen==='multi'&&multiplayerBattle);
+    setHomeMusicActive(!inBattle);
+    return()=>setHomeMusicActive(false);
+  },[screen,multiplayerBattle,evaluation]);
   useEffect(()=>{ document.documentElement.lang=lang==='en'?'en':'id'; },[lang]);
   useEffect(()=>{ localStorage.setItem(PLAYER_STORAGE,playerId); },[playerId]);
   const reset=()=>{

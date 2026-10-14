@@ -12,7 +12,7 @@ import { getBoss } from '../data/bosses';
 import { getBossImpactMs, getBossPreviewSrc, getBossSequenceDurationMs } from '../data/bossAssets';
 import PixelIcon from './PixelIcon';
 import { SolvoxUtilityArt } from './SolvoxUtilityArt';
-import { playSound } from '../services/sound';
+import { playBossAttack, playSound } from '../services/sound';
 
 export default function Battle({ levelId, playerId = 'traveler', lang, t, onComplete, onBack }) {
   const boss = getBoss(levelId);
@@ -336,7 +336,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     setHp(nextHp);
     setBusy(true);
     combatRef.current?.bossAttack();
-    playSound(Number(levelId) === 1 ? 'chapter1BossAttack' : 'attack');
+    playBossAttack(levelId);
 
     later(() => {
       showImpact('player', 8, 'boss');
