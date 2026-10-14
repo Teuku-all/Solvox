@@ -481,12 +481,12 @@ must(characterShowcaseV118.includes('character-showcase-roster') && characterSho
 must(multiplayerPickerV118.includes('...Object.values(BOSSES)') && multiplayerPickerV118.includes('kind: \'boss\'') && multiplayerPickerV118.includes('CharacterShowcase'), 'Multiplayer character showcase must offer registered boss characters');
 const characterScreenV118 = read('frontend/src/components/SinglePlayerCharacterSelect.jsx');
 const translationsV118 = read('frontend/src/services/i18n.js');
-must(characterScreenV118.includes('CHOOSE YOUR CHARACTER') && !characterScreenV118.includes('character-start-panel') && characterScreenV118.includes('startRef.current?.(chapterId, characterId)'), 'Cinematic character screen must select directly without a START panel');
+must(characterScreenV118.includes('CHOOSE YOUR CHARACTER') && !characterScreenV118.includes('character-start-panel') && characterScreenV118.includes('await onStart(chapterId, character.id)') && characterScreenV118.includes('SinglePlayerCharacterDetail'), 'Cinematic selection must preview details before committing START');
 must(translationsV118.includes("characterSelectTitle:'PILIH KARAKTER'") && translationsV118.includes("characterSelectTitle:'CHARACTER SELECT'") && translationsV118.includes("gameStartPrompt:'GAME START'"), 'V118 bilingual character select labels are missing');
 must(chapterV114.includes('onSelectChapter') && chapterV114.includes('onClick={() => onSelectChapter?.(level.id)}'), 'V116 chapter selection handler is incomplete');
 must(appV114.includes("screen==='character'") && appV114.includes('<SinglePlayerCharacterSelect'), 'V116 character selection route wiring missing');
 const characterSelectV116 = read('frontend/src/components/SinglePlayerCharacterSelect.jsx');
-must(characterSelectV116.includes('startRef.current?.(chapterId, characterId)') && appV114.includes("setScreen('battle')"), 'V116 character-to-battle transition wiring missing');
+must(characterSelectV116.includes('await onStart(chapterId, character.id)') && appV114.includes("setScreen('battle')"), 'V116 character-to-battle transition wiring missing');
 must(!chapterV114.includes('pendingLevel') && !chapterV114.includes('single-character-modal-v114'), 'V116 legacy nested chapter modal flow still present');
 must(appV114.includes('PLAYER_STORAGE') && appV114.includes('onPlayerChange={setPlayerId}') && appV114.includes('playerId={playerId}'), 'V114 selected player is not persisted or passed into battle');
 must(battleV114.includes('getPlayerAsset(playerId)') && battleV114.includes('playerCharacter: playerAsset.id'), 'V114 Battle does not use/log the selected character');

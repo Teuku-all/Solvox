@@ -28,7 +28,12 @@ function measureFrame(image) {
   return { image, footX: left <= right ? (left + right) / 2 : canvas.width / 2, bottom: bottom || canvas.height };
 }
 
-export default function SinglePlayerIdleSprite({ asset, reducedMotion }) {
+export default function SinglePlayerIdleSprite({ asset, reducedMotion, onReady, onLoadError }) {
+  const readyReportedRef = useRef(false);
+  const readyCallbackRef = useRef(onReady);
+  readyCallbackRef.current = onReady;
+  const errorCallbackRef = useRef(onLoadError);
+  errorCallbackRef.current = onLoadError;
   const sequence = asset.selectionIdle?.sequence || asset.sequences.idle;
   const canvasRef = useRef(null);
   const framesRef = useRef([]);
@@ -37,6 +42,8 @@ export default function SinglePlayerIdleSprite({ asset, reducedMotion }) {
   useEffect(() => {
     let alive = true;
     framesRef.current = [];
+    readyReportedRef.current = false;
+    let failed = 0;
     const images = sequence.frames.map((name) => {
       const image = new Image();
       image.decoding = 'async';
@@ -49,6 +56,10 @@ export default function SinglePlayerIdleSprite({ asset, reducedMotion }) {
           framesRef.current[index] = measureFrame(image);
           redrawRef.current();
         }
+      };
+      image.onerror = () => {
+        failed += 1;
+        if (alive && failed === images.length) errorCallbackRef.current?.();
       };
       image.src = src;
     });
@@ -78,6 +89,10 @@ export default function SinglePlayerIdleSprite({ asset, reducedMotion }) {
       }
       context.clearRect(0, 0, width, height);
       context.drawImage(frame.image, width / 2 - frame.footX, height - frame.bottom);
+      if (!readyReportedRef.current) {
+        readyReportedRef.current = true;
+        readyCallbackRef.current?.();
+      }
       previousFrame = index;
       previousImage = frame.image;
     };
