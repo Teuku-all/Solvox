@@ -1,5 +1,6 @@
 import React,{useEffect,useMemo,useState} from 'react';
 import PixelIcon from './PixelIcon';
+import { SolvoxUtilityArt } from './SolvoxUtilityArt';
 import {deriveProfile} from '../services/profile';
 import {apiJson} from '../services/api';
 import {getPlayerAsset} from '../data/playerAssets';
@@ -42,7 +43,7 @@ export default function ProfilePanel({progress,profile,playerId,onClose,onSave,t
       <header className="profile-screen-header">
         <button className="profile-screen-nav profile-screen-back" type="button" onClick={onClose}><PixelIcon name="back" size={20}/><span>{t('back')}</span></button>
         <div className="profile-screen-title"><small>SOLVOX PLAYER DOSSIER</small><h1>{lang==='en'?'PROFILE':'PROFIL'}</h1></div>
-        <button className="profile-screen-nav profile-screen-home" type="button" onClick={onClose} aria-label={lang==='en'?'Return home':'Kembali ke halaman utama'}><PixelIcon name="home" size={21}/><span>{lang==='en'?'HOME':'BERANDA'}</span></button>
+        <button className="profile-screen-nav profile-screen-close profile-close-btn" type="button" onClick={onClose} aria-label={t('close')}><SolvoxUtilityArt name="close" size={18} className="profile-close-art"/></button>
       </header>
       <div className="profile-screen-layout">
         <aside className="profile-showcase">
