@@ -1,0 +1,10 @@
+{
+  "name": "solvox-app-service",
+  "private": true,
+  "version": "1.0.0",
+  "main": "vercel.js",
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  }
+}

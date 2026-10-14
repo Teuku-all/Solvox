@@ -98,7 +98,9 @@ function freshQuestions(levelId,lang){
 
 const DATA_DIR=process.env.SOLVOX_DATA_DIR
   ? path.resolve(process.env.SOLVOX_DATA_DIR)
-  : path.join(__dirname,'..','data');
+  : process.env.VERCEL
+    ? path.join(os.tmpdir(),'solvox-data')
+    : path.join(__dirname,'..','data');
 const MATCH_LOG=path.join(DATA_DIR,'multiplayer.jsonl');
 function appendJsonLine(file,payload){fs.mkdirSync(DATA_DIR,{recursive:true});fs.appendFileSync(file,JSON.stringify(payload)+'\n');}
 function readJsonLines(file){if(!fs.existsSync(file))return [];return fs.readFileSync(file,'utf8').split(/\r?\n/).filter(Boolean).map(line=>{try{return JSON.parse(line)}catch{return null}}).filter(Boolean);}
@@ -243,7 +245,7 @@ function rebindSocket(room,player,socket){player.id=socket.id;player.connected=t
 const FRONTEND_DIST=path.join(__dirname,'..','frontend','dist');
 app.use(express.json({limit:'128kb'}));
 
-app.use(express.static(FRONTEND_DIST));
+if(!process.env.VERCEL) app.use(express.static(FRONTEND_DIST));
 app.use('/api/single-player',singlePlayerRoutes);
 
 app.post('/api/questions/generate',(req,res)=>{
@@ -369,8 +371,10 @@ io.on('connection',socket=>{
 function leaveRoom(socket,explicit){const code=socket.data.roomCode;if(!code)return;const room=rooms.get(code);if(!room)return;const p=room.players.find(x=>x.id===socket.id);if(!p)return;if(explicit){if(room.isBot){clearTimer(room);rooms.delete(code);return;}if(room.status==='battle'){const winner=room.players.find(x=>x.token!==p.token)?.token;finishRoom(room,winner);}room.players=room.players.filter(x=>x.token!==p.token);if(room.players.length===0){clearTimer(room);rooms.delete(code);return;}if(room.status!=='finished'){room.players[0].ready=false;broadcast(room,'player:left');}else broadcast(room,'player:left');return;}p.connected=false;p.id='disconnected:'+p.token.slice(0,8);p.ready=false;room.statusKey='DISCONNECTED';broadcast(room,'player:disconnected');p.disconnectTimer=setTimeout(()=>{if(!rooms.has(code))return;const current=rooms.get(code);const idx=current.players.findIndex(x=>x.token===p.token);if(idx>=0)current.players.splice(idx,1);if(current.players.length===0){clearTimer(current);rooms.delete(code);}else{current.status='waiting';current.started=false;current.players[0].ready=false;current.statusKey='WAITING_PLAYER';broadcast(current,'player:left');}},ROOM_GRACE_MS);}
 function lanAddresses(){const nets=os.networkInterfaces(),out=[];for(const name of Object.keys(nets))for(const net of nets[name]||[])if(net.family==='IPv4'&&!net.internal)out.push(net.address);return out;}
 function sendSpa(req,res){return res.sendFile(path.join(FRONTEND_DIST,'index.html'));}
-app.get(['/','/index.html','/game.html'],sendSpa);
-app.get(/^(?!\/api(?:\/|$)).*/,sendSpa);
+if(!process.env.VERCEL){
+  app.get(['/','/index.html','/game.html'],sendSpa);
+  app.get(/^(?!\/api(?:\/|$)).*/,sendSpa);
+}
 try{
   fs.mkdirSync(DATA_DIR,{recursive:true});
   fs.accessSync(DATA_DIR,fs.constants.W_OK);
@@ -378,4 +382,4 @@ try{
   console.error(`[Solvox] Data directory is not writable: ${DATA_DIR}. Set SOLVOX_DATA_DIR to a writable persistent directory.`);
   throw error;
 }
-server.listen(PORT,'0.0.0.0',()=>{console.log(`\nSolvox berjalan di port ${PORT}`);console.log(`Local : http://localhost:${PORT}`);for(const ip of lanAddresses())console.log(`LAN   : http://${ip}:${PORT}`);console.log(`Question engine: local deterministic generator | ${TOTAL_QUESTIONS} questions per chapter`);console.log(`Multiplayer: turn-based ${TURN_MS/1000}s per player, ${TOTAL_QUESTIONS} questions, reconnect ${ROOM_GRACE_MS/1000}s, bot mode enabled.`);});
+module.exports=server;

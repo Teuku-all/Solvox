@@ -1,0 +1,32 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "app": {
+      "root": "backend",
+      "runtime": "node",
+      "entrypoint": "vercel.js"
+    },
+    "frontend": {
+      "root": "frontend",
+      "framework": "vite"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": { "service": "app" }
+    },
+    {
+      "source": "/socket.io/(.*)",
+      "destination": { "service": "app" }
+    },
+    {
+      "source": "/health",
+      "destination": { "service": "app" }
+    },
+    {
+      "source": "/(.*)",
+      "destination": { "service": "frontend" }
+    }
+  ]
+}
