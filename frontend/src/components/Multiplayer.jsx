@@ -114,7 +114,7 @@ export default function Multiplayer({lang,onBack,t,playerName='',onBattleStateCh
     setAnswerInfo(null);
     setHintInfo(null);
     setAnswer('');
-  },[room?.questionIndex,room?.turnToken]);
+  },[room?.questionIndex]);
   useEffect(()=>{
     if(!room||room.status!=='battle')return setSeconds(45);
     const started=room.turnStartedAt||Date.now();

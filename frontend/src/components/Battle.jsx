@@ -244,9 +244,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
       explanation: bankAwareFeedback || `${correctAnswer}`,
       nextStep: isCorrect
         ? t('feedbackNextStep')
-        : attemptNow < 3
-          ? t('feedbackRetryPrompt')
-          : t('recommendReview'),
+        : t('feedbackRetryPrompt'),
       feedbackBankMatched: !!bankMatch,
       feedbackBankCode: bankMatch?.code || null,
       feedbackBankRow: bankMatch?.id || null,
@@ -371,7 +369,9 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
         explanation: feedbackUsed || q.feedback,
       };
 
-      if (attemptNow >= 3 || nextHp <= 0) {
+      // Keep the player on this question after repeated mistakes so they can
+      // use the available hints and learn from the persistent feedback.
+      if (nextHp <= 0) {
         const logs = [...questionLogs, log];
         setQuestionLogs(logs);
 
@@ -399,7 +399,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
           setIdx((value) => value + 1);
           setRound((value) => value + 1);
           setBusy(false);
-        }, nextHp <= 0 ? playerDieDurationMs + 140 : (attemptNow >= 3 ? 3000 : 2600));
+        }, playerDieDurationMs + 140);
         return;
       }
 
