@@ -225,10 +225,10 @@ must(!exists('frontend/src/styles/responsive-v102.css'), 'Retired responsive V10
 
 const playerAssets = read('frontend/src/data/playerAssets.js');
 const playerData = read('frontend/src/data/player.js');
-must(playerAssets.includes("base: '/assets/characters/traveler'"), 'Traveler asset registry missing');
+must(playerAssets.includes("base: '/assets/characters/kazura'"), 'Traveler asset registry missing');
 must(playerAssets.includes("idle: freezeSequence(['01.png','02.png','03.png','04.png','05.png','06.png']"), 'Traveler idle registry incomplete');
 must(playerAssets.includes("attack: freezeSequence(['01.png','02.png','03.png','04.png','05.png','06.png','07.png']"), 'Traveler attack registry incomplete');
-must(playerData.includes("id: ACTIVE_PLAYER_ID") && playerData.includes("name: 'The Traveler'"), 'Active player identity missing');
+must(playerData.includes("id: ACTIVE_PLAYER_ID") && playerData.includes("name: 'Kazura'"), 'Active player identity missing');
 must(!exists('frontend/src/data/wanderer.js'), 'Legacy Wanderer player data module remains');
 
 const expectedPlayerFrames = {
@@ -238,7 +238,7 @@ const expectedPlayerFrames = {
   die: 6,
 };
 for (const [state, expected] of Object.entries(expectedPlayerFrames)) {
-  const stateDir = path.join(root, 'frontend/public/assets/characters/traveler', state);
+  const stateDir = path.join(root, 'frontend/public/assets/characters/kazura', state);
   const frames = fs.existsSync(stateDir)
     ? fs.readdirSync(stateDir).filter((file) => file.endsWith('.png')).sort()
     : [];
@@ -315,7 +315,7 @@ must(main.includes("import './styles/ui-v93.css';") && exists('frontend/src/styl
   must(main.includes("import './styles/ui-v96.css';") && exists('frontend/src/styles/ui-v96.css'), 'V96 polish stylesheet is not wired');
 must(exists('frontend/src/styles/responsive-v105.css') && !exists('frontend/src/styles/responsive-v102.css') && !exists('frontend/src/styles/responsive-v101.css') && !exists('frontend/src/styles/responsive-v94.css') && !exists('frontend/src/styles/responsive-v93.css'), 'Responsive source cleanup is incomplete');
 must(multi.includes('home-background-v83.mp4') && multi.includes('multi-home-bg'), 'Multiplayer Home background video is not wired');
-must(profile.includes('SolvoxUtilityArt name="close"'), 'Profile close control is not using the dedicated close artwork');
+must(profile.includes('profile-screen-back" type="button" onClick={onClose}') && profile.includes('profile-screen-home" type="button" onClick={onClose}') && profile.includes("if(e.key==='Escape')onClose()"), 'Profile back, home, or Escape dismissal is missing');
 must(settings.includes('settings-about-row') && settings.includes('settings-close-btn') && !settings.includes('success'), 'Settings V96 about/close cleanup is incomplete');
 must(battlePanel.includes('is-story-chapter'), 'Story chapter class is missing');
 must(exists('frontend/src/components/AboutDevelopers.jsx') && main.includes("import './styles/ui-v96.css';"), 'About Us page/style is not wired');
@@ -474,19 +474,19 @@ const spriteV114 = read('frontend/src/components/SpriteCharacter.jsx');
 const combatV114 = read('frontend/src/components/CombatStage.jsx');
 must(playerAssetsV114.includes("asuka:") && playerAssetsV114.includes("/assets/characters/asuka"), 'V114 Asuka player asset is not registered');
 must(playerAssetsV114.includes("attack-asuka_12.webp") && playerAssetsV114.includes("hurt-asuka_08.webp") && playerAssetsV114.includes("die-asuka_05.webp"), 'V114 Asuka animation sequences are incomplete');
-must(pickerV114.includes('CharacterShowcase') && pickerV114.includes('SINGLE_PLAYER_CHARACTERS'), 'Single-player reference-inspired character showcase or character options are missing');
+must(pickerV114.includes('SinglePlayerIdleSprite') && pickerV114.includes('SINGLE_PLAYER_CHARACTERS'), 'Single-player cinematic idle renderer or character options are missing');
 const characterShowcaseV118 = read('frontend/src/components/CharacterShowcase.jsx');
 const multiplayerPickerV118 = read('frontend/src/components/CharacterPicker.jsx');
 must(characterShowcaseV118.includes('character-showcase-roster') && characterShowcaseV118.includes('character-showcase-stage') && characterShowcaseV118.includes('character-showcase-details'), 'Character showcase roster, spotlight, or profile panel is missing');
 must(multiplayerPickerV118.includes('...Object.values(BOSSES)') && multiplayerPickerV118.includes('kind: \'boss\'') && multiplayerPickerV118.includes('CharacterShowcase'), 'Multiplayer character showcase must offer registered boss characters');
 const characterScreenV118 = read('frontend/src/components/SinglePlayerCharacterSelect.jsx');
 const translationsV118 = read('frontend/src/services/i18n.js');
-must(characterScreenV118.includes('character-select-header') && characterScreenV118.includes('character-start-panel') && characterScreenV118.includes('onStart?.(chapterId, playerId)'), 'V118 character screen layout or start handler is missing');
+must(characterScreenV118.includes('CHOOSE YOUR CHARACTER') && !characterScreenV118.includes('character-start-panel') && characterScreenV118.includes('await onStart(chapterId, character.id)') && characterScreenV118.includes('SinglePlayerCharacterDetail'), 'Cinematic selection must preview details before committing START');
 must(translationsV118.includes("characterSelectTitle:'PILIH KARAKTER'") && translationsV118.includes("characterSelectTitle:'CHARACTER SELECT'") && translationsV118.includes("gameStartPrompt:'GAME START'"), 'V118 bilingual character select labels are missing');
 must(chapterV114.includes('onSelectChapter') && chapterV114.includes('onClick={() => onSelectChapter?.(level.id)}'), 'V116 chapter selection handler is incomplete');
 must(appV114.includes("screen==='character'") && appV114.includes('<SinglePlayerCharacterSelect'), 'V116 character selection route wiring missing');
 const characterSelectV116 = read('frontend/src/components/SinglePlayerCharacterSelect.jsx');
-must(characterSelectV116.includes('onStart?.(chapterId, playerId)') && appV114.includes("setScreen('battle')"), 'V116 character-to-battle transition wiring missing');
+must(characterSelectV116.includes('await onStart(chapterId, character.id)') && appV114.includes("setScreen('battle')"), 'V116 character-to-battle transition wiring missing');
 must(!chapterV114.includes('pendingLevel') && !chapterV114.includes('single-character-modal-v114'), 'V116 legacy nested chapter modal flow still present');
 must(appV114.includes('PLAYER_STORAGE') && appV114.includes('onPlayerChange={setPlayerId}') && appV114.includes('playerId={playerId}'), 'V114 selected player is not persisted or passed into battle');
 must(battleV114.includes('getPlayerAsset(playerId)') && battleV114.includes('playerCharacter: playerAsset.id'), 'V114 Battle does not use/log the selected character');
@@ -527,7 +527,7 @@ must(multiplayerFighterV120.includes('attackDirection') && multiplayerV117.inclu
 must(multiplayerV117.includes('className="primary-btn multi-bot-btn"') && !multiplayerV117.includes('secondary-btn multi-bot-btn'), 'Play vs bot button should use the shared primary action styling');
 const multiplayerButtonStyles = read('frontend/src/styles/ui-v104.css');
 must(multiplayerButtonStyles.includes('.multi-bot-btn:hover:not(:disabled)') && multiplayerButtonStyles.includes('grid-template-columns:1fr'), 'Play vs bot button hover or mobile styling is missing');
-must(read('frontend/src/data/playerAssets.js').includes('base: \'/assets/characters/traveler/mirror\'') && bossAssets.includes('base: \'/assets/characters/wolf/mirror\''), 'Supplied mirrored character animation packs are not registered');
+must(read('frontend/src/data/playerAssets.js').includes('base: \'/assets/characters/kazura/mirror\'') && bossAssets.includes('base: \'/assets/characters/wolf/mirror\''), 'Supplied mirrored character animation packs are not registered');
 must(apiServer.includes('currentTurnPlayerId') && !apiServer.includes('token:player.token') && apiServer.includes('function findPlayer(room,socket){return room?.players.find(p=>p.id===socket.id);}'), 'Multiplayer room state leaks reconnect tokens or authorizes stale sockets');
 must(multiplayerV117.includes("socket.timeout(750).emit('room:leave'") && apiServer.includes("socket.on('room:leave',(ack)=>{leaveRoom(socket,true);ack?.({ok:true});})"), 'Leaving multiplayer does not close a room cleanly');
 must(apiServer.includes('const second=room.players[1];') && apiServer.includes("if(room.status==='battle'){const winner=room.players.find(x=>x.token!==p.token)?.token;finishRoom(room,winner);}room.players=room.players.filter(x=>x.token!==p.token);"), 'Leaving during a battle can crash the room before the opponent is declared winner');

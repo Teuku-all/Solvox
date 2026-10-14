@@ -86,11 +86,24 @@ export default function App(){
     const chapterId=Number(id);
     if(chapterId!==1||!Number.isInteger(chapterId)||chapterId<1||chapterId>LEVELS.length)return;
     const selected=nextPlayerId||'traveler';
+    if(!['traveler','asuka'].includes(selected))return false;
+    // Commit storage before changing React state or navigating. A failed write
+    // leaves the preview open and lets the character screen offer a retry.
+    const previous=[PLAYER_STORAGE,PLAYER_LOCK_STORAGE,STORAGE].map(key=>[key,localStorage.getItem(key)]);
+    try{
+      localStorage.setItem(PLAYER_STORAGE,selected);
+      localStorage.setItem(PLAYER_LOCK_STORAGE,'1');
+      if(allChaptersCompleted)save({...state,completedLevels:[]});
+    }catch(error){
+      for(const [key,value] of previous){
+        try{if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value);}catch{}
+      }
+      throw error;
+    }
     // Completing the full campaign and choosing a new Chapter 1 character
     // starts a fresh run, so the new choice stays locked for that run.
     if(allChaptersCompleted)setState(current=>({...current,completedLevels:[]}));
     setPlayerId(selected);
-    localStorage.setItem(PLAYER_LOCK_STORAGE,'1');
     setPlayerSelectionLocked(true);
     launchBattle(chapterId);
   };

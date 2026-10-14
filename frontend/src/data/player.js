@@ -2,7 +2,7 @@ import { ACTIVE_PLAYER_ID } from './playerAssets';
 
 export const PLAYER = {
   id: ACTIVE_PLAYER_ID,
-  name: 'The Traveler',
+  name: 'Kazura',
   role: 'Main Character',
   quoteId: 'traveler.quote',
   stats: { hp: 100, energy: 50, str: 10, dex: 12, int: 8, vit: 10, luk: 5 },

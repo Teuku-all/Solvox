@@ -19,7 +19,7 @@ const TOTAL_QUESTIONS=10;
 const DAMAGE_PER_CORRECT=20;
 
 const CHARACTERS={
-  traveler:{id:'traveler',name:'The Traveler',hp:100,color:'#efbd52'},
+  traveler:{id:'traveler',name:'Kazura',hp:100,color:'#efbd52'},
   asuka:{id:'asuka',name:'Asuka',hp:100,color:'#f17a83'},
   wolf:{id:'wolf',name:'Wolf',hp:100,color:'#b84cff'},
   wraith:{id:'wraith',name:'Wraith',hp:100,color:'#38d8ff'},
