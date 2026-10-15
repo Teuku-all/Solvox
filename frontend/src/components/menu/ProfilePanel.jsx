@@ -1,10 +1,10 @@
 import React,{useEffect,useMemo,useState} from 'react';
-import PixelIcon from './PixelIcon';
-import {SolvoxUtilityArt} from './SolvoxUtilityArt';
-import {deriveProfile} from '../services/profile';
-import {apiJson} from '../services/api';
-import {getPlayerAsset} from '../data/playerAssets';
-import {LEVELS} from '../data/levels';
+import PixelIcon from '../shared/PixelIcon';
+import {SolvoxUtilityArt} from '../shared/SolvoxUtilityArt';
+import {deriveProfile} from '../../services/profile';
+import {apiJson} from '../../services/api';
+import {getPlayerAsset} from '../../data/playerAssets';
+import {LEVELS} from '../../data/levels';
 
 function fmtTime(seconds){
   const s=Math.max(0,Number(seconds)||0);

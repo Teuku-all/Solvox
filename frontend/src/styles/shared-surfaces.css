@@ -2,7 +2,7 @@
    V42 — Shared non-battle visual layer
    Home, mode select, chapter select, and shared
    component primitives live here. Current battle geometry lives in
-   battle-v43.css so there is one source of truth for the combat layout.
+   battle.css so there is one source of truth for the combat layout.
    ============================================================ */
 
 html,body,#root{width:100%;min-height:100%;}

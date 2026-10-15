@@ -1,6 +1,6 @@
 import React from 'react';
 import Keypad from './Keypad';
-import PixelIcon from './PixelIcon';
+import PixelIcon from '../shared/PixelIcon';
 
 /**
  * Solvox battle learning console.

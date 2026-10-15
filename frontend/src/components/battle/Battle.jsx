@@ -1,18 +1,18 @@
-import { getPlayerAsset } from '../data/playerAssets';
+import { getPlayerAsset } from '../../data/playerAssets';
 import React, { useEffect, useRef, useState } from 'react';
 import ArenaBackground from './ArenaBackground';
 import BattleQuestionPanel from './BattleQuestionPanel';
 import CombatStage from './CombatStage';
 import HitEffect from './HitEffect';
-import { loadChapterQuestions, validateChapterAnswer } from '../services/singlePlayerGame';
-import { evaluateSolvoxChapter } from '../services/solvoxEvaluation';
-import { LEVELS } from '../data/levels';
-import { PLAYER } from '../data/player';
-import { getBoss } from '../data/bosses';
-import { getBossImpactMs, getBossPreviewSrc, getBossSequenceDurationMs } from '../data/bossAssets';
-import PixelIcon from './PixelIcon';
-import { SolvoxUtilityArt } from './SolvoxUtilityArt';
-import { playBossAttack, playSound } from '../services/sound';
+import { loadChapterQuestions, validateChapterAnswer } from '../../services/singlePlayerGame';
+import { evaluateSolvoxChapter } from '../../services/solvoxEvaluation';
+import { LEVELS } from '../../data/levels';
+import { PLAYER } from '../../data/player';
+import { getBoss } from '../../data/bosses';
+import { getBossImpactMs, getBossPreviewSrc, getBossSequenceDurationMs } from '../../data/bossAssets';
+import PixelIcon from '../shared/PixelIcon';
+import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
+import { playBossAttack, playSound } from '../../services/sound';
 
 export default function Battle({ levelId, playerId = 'traveler', lang, t, onComplete, onBack }) {
   const boss = getBoss(levelId);

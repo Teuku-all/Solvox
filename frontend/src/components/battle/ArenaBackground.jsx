@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import { BACKGROUNDS } from '../config/backgrounds';
+import { BACKGROUNDS } from '../../config/backgrounds';
 
 export default function ArenaBackground({ levelId = 1 }) {
   const ref = useRef(null);

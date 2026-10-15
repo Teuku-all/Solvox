@@ -1,5 +1,5 @@
 import React from 'react';
-import { SolvoxUtilityArt } from './SolvoxUtilityArt';
+import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 
 const DEVS = [
   { name: 'Teuku Al Jumanatul Ali', roleKey: 'developerRoleEngineering', copyKey: 'developerTeuku' },

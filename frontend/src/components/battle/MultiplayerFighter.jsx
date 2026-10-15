@@ -1,6 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useRef } from 'react';
-import { getBossAsset } from '../data/bossAssets';
-import { PLAYER_ASSETS } from '../data/playerAssets';
+import { getBossAsset } from '../../data/bossAssets';
+import { PLAYER_ASSETS } from '../../data/playerAssets';
 import BossMonster from './BossMonster';
 import SpriteCharacter from './SpriteCharacter';
 

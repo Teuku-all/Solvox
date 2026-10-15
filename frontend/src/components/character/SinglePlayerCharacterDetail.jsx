@@ -1,7 +1,7 @@
 import React from 'react';
 import SinglePlayerIdleSprite from './SinglePlayerIdleSprite';
 import { CharacterEmblem } from './CinematicCharacterChoice';
-import { SELECTION_ART, SELECTION_ABILITIES } from '../data/characterSelection';
+import { SELECTION_ART, SELECTION_ABILITIES } from '../../data/characterSelection';
 
 export default function SinglePlayerCharacterDetail({ character, reducedMotion, lang, busy, error, onStart, onReady, onLoadError, headingRef }) {
   const locale = lang === 'en' ? 'en' : 'id';

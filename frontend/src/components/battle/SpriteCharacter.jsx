@@ -1,5 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-import { getPlayerAsset, resolvePlayerSequence } from '../data/playerAssets';
+import { getPlayerAsset, resolvePlayerSequence } from '../../data/playerAssets';
 
 const ONE_SHOT_MODES = new Set(['attack', 'hurt', 'die']);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));

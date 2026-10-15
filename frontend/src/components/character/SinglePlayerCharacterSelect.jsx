@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { CHARACTER_SELECT_BACKGROUND } from '../config/backgrounds';
-import { SELECTION_ART, SELECTION_CHARACTERS } from '../data/characterSelection';
+import { CHARACTER_SELECT_BACKGROUND } from '../../config/backgrounds';
+import { SELECTION_ART, SELECTION_CHARACTERS } from '../../data/characterSelection';
 import CinematicCharacterChoice from './CinematicCharacterChoice';
 import SinglePlayerCharacterDetail from './SinglePlayerCharacterDetail';
-import '../styles/character-selection-v2.css';
+import '../../styles/character-selection.css';
 
 export default function SinglePlayerCharacterSelect({ levelId, onStart, onBack, lang = 'id' }) {
   const [phase, setPhase] = useState('choice');

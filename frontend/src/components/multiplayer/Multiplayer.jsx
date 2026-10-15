@@ -1,17 +1,17 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {io} from 'socket.io-client';
-import CharacterPicker, { findCharacter } from './CharacterPicker';
-import PixelIcon from './PixelIcon';
-import SolvoxBrandLogo from './SolvoxBrandLogo';
-import MultiplayerFighter from './MultiplayerFighter';
-import ArenaBackground from './ArenaBackground';
-import BattleQuestionPanel from './BattleQuestionPanel';
-import HitEffect from './HitEffect';
-import { SolvoxUtilityArt } from './SolvoxUtilityArt';
-import {GAME_META} from '../config/game';
-import {LEVELS} from '../data/levels';
-import { playCharacterAttack, playSound } from '../services/sound';
-import {apiJson} from '../services/api';
+import CharacterPicker, { findCharacter } from '../character/CharacterPicker';
+import PixelIcon from '../shared/PixelIcon';
+import SolvoxBrandLogo from '../shared/SolvoxBrandLogo';
+import MultiplayerFighter from '../battle/MultiplayerFighter';
+import ArenaBackground from '../battle/ArenaBackground';
+import BattleQuestionPanel from '../battle/BattleQuestionPanel';
+import HitEffect from '../battle/HitEffect';
+import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
+import {GAME_META} from '../../config/game';
+import {LEVELS} from '../../data/levels';
+import { playCharacterAttack, playSound } from '../../services/sound';
+import {apiJson} from '../../services/api';
 
 export default function Multiplayer({lang,onBack,t,playerName='',onBattleStateChange,dashboardOnly=false}){
   const [socket]=useState(()=>io(import.meta.env.VITE_SOCKET_URL || undefined,{autoConnect:false}));

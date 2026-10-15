@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import SolvoxUtilityArt from './SolvoxUtilityArt';
-import PixelIcon from './PixelIcon';
+import SolvoxUtilityArt from '../shared/SolvoxUtilityArt';
+import PixelIcon from '../shared/PixelIcon';
 
 const STEPS = [
   ['01','tutorialModeTitle','tutorialModeBody'],

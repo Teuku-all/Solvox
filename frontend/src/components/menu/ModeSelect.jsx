@@ -1,6 +1,6 @@
 import React from 'react';
-import PixelIcon from './PixelIcon';
-import { SolvoxUtilityArt } from './SolvoxUtilityArt';
+import PixelIcon from '../shared/PixelIcon';
+import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 
 const MODE_ART = {
   single: '/assets/ui/modes/single-mode-v94.webp',

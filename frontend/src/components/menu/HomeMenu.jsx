@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import SolvoxBrandLogo from './SolvoxBrandLogo';
+import SolvoxBrandLogo from '../shared/SolvoxBrandLogo';
 
 const NAV_ITEMS = [
   { id: 'play', labelKey: 'homeMain' },

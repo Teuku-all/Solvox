@@ -1,7 +1,7 @@
 import React from 'react';
 import PixelIcon from './PixelIcon';
-import {GAME_META} from '../config/game';
-import {T} from '../services/i18n';
+import {GAME_META} from '../../config/game';
+import {T} from '../../services/i18n';
 
 export default class ErrorBoundary extends React.Component {
   constructor(props) {

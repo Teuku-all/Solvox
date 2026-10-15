@@ -1,8 +1,8 @@
 import React from 'react';
-import { getBossBySpriteId } from '../data/bosses';
-import { PLAYER } from '../data/player';
-import MultiplayerFighter from './MultiplayerFighter';
-import PixelIcon from './PixelIcon';
+import { getBossBySpriteId } from '../../data/bosses';
+import { PLAYER } from '../../data/player';
+import MultiplayerFighter from '../battle/MultiplayerFighter';
+import PixelIcon from '../shared/PixelIcon';
 
 const PLAYER_SKILLS = ['skillNormal', 'skillDash', 'skillSpirit', 'skillUltimate'];
 

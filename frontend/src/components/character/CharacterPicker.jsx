@@ -1,7 +1,7 @@
 import React from 'react';
-import { BOSSES } from '../data/bosses';
-import { getBossPreviewSrc } from '../data/bossAssets';
-import { PLAYER_ASSETS } from '../data/playerAssets';
+import { BOSSES } from '../../data/bosses';
+import { getBossPreviewSrc } from '../../data/bossAssets';
+import { PLAYER_ASSETS } from '../../data/playerAssets';
 import CharacterShowcase from './CharacterShowcase';
 
 export const MULTIPLAYER_CHARACTERS = Object.freeze([

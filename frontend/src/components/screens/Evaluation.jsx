@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { classifyMastery, summarizePerformance } from '../services/evaluation';
-import { evaluateSolvoxChapter } from '../services/solvoxEvaluation';
-import PixelIcon from './PixelIcon';
-import {apiJson} from '../services/api';
+import { classifyMastery, summarizePerformance } from '../../services/evaluation';
+import { evaluateSolvoxChapter } from '../../services/solvoxEvaluation';
+import PixelIcon from '../shared/PixelIcon';
+import {apiJson} from '../../services/api';
 
 function buildStrengths(summary, t) {
   const strengths = [];

@@ -1,10 +1,10 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
-import { getBoss, getBossBySpriteId } from '../data/bosses';
+import { getBoss, getBossBySpriteId } from '../../data/bosses';
 import {
   getBossAsset,
   getBossImpactMs,
   resolveBossSequence,
-} from '../data/bossAssets';
+} from '../../data/bossAssets';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);

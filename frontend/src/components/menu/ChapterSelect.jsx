@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { LEVELS, isUnlocked } from '../data/levels';
-import { getBoss } from '../data/bosses';
-import PixelIcon from './PixelIcon';
-import { SolvoxUtilityArt } from './SolvoxUtilityArt';
+import { LEVELS, isUnlocked } from '../../data/levels';
+import { getBoss } from '../../data/bosses';
+import PixelIcon from '../shared/PixelIcon';
+import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 
 function chapterProgress(id, progress) {
   if ((progress.completedLevels || []).map(Number).includes(Number(id))) return 100;

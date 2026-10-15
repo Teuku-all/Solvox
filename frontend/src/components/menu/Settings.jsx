@@ -1,7 +1,7 @@
 import React,{useEffect,useState} from 'react';
-import PixelIcon from './PixelIcon';
-import {SolvoxUtilityArt} from './SolvoxUtilityArt';
-import { isSoundEnabled, setSoundEnabled } from '../services/sound';
+import PixelIcon from '../shared/PixelIcon';
+import {SolvoxUtilityArt} from '../shared/SolvoxUtilityArt';
+import { isSoundEnabled, setSoundEnabled } from '../../services/sound';
 
 export default function Settings({lang,t,onClose,onReset,onChangeLang,onAboutUs}){
   const [motion,setMotion]=useState(()=>localStorage.getItem('solvox.reducedMotion')==='1' || localStorage.getItem('numericore.reducedMotion')==='1' || localStorage.getItem('aljabarmaster.reducedMotion')==='1');

@@ -1,7 +1,7 @@
 import React,{useState} from 'react';
-import {sendFeedback} from '../services/feedback';
-import PixelIcon from './PixelIcon';
-import { SolvoxUtilityArt } from './SolvoxUtilityArt';
+import {sendFeedback} from '../../services/feedback';
+import PixelIcon from '../shared/PixelIcon';
+import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 
 export default function Feedback({onClose,lang,t}){
   const [rating,setRating]=useState(5),[category,setCategory]=useState('pedagogy'),[text,setText]=useState(''),[sent,setSent]=useState(false),[loading,setLoading]=useState(false);

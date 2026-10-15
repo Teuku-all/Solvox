@@ -1,5 +1,5 @@
 import React from 'react';
-import { SELECTION_ART, SELECTION_CHARACTERS } from '../data/characterSelection';
+import { SELECTION_ART, SELECTION_CHARACTERS } from '../../data/characterSelection';
 
 export function CharacterEmblem({ character }) {
   return character.emblem === 'crystal'
