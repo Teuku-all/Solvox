@@ -104,6 +104,7 @@ export default function BattleQuestionPanel({
   answer,
   setAnswer,
   busy,
+  simulationReady = true,
   submit,
   hintsUsed,
   hintsLeft,
@@ -162,13 +163,13 @@ export default function BattleQuestionPanel({
             <span className="answer-icon"><PixelIcon name="keyboard" size={16} /></span>
             <input
               className="battle-answer-input"
-              disabled={busy}
+              disabled={busy || !simulationReady}
               value={answer}
               onChange={(event) => setAnswer(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') submit();
               }}
-              placeholder={t('typeAnswer')}
+              placeholder={simulationReady ? t('typeAnswer') : lang === 'en' ? 'Complete the equation steps first' : 'Selesaikan langkah persamaan dahulu'}
               autoComplete="off"
               inputMode="text"
             />
@@ -177,7 +178,7 @@ export default function BattleQuestionPanel({
 
           <button
             className="attack-btn"
-            disabled={busy || !answer.trim()}
+            disabled={busy || !simulationReady || !answer.trim()}
             onClick={submit}
           >
             <PixelIcon name="sword" size={16} />
@@ -190,13 +191,13 @@ export default function BattleQuestionPanel({
             className="keypad-toggle"
             type="button"
             onClick={onToggleKeypad}
-            disabled={busy}
+            disabled={busy || !simulationReady}
             aria-pressed={keypadVisible}
           >
             <PixelIcon name="keyboard" size={15} />
             <span>{keypadVisible ? t('hideKeyboard') : t('showKeyboard')}</span>
           </button>
-          {showAttemptCounter && <span className="attempts">{t('attempt')}: {attempts}/3</span>}
+          {showAttemptCounter && <span className="attempts">{t('attempt')}: {attempts}</span>}
         </div>
       </div>
 
@@ -256,7 +257,7 @@ export default function BattleQuestionPanel({
             value={answer}
             onChange={setAnswer}
             onEnter={submit}
-            disabled={busy}
+            disabled={busy || !simulationReady}
             t={t}
             visible={keypadVisible}
           />

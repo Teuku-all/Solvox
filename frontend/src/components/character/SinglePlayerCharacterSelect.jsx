@@ -12,7 +12,7 @@ export default function SinglePlayerCharacterSelect({ levelId, onStart, onBack, 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [ready, setReady] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches || localStorage.getItem('solvox.reducedMotion') === '1');
   const lockedRef = useRef(false);
   const aliveRef = useRef(true);
   const timerRef = useRef(null);
@@ -111,7 +111,7 @@ export default function SinglePlayerCharacterSelect({ levelId, onStart, onBack, 
           busy={busy} error={error} onStart={start} onReady={markReady} onLoadError={spriteFailed} headingRef={headingRef} />}
       </div>
       <div ref={choiceLayerRef} className="spx-choice-layer" aria-hidden={detailVisible}>
-        <h1><span>CHOOSE YOUR CHARACTER</span></h1>
+        <h1><span>{lang === 'en' ? 'CHOOSE YOUR CHARACTER' : 'PILIH KARAKTER'}</span></h1>
         {phase === 'choice' && error && <p className="spx-choice-error spx-error" role="alert">{error}</p>}
         <CinematicCharacterChoice activeId={activeId} selectedId={moving ? previewId : null} disabled={phase !== 'choice'} onFocusCharacter={setActiveId}
           onOpen={openDetail} lang={lang} choiceRefs={choiceRefs} />

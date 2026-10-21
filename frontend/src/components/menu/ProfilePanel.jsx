@@ -26,10 +26,12 @@ export default function ProfilePanel({progress,profile,playerId,onClose,onSave,t
   const stats=useMemo(()=>deriveProfile(progress),[progress]);
   const character=getPlayerAsset(playerId);
   const [name,setName]=useState(profile?.name||progress.playerName||'Player');
+  const savedName=profile?.name||progress.playerName||'Player';
   const [mp,setMp]=useState(null);
   const [loading,setLoading]=useState(true);
   const [activeTab,setActiveTab]=useState('activity');
   const en=lang==='en';
+  const rankLabel=en?stats.rank:({Novice:'Pemula',Bronze:'Perunggu',Silver:'Perak'}[stats.rank]||stats.rank);
 
   useEffect(()=>{
     const onKey=e=>{if(e.key==='Escape')onClose()};
@@ -38,14 +40,14 @@ export default function ProfilePanel({progress,profile,playerId,onClose,onSave,t
   },[onClose]);
   useEffect(()=>{
     let alive=true;
-    const lookupName=String(name||profile?.name||progress.playerName||'Player').trim();
+    const lookupName=String(savedName).trim();
     setLoading(true);
     apiJson(`/api/player-profile?name=${encodeURIComponent(lookupName)}`)
       .then(data=>{if(alive)setMp(data?.player||null)})
       .catch(()=>{if(alive)setMp(null)})
       .finally(()=>{if(alive)setLoading(false)});
     return()=>{alive=false};
-  },[name]);
+  },[savedName]);
 
   const mpMatches=Number(mp?.matches)||0;
   const totalMatches=stats.totalRuns+mpMatches;
@@ -55,7 +57,8 @@ export default function ProfilePanel({progress,profile,playerId,onClose,onSave,t
   const totalCorrect=stats.correct+(Number(mp?.correct)||0);
   const combinedAccuracy=totalAnswered?Math.round(totalCorrect/totalAnswered*100):stats.accuracy;
   const completed=new Set((progress.completedLevels||[]).map(Number));
-  const save=()=>onSave({...profile,name:name.trim()||'Player'});
+  const cleanName=name.trim()||'Player';
+  const save=()=>onSave({...profile,name:cleanName});
 
   return <div className="profile-overlay profile-screen-overlay" role="dialog" aria-modal="true" aria-label={t('profileTitle')}>
     <div className="profile-panel profile-screen">
@@ -69,13 +72,13 @@ export default function ProfilePanel({progress,profile,playerId,onClose,onSave,t
         <section className="profile-hero-banner">
           <div className="profile-hero-avatar"><img src={character.portrait} alt=""/></div>
           <div className="profile-hero-copy">
-            <label>{en?'PLAYER NAME':'NAMA PEMAIN'}<input value={name} maxLength={18} onChange={e=>setName(e.target.value)} aria-label={en?'Player name':'Nama pemain'}/></label>
+            <label>{en?'PLAYER NAME':'NAMA PEMAIN'}<input value={name} maxLength={18} onChange={e=>setName(e.target.value)} onKeyDown={e=>{if(e.key==='Enter')save()}} aria-label={en?'Player name':'Nama pemain'}/></label>
             <p>{t(character.nameId)} <span>•</span> {t(character.roleId)}</p>
             <div className="profile-xp-track"><i style={{width:`${Math.round(stats.currentLevelExp/100*100)}%`}}/></div>
             <small>{stats.currentLevelExp}/100 EXP <span>·</span> {stats.exp.toLocaleString(en?'en-US':'id-ID')} {en?'TOTAL XP':'TOTAL XP'}</small>
           </div>
-          <div className="profile-hero-rank"><small>{en?'CURRENT RANK':'PERINGKAT SAAT INI'}</small><strong>{stats.rank} <i>{stats.rankScore}</i></strong><span>LEVEL {stats.level}</span></div>
-          <button className="profile-save-btn" onClick={save}><PixelIcon name="save" size={15}/>{t('save')}</button>
+          <div className="profile-hero-rank"><small>{en?'CURRENT RANK':'PERINGKAT SAAT INI'}</small><strong>{rankLabel} <i>{stats.rankScore}</i></strong><span>LEVEL {stats.level}</span></div>
+          <button className="profile-save-btn" type="button" onClick={save}><PixelIcon name="save" size={15}/>{t('save')}</button>
           <div className="profile-hero-meta">
             <div><small>{en?'MATCHES PLAYED':'TOTAL PERTANDINGAN'}</small><b>{totalMatches}</b></div>
             <div><small>{en?'QUESTIONS ANSWERED':'SOAL DIJAWAB'}</small><b>{totalAnswered}</b></div>
@@ -108,8 +111,8 @@ export default function ProfilePanel({progress,profile,playerId,onClose,onSave,t
 
           <section className="profile-main-column">
             <nav className="profile-tabs" aria-label={en?'Profile sections':'Bagian profil'}>
-              <button className={activeTab==='activity'?'active':''} onClick={()=>setActiveTab('activity')}><PixelIcon name="chart" size={15}/>{en?'Activity':'Aktivitas'}</button>
-              <button className={activeTab==='achievements'?'active':''} onClick={()=>setActiveTab('achievements')}><PixelIcon name="trophy" size={15}/>{t('achievements')}<i>{stats.achievements.filter(item=>item.ok).length}</i></button>
+              <button type="button" aria-pressed={activeTab==='activity'} className={activeTab==='activity'?'active':''} onClick={()=>setActiveTab('activity')}><PixelIcon name="chart" size={15}/>{en?'Activity':'Aktivitas'}</button>
+              <button type="button" aria-pressed={activeTab==='achievements'} className={activeTab==='achievements'?'active':''} onClick={()=>setActiveTab('achievements')}><PixelIcon name="trophy" size={15}/>{t('achievements')}<i>{stats.achievements.filter(item=>item.ok).length}</i></button>
             </nav>
             {activeTab==='activity'?<>
               <div className="profile-performance-grid">

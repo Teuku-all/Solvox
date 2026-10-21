@@ -46,6 +46,7 @@ function parseNumber(raw) {
 }
 
 function isSameAnswer(a, b) {
+  if (Array.isArray(b)) return b.some(option => isSameAnswer(a, option));
   const left = normalizeAnswer(a); const right = normalizeAnswer(b);
   if (left === right) return true;
   const ln = parseNumber(left); const rn = parseNumber(right);

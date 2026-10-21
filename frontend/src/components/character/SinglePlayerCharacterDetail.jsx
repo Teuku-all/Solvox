@@ -17,7 +17,7 @@ export default function SinglePlayerCharacterDetail({ character, reducedMotion, 
           <h2 id="spx-detail-name" ref={headingRef} tabIndex={-1}>{character.name}</h2>
           <p className="spx-eyebrow">{character.title}</p>
           <div className="spx-lore">
-            <h3>{locale === 'en' ? 'CHARACTER NOTES · DRAFT' : 'CATATAN KARAKTER · DRAF'}</h3>
+            <h3>{locale === 'en' ? 'CHARACTER STORY' : 'KISAH KARAKTER'}</h3>
             <p>{character.lore[locale]}</p>
           </div>
           <div className="spx-abilities" aria-label={locale === 'en' ? 'Role and abilities' : 'Peran dan kemampuan'}>
@@ -37,7 +37,7 @@ export default function SinglePlayerCharacterDetail({ character, reducedMotion, 
         <div className="spx-start-area">
           {error && <p className="spx-error" role="alert">{error}</p>}
           <button className="spx-start" type="button" onClick={onStart} disabled={busy} aria-busy={busy}>
-            <span>{busy ? (locale === 'en' ? 'SAVING…' : 'MENYIMPAN…') : error ? (locale === 'en' ? 'RETRY START' : 'COBA START LAGI') : 'START'}</span><span aria-hidden="true">→</span>
+            <span>{busy ? (locale === 'en' ? 'SAVING…' : 'MENYIMPAN…') : error ? (locale === 'en' ? 'RETRY START' : 'COBA LAGI') : (locale === 'en' ? 'START STAGE' : 'MULAI STAGE')}</span><span aria-hidden="true">→</span>
           </button>
         </div>
       </div>

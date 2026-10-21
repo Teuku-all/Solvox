@@ -1,0 +1,101 @@
+.battle-reference-arena .math-sim {
+  position: absolute;
+  z-index: 8;
+  top: 50%;
+  left: 50%;
+  width: min(570px, 55vw);
+  max-height: calc(100% - 12px);
+  transform: translate(-50%, -50%);
+  overflow: auto;
+  padding: 11px 14px 12px;
+  border: 1px solid rgba(145, 215, 202, .42);
+  border-radius: 14px;
+  background: linear-gradient(150deg, rgba(8, 25, 31, .94), rgba(5, 13, 20, .96));
+  box-shadow: 0 14px 35px rgba(0,0,0,.45), inset 0 1px rgba(255,255,255,.08);
+  color: #eff9f2;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: #5b9f9a transparent;
+}
+.math-sim-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px; }
+.math-sim-head > div { display:flex; align-items:baseline; gap:9px; }
+.math-sim-head small { color:#a9d5c9; font-size:10px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }
+.math-sim-head b { color:#f4e6a6; font-size:11px; }
+.math-sim-head button { padding:5px 9px; border:1px solid rgba(145,215,202,.3); border-radius:7px; background:rgba(34,66,68,.7); color:#e5f5ef; font-size:10px; font-weight:700; }
+.math-sim-head button:disabled { opacity:.4; }
+.math-sim-progress { height:4px; margin-bottom:9px; overflow:hidden; border-radius:5px; background:rgba(148,186,171,.19); }
+.math-sim-progress span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#58c5b2,#e0da8e); transition:width .25s ease; }
+.math-sim-equation { display:grid; grid-template-columns:minmax(0,1fr) 25px minmax(0,1fr); align-items:end; gap:7px; }
+.math-sim-equation > div { min-width:0; }
+.math-sim-equation small { display:block; margin-bottom:3px; color:#a4bfb7; font-size:9px; text-align:center; text-transform:uppercase; }
+.math-sim-side { display:grid; min-height:56px; place-items:center; padding:5px 8px; border:1px solid rgba(145,215,202,.24); border-radius:9px; background:rgba(18,44,48,.72); text-align:center; box-sizing:border-box; }
+.math-sim-side strong { overflow-wrap:anywhere; font:700 clamp(15px,1.5vw,22px)/1.2 Georgia,serif; }
+.math-sim-balance .math-sim-equation { position:relative; padding-bottom:9px; }
+.math-sim-balance .math-sim-equation::after { content:''; position:absolute; bottom:2px; left:6%; right:6%; height:3px; border-radius:4px; background:#bfccb1; }
+.math-sim-equals { align-self:center; justify-self:center; color:#f4e6a6; font-size:22px; font-weight:900; }
+.math-sim-tiles { display:flex; flex-wrap:wrap; justify-content:center; gap:3px; }
+.math-sim-tiles span { display:grid; min-width:25px; min-height:25px; place-items:center; padding:2px 4px; border:1px solid rgba(196,224,208,.3); border-radius:5px; background:rgba(97,137,124,.24); color:#f4faf3; font-size:13px; font-weight:900; box-sizing:border-box; }
+.math-sim-tiles .is-variable { border-color:rgba(118,198,230,.5); background:rgba(62,134,165,.35); color:#cef0ff; }
+.math-sim-tiles .is-negative { border-color:rgba(225,133,121,.5); background:rgba(150,61,57,.35); color:#ffd7d0; }
+.math-sim-zero { display:flex; align-items:center; flex-wrap:wrap; gap:3px; margin:3px 0 4px; color:#d4d0a7; font-size:10px; }
+.math-sim-zero span { display:inline-grid; min-width:20px; min-height:19px; place-items:center; border:1px solid rgba(205,220,178,.3); border-radius:4px; background:rgba(127,145,97,.2); }
+.math-sim-zero b { margin-right:5px; }
+.math-sim-transition { display:flex; flex-wrap:wrap; gap:5px 13px; margin:7px 0; color:#b9d6cc; font-size:10px; }
+.math-sim-transition span:last-child { color:#e5dba7; }
+.math-sim-choices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
+.math-sim-choices button { min-width:0; min-height:37px; padding:5px 8px; border:1px solid rgba(138,207,193,.32); border-radius:8px; background:linear-gradient(180deg,rgba(46,94,89,.88),rgba(21,56,57,.88)); color:#eefaf2; font:700 10px/1.25 inherit; overflow-wrap:anywhere; }
+.math-sim-choices button:hover, .math-sim-choices button:focus-visible { border-color:#f2de94; background:rgba(63,112,104,.95); outline:none; }
+.math-sim-choices button:disabled { opacity:.55; cursor:wait; }
+.math-sim-model > p { margin:3px 0 8px; font-size:13px; font-weight:800; }
+.math-sim-model .math-sim-choices { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.math-sim-model-progress { display:block; margin-top:7px; color:#a8c9bb; font-size:10px; }
+.math-sim-message, .math-sim-hint, .math-sim-ready { margin:7px 0 0; font-size:11px; line-height:1.35; }
+.math-sim-message { color:#f1dca7; }
+.math-sim-hint { color:#bce9d1; }
+.math-sim-ready { color:#bce9d1; font-weight:800; }
+
+@media (max-width: 900px) and (min-width: 701px) {
+  .battle-reference-arena .math-sim { width:min(510px,72vw); }
+}
+@media (max-width: 760px) {
+  .battle-reference-arena {
+    --mobile-stage-height: clamp(150px, 23dvh, 205px);
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    padding-top: var(--mobile-stage-height);
+  }
+  .battle-reference-arena .combat-stage {
+    height: var(--mobile-stage-height) !important;
+  }
+  .battle-reference-arena .math-sim {
+    position: relative;
+    top: auto; bottom: auto; left: auto;
+    width: 100%; max-height: none;
+    margin-top: 0;
+    transform: none; overflow: visible;
+    padding: 14px;
+    box-sizing: border-box;
+  }
+  .math-sim-head small { font-size: 11px; }
+  .math-sim-head b { font-size: 12px; }
+  .math-sim-head button { min-height: 44px; padding: 8px 12px; font-size: 12px; touch-action: manipulation; }
+  .math-sim-side { min-height: 52px; }
+  .math-sim-side strong { font-size: clamp(16px, 4.4vw, 22px); }
+  .math-sim-equation small { font-size: 10px; }
+  .math-sim-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .math-sim-choices button { min-height: 48px; padding: 9px; font-size: 12px; line-height: 1.3; touch-action: manipulation; }
+  .math-sim-choices button:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .math-sim-transition, .math-sim-message, .math-sim-hint, .math-sim-ready { font-size: 12px; line-height: 1.45; }
+  .math-sim-model > p { font-size: 14px; line-height: 1.35; }
+}
+
+@media (max-width: 420px) {
+  .battle-reference-arena { --mobile-stage-height: clamp(140px, 21dvh, 180px); }
+  .battle-reference-arena .math-sim { padding: 12px; }
+  .math-sim-tiles span { min-width: 22px; min-height: 22px; font-size: 12px; }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .battle-reference-arena { --mobile-stage-height: 140px; }
+}

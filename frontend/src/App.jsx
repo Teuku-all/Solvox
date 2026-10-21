@@ -43,6 +43,8 @@ export default function App(){
     return()=>setHomeMusicActive(false);
   },[screen,multiplayerBattle,evaluation]);
   useEffect(()=>{ document.documentElement.lang=lang==='en'?'en':'id'; },[lang]);
+  useEffect(()=>{document.documentElement.classList.toggle('reduced-motion',localStorage.getItem('solvox.reducedMotion')==='1')},[]);
+  useEffect(()=>{window.scrollTo(0,0)},[screen]);
   useEffect(()=>{ localStorage.setItem(PLAYER_STORAGE,playerId); },[playerId]);
   const reset=()=>{
     if(!confirm(t('resetConfirm')))return;
@@ -141,6 +143,6 @@ export default function App(){
     {settings&&<Settings lang={lang} t={t} onClose={()=>setSettings(false)} onReset={reset} onChangeLang={changeLang} onAboutUs={()=>{setSettings(false);setScreen('about')}}/>}
     {screen==='about'&&<AboutDevelopers lang={lang} t={t} onBack={()=>setScreen('home')}/>}
     {profileOpen&&<ProfilePanel progress={state} profile={state.profile} playerId={playerId} onClose={()=>setProfileOpen(false)} onSave={saveProfile} t={t} lang={lang}/>}
-    {tutorialOpen&&<Tutorial t={t} onClose={()=>setTutorialOpen(false)}/>} 
+    {tutorialOpen&&<Tutorial t={t} lang={lang} onClose={()=>setTutorialOpen(false)} onPlay={()=>{setTutorialOpen(false);setScreen('modes')}}/>}
   </div>
 }

@@ -319,3 +319,15 @@
   .mode-card.multi .mode-card-art{width:36%;right:1%;}
   .mode-card-copy{width:64%;}
 }
+
+@media (max-width: 600px) {
+  .mode-select-shell { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+  .mode-select-header p { font-size: 13px; }
+  .mode-card { min-height: 270px; }
+  .mode-card-copy { min-height: 230px; }
+  .mode-card-copy > small { font-size: 10px; }
+  .mode-card-copy p { font-size: 13px; line-height: 1.45; }
+  .mode-card-action { font-size: 11px; }
+  .mode-card-tag { font-size: 10px; }
+  .mode-select-note { font-size: 11px; line-height: 1.4; }
+}

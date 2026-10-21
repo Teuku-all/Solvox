@@ -2,17 +2,20 @@ import React,{useEffect,useState} from 'react';
 import PixelIcon from '../shared/PixelIcon';
 import {SolvoxUtilityArt} from '../shared/SolvoxUtilityArt';
 import { isSoundEnabled, setSoundEnabled } from '../../services/sound';
+import useDialogKeyboard from '../shared/useDialogKeyboard';
 
 export default function Settings({lang,t,onClose,onReset,onChangeLang,onAboutUs}){
+  const dialogRef=useDialogKeyboard(onClose);
   const [motion,setMotion]=useState(()=>localStorage.getItem('solvox.reducedMotion')==='1' || localStorage.getItem('numericore.reducedMotion')==='1' || localStorage.getItem('aljabarmaster.reducedMotion')==='1');
   const [sound,setSound]=useState(()=>isSoundEnabled());
   useEffect(()=>{document.documentElement.classList.toggle('reduced-motion',motion);localStorage.setItem('solvox.reducedMotion',motion?'1':'0')},[motion]);
   const chooseLanguage=(next)=>{onChangeLang?.(next)};
-  return <div className="modal-backdrop">
-    <div className="settings-card">
+  return <div className="modal-backdrop" onMouseDown={(event)=>{if(event.target===event.currentTarget)onClose()}}>
+    <div ref={dialogRef} className="settings-card" role="dialog" aria-modal="true" aria-labelledby="settings-title">
       <div className="utility-art-modal-head settings-head--legacy settings-head">
         <img src="/assets/ui/utility/icons/settings-v101.webp" alt="" aria-hidden="true" className="settings-head-art" />
-        <div><div className="eyebrow">{t('settings')}</div><h2>{t('settingsTitle')}</h2></div>
+        <div><div className="eyebrow">{t('settings')}</div><h2 id="settings-title">{t('settingsTitle')}</h2></div>
+        <button className="dialog-icon-close" type="button" onClick={onClose} aria-label={t('close')}><PixelIcon name="close" size={18}/></button>
       </div>
 
       <div className="settings-row language-setting">

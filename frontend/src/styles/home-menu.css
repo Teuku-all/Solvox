@@ -45,8 +45,11 @@
   .home-menu-item{font-size:clamp(22px,3.6vw,30px)}
 }
 @media (max-width:640px){
-  .home-menu-nav{width:100%;min-width:0;min-height:100dvh;padding:24px 20px 30px;background:linear-gradient(90deg,rgba(1,7,4,.84),rgba(1,7,4,.48) 62%,transparent 100%)}
-  .home-menu-brand{margin-bottom:38px}
+  .home-menu-backdrop-video{object-position:56% center}
+  .home-menu-shade{background:linear-gradient(90deg,rgba(1,7,4,.62),rgba(1,7,4,.34) 60%,rgba(1,5,4,.12)),linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.08) 50%,rgba(0,0,0,.34))}
+  .home-menu-nav{width:100%;min-width:0;min-height:100dvh;padding:28px 20px 30px;background:none}
+  .home-menu-brand{width:calc(100% - 64px);max-width:290px;margin-bottom:58px}
+  .home-menu-brand .solvox-brand{width:100%;max-width:100%}
   .home-menu-menu{gap:2px}
   .home-menu-item{font-size:26px;min-height:48px}
 }

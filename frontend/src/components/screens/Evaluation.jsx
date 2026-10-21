@@ -3,6 +3,7 @@ import { classifyMastery, summarizePerformance } from '../../services/evaluation
 import { evaluateSolvoxChapter } from '../../services/solvoxEvaluation';
 import PixelIcon from '../shared/PixelIcon';
 import {apiJson} from '../../services/api';
+import useDialogKeyboard from '../shared/useDialogKeyboard';
 
 function buildStrengths(summary, t) {
   const strengths = [];
@@ -24,6 +25,7 @@ function buildAdvice(summary, t) {
 }
 
 export default function Evaluation({ result, onClose, onRematch, onNext, nextLevel, t, lang }) {
+  const dialogRef = useDialogKeyboard(onClose);
   const summary = useMemo(() => summarizePerformance(result), [result]);
   const solvoxEvaluation = useMemo(() => result.chapterEvaluation || evaluateSolvoxChapter({ ...result, ...summary }), [result, summary]);
   const cls = classifyMastery(summary.mastery).key;
@@ -55,12 +57,12 @@ export default function Evaluation({ result, onClose, onRematch, onNext, nextLev
   }, [result, summary]);
 
   return (
-    <div className="modal-backdrop">
-      <div className={`eval-card eval-card-detailed eval-card--detailed ${result.won ? 'win' : 'loss'}`}>
+    <div className="modal-backdrop evaluation-backdrop">
+      <div ref={dialogRef} className={`eval-card eval-card-detailed eval-card--detailed ${result.won ? 'win' : 'loss'}`} role="dialog" aria-modal="true" aria-labelledby="evaluation-title">
         <header className="eval-summary">
           <div className="eval-summary-copy">
-            <div className="eyebrow">{t('evaluation')}</div>
-            <h2>{statusText}</h2>
+            <div className="eval-heading-row"><div className="eyebrow">{t('evaluation')}</div><button className="dialog-icon-close evaluation-close" type="button" onClick={onClose} aria-label={t('backToMap')}><PixelIcon name="close" size={18}/></button></div>
+            <h2 id="evaluation-title">{statusText}</h2>
             <p>{outcomeNote}</p>
           </div>
           <div className="eval-score">
@@ -125,8 +127,13 @@ export default function Evaluation({ result, onClose, onRematch, onNext, nextLev
                   <div className="eval-question-full"><span>{t('question')}</span><p>{item.text}</p></div>
                   <div className="eval-answer-grid">
                     <div><span>{t('yourAnswer')}</span><b>{Array.isArray(item.answer) ? item.answer.join(', ') : item.answer || '—'}</b></div>
-                    <div><span>{t('expected')}</span><b>{Array.isArray(item.correctAnswer) ? item.correctAnswer.join(', ') : item.correctAnswer}</b></div>
+                    <div><span>{t('expected')}</span><b>{Array.isArray(item.correctAnswer) ? item.correctAnswer.join(lang === 'en' ? ' or ' : ' atau ') : item.correctAnswer}</b></div>
                   </div>
+                  {item.simulation && <div className="eval-history">
+                    <span>{lang === 'en' ? 'Equation process' : 'Proses persamaan'}</span>
+                    <p>{item.simulation.stepsCompleted}/{item.simulation.stepsTotal} {lang === 'en' ? 'steps completed' : 'langkah selesai'} · {item.simulation.stepErrors} {lang === 'en' ? 'step retries' : 'perbaikan langkah'}</p>
+                    {Number(item.questionId) >= 41 && <p>{lang === 'en' ? 'Story model' : 'Model cerita'}: {item.simulation.modelCorrect ? (lang === 'en' ? 'correct' : 'tepat') : (lang === 'en' ? 'incomplete' : 'belum selesai')} · {item.simulation.modelErrors} {lang === 'en' ? 'model retries' : 'perbaikan model'}</p>}
+                  </div>}
                   {item.feedback && <div className="eval-feedback"><span>{t('learningFeedback')}</span><p>{item.feedback}</p></div>}
                   {item.explanation && <div className="eval-explanation"><span>{t('explanation')}</span><p>{item.explanation}</p></div>}
                   {item.answerHistory?.length > 1 && <div className="eval-history"><span>{t('answerHistory')}</span><p>{item.answerHistory.join(' → ')}</p></div>}

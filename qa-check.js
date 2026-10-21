@@ -454,7 +454,7 @@ for(const asset of ['flag-id-v94.png','flag-en-v94.png','back-v82.webp','close-v
 must(exists('frontend/public/assets/ui/modes/single-mode-v94.webp') && exists('frontend/public/assets/ui/modes/multi-mode-v94.webp'), 'V94 mode artwork is missing');
 must(!exists('frontend/public/assets/ui/modes/single-player-hero.png') && !exists('frontend/public/assets/ui/modes/multiplayer-hero.png'), 'Old mode artwork assets remain');
 must(!exists('frontend/public/assets/ui/utility/icons/back.webp'), 'Old back icon asset remains');
-must(battle.includes('bossDieDurationMs + 140') && battle.includes('playerDieDurationMs + 140'), 'Evaluation timing is not synchronized with die animations');
+must(battle.includes('bossDieDurationMs + 140') && battle.includes('bossAttackImpactMs') && battle.includes('playBossAttack(levelId)'), 'Battle animations must remain synchronized with boss assets');
 must(settings.includes('flag-id-v94.png') && settings.includes('flag-en-v94.png') && settings.includes('settings-about-row'), 'V96 Settings flags/about routing are missing');
 
 // V104 multiplayer arena guard
@@ -513,8 +513,8 @@ must(appV117.includes("localStorage.setItem(PLAYER_LOCK_STORAGE,'1')") && appV11
 must(appV117.includes('save(next);') && appV117.includes('LEGACY_STORAGES.forEach') && appV117.includes('setSettings(false);') && appV117.includes("setScreen('home');"), 'Reset must clear legacy progress, close overlays, and return to a playable home screen');
 must(assetsV117.includes("idle: 'idle-asuka'") && assetsV117.includes("attack: 'attack-asuka'") && assetsV117.includes("hurt: 'hurt-asuka'") && assetsV117.includes("die: 'die-asuka'"), 'V117 Asuka supplied folder mappings are missing');
 must(spriteV117.includes('activeAsset.sequenceFolders?.[mode] || mode'), 'V117 sprite loader ignores character-specific animation folders');
-must(battleV117.includes('const nextHp = Math.max(0, hp - 8)') && battleV117.includes('if (nextHp <= 0)') && battleV117.includes('setBusy(false);') && !battleV117.includes('attemptNow === 2 ? 2600 : 520') && multi.includes('match-evaluation'), 'Single-player retry feedback persistence or multiplayer evaluation is missing');
-must(battlePanelV117.includes(`{t('attempt')}: {attempts}/3`), 'V117 attempt counter is not set to three');
+must(battleV117.includes('value - hintCost') && battleV117.includes('const handleWrongAnswer = () =>') && battleV117.includes('setBusy(false);') && !battleV117.includes('hp - 8') && multi.includes('match-evaluation'), 'Single-player retry, hint HP cost, or multiplayer evaluation is missing');
+must(battlePanelV117.includes(`{t('attempt')}: {attempts}`), 'Single-player attempt counter is missing');
 must(viteV117.includes("'/socket.io'") && viteV117.includes('ws: true') && viteV117.includes('http://127.0.0.1:3000'), 'V117 Vite Socket.IO proxy target is missing or may resolve to the wrong localhost interface');
 must(multiplayerV117.includes("socket.on('connect_error',onConnectError)") && multiplayerV117.includes('SOCKET_CONNECTION') && multiplayerV117.includes('socket.emit(\'room:join\'') && multiplayerV117.includes('pendingActionRef.current=action') && multiplayerV117.includes('pendingAction();'), 'V120 multiplayer connection/token recovery or queued click handling is incomplete');
 const multiplayerFighterV120 = read('frontend/src/components/battle/MultiplayerFighter.jsx');
@@ -533,3 +533,9 @@ must(main.includes("import './styles/multiplayer-characters.css';"), 'V120 multi
 must(read('scripts/dev.js').includes("launch(process.execPath, ['server.js'])") && read('package.json').includes('node scripts/dev.js'), 'V117 development command does not start the multiplayer backend');
 must(!chapterCssV117.includes('single-character-modal-v114') && !chapterCssV117.includes('single-character-panel-v114'), 'V117 obsolete nested character modal styles remain');
 console.log('V120: multiplayer player/boss roster, synchronized sprite selection, private reconnect tokens, room exit and reconnect PASS');
+
+const { evaluateAttempt } = require('./backend/singlePlayerGame');
+must(evaluateAttempt({questionId:7,answer:'2.5',lang:'en'}).correct, 'Decimal form of a multi-answer question should be accepted');
+must(evaluateAttempt({questionId:7,answer:'5/2',lang:'en'}).correct, 'Fraction form of a multi-answer question should be accepted');
+must(!evaluateAttempt({questionId:7,answer:'2.5,5/2',lang:'en'}).correct, 'A joined list of acceptable answers must not count as one answer');
+console.log('Single-player answer variants PASS');

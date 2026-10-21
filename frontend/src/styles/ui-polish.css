@@ -1,0 +1,160 @@
+/* Shared finishing layer for the menu screens and compact dialogs. */
+:root {
+  --solvox-heading: Georgia, 'Times New Roman', serif;
+  --solvox-focus: #d9d27f;
+}
+
+.mode-select-header h1,
+.mode-card-copy h2,
+.chapter-select-title h1,
+.chapter-card-copy strong,
+.settings-card .settings-head h2,
+.feedback-card .feedback-head h2 {
+  font-family: var(--solvox-heading) !important;
+  font-weight: 700 !important;
+  letter-spacing: -.025em !important;
+  text-wrap: balance;
+}
+
+.mode-select-header h1 {
+  font-size: clamp(2.1rem, 4vw, 3.2rem) !important;
+  line-height: 1.04 !important;
+}
+.mode-select-header p { font-size: clamp(.88rem, 1.1vw, 1rem) !important; }
+.mode-card-copy p { line-height: 1.55 !important; }
+.chapter-select-title h1 {
+  font-size: clamp(2rem, 3.5vw, 3rem) !important;
+  line-height: 1.05 !important;
+}
+.chapter-card-copy strong { line-height: 1.1 !important; }
+.chapter-card.is-locked { opacity: .72; filter: saturate(.62); }
+.chapter-card.is-locked .chapter-card-art { opacity: .65; }
+.chapter-card.is-locked .chapter-card-copy em,
+.chapter-card.is-locked .chapter-card-progress { color: #b7cbc6; }
+
+.settings-card .settings-head {
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) 38px !important;
+  gap: 12px !important;
+  align-items: center !important;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(149, 216, 201, .14);
+}
+.settings-card .settings-head > div { min-width: 0; }
+.settings-card .settings-head h2,
+.feedback-card .feedback-head h2 {
+  margin: 3px 0 0 !important;
+  font-size: clamp(1.55rem, 3vw, 2rem) !important;
+  line-height: 1.12 !important;
+  overflow-wrap: normal !important;
+}
+.feedback-card .feedback-head {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  text-align: left;
+  padding-bottom: 16px !important;
+  border-bottom: 1px solid rgba(149, 216, 201, .14);
+}
+.feedback-card .feedback-head > div { min-width: 0; }
+.dialog-icon-close {
+  display: inline-grid !important;
+  place-items: center !important;
+  flex: none !important;
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid rgba(157, 218, 197, .28) !important;
+  border-radius: 9px !important;
+  background: rgba(20, 52, 47, .72) !important;
+  color: #e3f2df !important;
+  box-shadow: none !important;
+  line-height: 1 !important;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.dialog-icon-close:hover { background: rgba(34, 80, 68, .9) !important; border-color: rgba(219, 210, 127, .65) !important; transform: translateY(-1px); }
+.dialog-icon-close .pixel-icon { display: block; }
+.feedback-card .feedback-category { margin: 18px 0 10px; }
+.feedback-card .stars { margin: 16px 0 22px; }
+.feedback-card textarea { border-color: rgba(149, 216, 201, .24); }
+.feedback-send-error { margin: 0 0 12px; color: #ffd0c5; font-size: .85rem; line-height: 1.4; }
+.eval-heading-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.evaluation-close { width: 32px !important; height: 32px !important; min-width: 32px !important; min-height: 32px !important; }
+.evaluation-backdrop { background: rgba(1, 9, 13, .96) !important; }
+.evaluation-backdrop .eval-actions {
+  position: static !important;
+  padding-top: 14px !important;
+  border-top: 1px solid rgba(149, 216, 201, .16);
+  background: none !important;
+}
+
+.mode-card:focus-visible,
+.chapter-select-back:focus-visible,
+.mode-select-back:focus-visible,
+.dialog-icon-close:focus-visible,
+.settings-card button:focus-visible,
+.feedback-card button:focus-visible {
+  outline: 2px solid var(--solvox-focus) !important;
+  outline-offset: 3px;
+}
+
+@media (max-width: 680px) {
+  .mode-select-header h1 { font-size: clamp(1.9rem, 8vw, 2.35rem) !important; }
+  .mode-select-header p { font-size: .87rem !important; line-height: 1.5 !important; }
+  .mode-card-copy h2 { font-size: clamp(1.35rem, 6vw, 1.7rem) !important; line-height: 1.1 !important; }
+  .mode-card-copy p { font-size: .78rem !important; }
+  .chapter-select-top {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: max(12px, env(safe-area-inset-top)) 14px 14px;
+  }
+  .chapter-select-back { align-self: flex-start; }
+  .chapter-select-title { text-align: left; }
+  .chapter-select-title h1 { font-size: clamp(1.9rem, 8vw, 2.35rem) !important; }
+  .chapter-select-title p { max-width: 38ch; line-height: 1.5; }
+  .chapter-card-copy strong { font-size: clamp(1.4rem, 6vw, 1.75rem) !important; }
+  .chapter-card-copy em { font-size: .72rem !important; }
+  .settings-card .settings-head { grid-template-columns: 34px minmax(0, 1fr) 38px !important; gap: 8px !important; }
+  .settings-card .settings-head h2,
+  .feedback-card .feedback-head h2 { font-size: clamp(1.45rem, 6vw, 1.8rem) !important; }
+  .settings-card .settings-head-art { width: 34px !important; height: 34px !important; }
+  .evaluation-backdrop { display: grid !important; place-items: center !important; overflow: hidden !important; padding: 8px !important; }
+  .evaluation-backdrop .eval-card--detailed {
+    width: 100% !important;
+    max-height: calc(100dvh - 16px) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    margin: 0 auto !important;
+  }
+}
+
+@keyframes solvox-dialog-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes solvox-dialog-card-in {
+  from { opacity: 0; transform: translateY(9px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.reduced-motion) .modal-backdrop,
+  html:not(.reduced-motion) .tutorial-backdrop,
+  html:not(.reduced-motion) .profile-screen-overlay { animation: solvox-dialog-backdrop-in .22s ease-out both; }
+  html:not(.reduced-motion) .modal-backdrop > .settings-card,
+  html:not(.reduced-motion) .modal-backdrop > .feedback-card,
+  html:not(.reduced-motion) .modal-backdrop > .eval-card,
+  html:not(.reduced-motion) .tutorial-card,
+  html:not(.reduced-motion) .profile-screen,
+  html:not(.reduced-motion) .mode-card,
+  html:not(.reduced-motion) .about-shell { animation: solvox-dialog-card-in .25s cubic-bezier(.2,.7,.2,1) backwards; }
+  html:not(.reduced-motion) .mode-card:nth-child(2) { animation-delay: .05s; }
+}
+html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::after {
+  animation-duration: .01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: .01ms !important;
+  scroll-behavior: auto !important;
+}

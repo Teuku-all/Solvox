@@ -26,9 +26,9 @@
 .home-profile-trigger-arrow { margin-left: 4px; color: #c8d788; font: 700 1rem/1 system-ui, sans-serif; }
 
 @media (max-width: 640px) {
-  .home-profile-trigger { top: 15px; right: 14px; min-height: 44px; padding: 4px; border-radius: 50%; }
+  .home-profile-trigger { top: max(16px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right)); width: 46px; height: 46px; min-height: 46px; justify-content: center; padding: 4px; border-radius: 50%; }
   .home-profile-trigger-copy, .home-profile-trigger-arrow { display: none; }
-  .home-profile-avatar { width: 34px; height: 34px; flex-basis: 34px; }
+  .home-profile-avatar { width: 36px; height: 36px; flex-basis: 36px; }
 }
 
 @media (prefers-reduced-motion: reduce) { .home-profile-trigger { transition: none; } }

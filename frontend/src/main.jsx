@@ -26,7 +26,9 @@ import './styles/multiplayer-lobby.css';
 import './styles/multiplayer-result.css';
 import './styles/home-profile.css';
 import './styles/profile-screen.css';
+import './styles/math-simulation.css';
 import './styles/leaderboard.css';
+import './styles/ui-polish.css';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>

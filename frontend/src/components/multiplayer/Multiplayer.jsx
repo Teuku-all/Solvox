@@ -283,7 +283,7 @@ useEffect(()=>{
 
         <div className="multi-card join-card">
           <div className="player-slot-label"><span>{t('player2')}</span><b>{t('challenger')}</b></div>
-          <h2>ðŸ”— {t('joinArena')}</h2>
+          <h2><PixelIcon name="party" size={18}/><span>{t('joinArena')}</span></h2>
           <p className="card-subtitle">{t('joinArenaDesc')}</p>
           <input value={code} maxLength={8} onChange={e=>setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g,''))} placeholder="AJM-OOOO"/>
           <input value={name} onChange={e=>setName(e.target.value)} placeholder={t('name')}/>
@@ -349,11 +349,11 @@ useEffect(()=>{
       </section>}
       <div className="room-status">{statusText()}</div>
        {answerInfo&&<div className={`mp-feedback-banner ${answerInfo.correct?'ok':'bad'}`} role="alert" aria-live="polite">
-         <strong>{answerInfo.correct ? 'âœ“ '+t('correct') : 'âœ• '+t('wrong')}</strong>
+         <strong>{answerInfo.correct ? `${t('correct')}` : `${t('wrong')}`}</strong>
          <span>{answerInfo.explanation}</span>
        </div>}
       {room.status==='waiting'&&<button className="primary-btn wide-action" onClick={ready}><PixelIcon name="check" size={16}/><span>{t('ready')}</span></button>}
-      {room.status==='generating'&&<div className="match-loading">âœ¨ {t('generatingMatch')}</div>}
+      {room.status==='generating'&&<div className="match-loading"><PixelIcon name="spark" size={16}/> {t('generatingMatch')}</div>}
 {room.status==='battle'&&room.question&&<div className="battle-page battle-reference multiplayer-battle-page">
   <div className="battle-world">
     <ArenaBackground levelId={room.levelId||level}/>
