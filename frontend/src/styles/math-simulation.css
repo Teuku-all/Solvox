@@ -194,9 +194,109 @@
 .math-sim-balance .math-sim-hint,
 .math-sim-balance .math-sim-ready { color: #c3f4d9; }
 
+/* Reference composition: lesson card, illustrated balance, tile tray, and action dock. */
+.battle-reference-arena .math-sim-balance-reference {
+  width: min(1220px, calc(100% - 24px));
+  max-height: calc(100% - 10px);
+  padding: 15px;
+  overflow: auto;
+  border-color: rgba(98, 174, 231, .62);
+  border-radius: 18px;
+  background:
+    radial-gradient(ellipse at 17% 35%, rgba(39, 124, 186, .16), transparent 42%),
+    linear-gradient(145deg, rgba(6, 22, 43, .985), rgba(4, 13, 29, .99));
+  box-shadow: 0 20px 56px rgba(0, 0, 0, .58), inset 0 1px rgba(220, 244, 255, .13), 0 0 0 4px rgba(41, 105, 159, .12);
+}
+
+.math-sim-reference-question {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 7px 18px;
+  margin-bottom: 12px;
+  padding: 13px 17px 15px;
+  border: 1px solid rgba(105, 185, 234, .52);
+  border-radius: 14px;
+  background: linear-gradient(110deg, rgba(13, 43, 81, .97), rgba(8, 28, 58, .94));
+  box-shadow: inset 0 1px rgba(222, 244, 255, .12), 0 6px 16px rgba(0, 0, 0, .22);
+}
+
+.math-sim-reference-heading { display: flex; align-items: center; gap: 10px; min-width: 0; color: #eaf5ff; }
+.math-sim-reference-heading strong { font-size: clamp(14px, 1.4vw, 20px); }
+.math-sim-reference-heading i { color: #73cafa; font-style: normal; }
+.math-sim-reference-heading b { color: #b8dcff; font-size: clamp(12px, 1.2vw, 17px); }
+.math-sim-chapter-gem { display: grid; width: 33px; height: 33px; flex: 0 0 33px; place-items: center; border: 1px solid rgba(153, 224, 255, .76); border-radius: 10px; background: linear-gradient(145deg, #50c9ff, #326ad4 58%, #143a83); color: #f5fcff; font-size: 21px; text-shadow: 0 0 11px rgba(118, 218, 255, .86); box-shadow: 0 4px 13px rgba(41, 148, 221, .32), inset 0 1px rgba(255, 255, 255, .46); }
+.math-sim-reference-question > p { grid-column: 1 / -1; margin: 0; color: #edf6ff; font-size: clamp(14px, 1.6vw, 21px); font-weight: 750; line-height: 1.3; }
+.math-sim-reference-equation { justify-self: start; padding: 5px 13px; border: 1px solid rgba(77, 189, 255, .52); border-radius: 8px; background: rgba(5, 31, 65, .76); color: #69d2ff; font-size: clamp(18px, 2vw, 27px); letter-spacing: .035em; text-shadow: 0 0 13px rgba(50, 175, 255, .3); }
+.math-sim-reference-progress { grid-column: 1 / -1; height: 4px; overflow: hidden; border-radius: 9px; background: rgba(133, 182, 221, .16); }
+.math-sim-reference-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #35c9ff, #77e8d1, #ecd17e); transition: width .3s ease; }
+
+.math-sim-balance-workspace { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(260px, .92fr); gap: 12px; }
+.math-sim-balance-stage,
+.math-sim-tile-dock { min-width: 0; min-height: 315px; border: 1px solid rgba(95, 173, 224, .38); border-radius: 14px; background: linear-gradient(145deg, rgba(11, 34, 63, .92), rgba(5, 19, 42, .95)); box-shadow: inset 0 1px rgba(218, 243, 255, .075); }
+.math-sim-balance-stage { position: relative; display: grid; min-height: 315px; place-items: center; overflow: hidden; background: radial-gradient(ellipse at 50% 43%, rgba(43, 117, 170, .2), transparent 53%), linear-gradient(180deg, rgba(18, 48, 80, .76), rgba(7, 22, 45, .95)); }
+.math-sim-balance-stage::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(121, 192, 235, .06), transparent 42%, rgba(207, 178, 112, .07)); pointer-events: none; }
+.math-sim-balance-scale { position: relative; width: 94%; height: 285px; isolation: isolate; }
+.math-sim-scale-beam { position: absolute; z-index: 1; top: 24%; left: 8%; right: 8%; height: 13px; border: 1px solid rgba(255, 224, 151, .83); border-radius: 999px; background: linear-gradient(180deg, #ffe39b, #b17b39 62%, #744824); box-shadow: 0 4px 12px rgba(0, 0, 0, .42), 0 0 14px rgba(240, 194, 101, .22); }
+.math-sim-scale-beam span { position: absolute; left: 50%; top: -22px; width: 42px; height: 47px; transform: translateX(-50%); clip-path: polygon(50% 0, 100% 25%, 80% 100%, 20% 100%, 0 25%); border: 1px solid rgba(182, 242, 255, .9); background: linear-gradient(135deg, #d4fbff, #37c8ff 44%, #2463d8 76%, #a2efff); filter: drop-shadow(0 0 10px rgba(57, 187, 255, .72)); }
+.math-sim-scale-post { position: absolute; z-index: 0; top: 27%; bottom: 13%; left: calc(50% - 12px); width: 24px; background: linear-gradient(90deg, #704520, #d0a75b 24%, #ffe39b 48%, #8d5c2d 75%, #53351f); clip-path: polygon(35% 0, 65% 0, 72% 74%, 100% 91%, 100% 96%, 0 96%, 0 91%, 28% 74%); filter: drop-shadow(0 4px 7px rgba(0, 0, 0, .5)); }
+.math-sim-scale-pans { position: absolute; z-index: 2; top: 38%; left: 1%; right: 1%; display: grid; grid-template-columns: minmax(0, 1fr) 30px minmax(0, 1fr); align-items: start; gap: 7px; }
+.math-sim-scale-pan { position: relative; display: grid; justify-items: center; gap: 7px; min-width: 0; padding-top: 31px; }
+.math-sim-scale-pan::before,
+.math-sim-scale-pan::after { content: ''; position: absolute; z-index: -1; top: -47px; height: 78px; width: 1px; background: linear-gradient(180deg, #d8bd7c, rgba(222, 196, 131, .72)); transform-origin: top; }
+.math-sim-scale-pan::before { left: 13%; transform: rotate(-19deg); }
+.math-sim-scale-pan::after { right: 13%; transform: rotate(19deg); }
+.math-sim-scale-pan > small { position: absolute; top: 0; display: grid; min-width: 120px; min-height: 30px; place-items: center; padding: 4px 13px; border: 1px solid rgba(245, 207, 130, .67); border-radius: 999px; background: linear-gradient(180deg, #35527b, #162e54); color: #f2f6ff; font-size: 12px; font-weight: 850; box-shadow: inset 0 1px rgba(255, 255, 255, .16), 0 4px 10px rgba(0, 0, 0, .24); }
+.math-sim-balance .math-sim-scale-pan .math-sim-side { display: grid; width: 100%; min-height: 76px; place-items: center; padding: 12px 8px 16px; border: 1px solid rgba(249, 205, 117, .76); border-radius: 9px 9px 42% 42% / 9px 9px 32% 32%; background: linear-gradient(180deg, rgba(181, 127, 56, .97), rgba(93, 56, 32, .99)); box-shadow: inset 0 2px rgba(255, 231, 168, .38), inset 0 -9px 14px rgba(37, 23, 19, .38), 0 7px 14px rgba(0, 0, 0, .37); }
+.math-sim-balance .math-sim-scale-pan .math-sim-tiles { gap: 5px; }
+.math-sim-balance .math-sim-scale-pan .math-sim-tiles span { min-width: 38px; min-height: 42px; border-radius: 8px; font-size: 18px; }
+.math-sim-balance .math-sim-scale-pan .math-sim-tiles .is-total { border-color: rgba(133, 225, 255, .92); background: linear-gradient(145deg, #79d9ff, #3597e3); color: #092e58; }
+.math-sim-scale-equals { align-self: center; margin-top: 31px; color: #f2d78d; font-size: 24px; font-weight: 1000; text-shadow: 0 0 12px rgba(240, 199, 106, .35); }
+.math-sim-scale-base { position: absolute; z-index: -1; bottom: 6%; left: 31%; width: 38%; height: 20px; border: 1px solid rgba(252, 216, 142, .72); border-radius: 50% 50% 8px 8px; background: linear-gradient(180deg, #d8b56f, #80532e 68%, #52351f); box-shadow: 0 8px 13px rgba(0, 0, 0, .42), inset 0 1px rgba(255, 239, 190, .48); }
+
+.math-sim-tile-dock { padding: 13px; background: linear-gradient(150deg, rgba(8, 25, 52, .97), rgba(5, 17, 39, .99)); }
+.math-sim-dock-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.math-sim-dock-heading h2 { margin: 0; color: #edf6ff; font-size: 19px; }
+.math-sim-dock-heading > span { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 50%; background: #376dcc; color: white; font-size: 14px; font-weight: 900; }
+.math-sim-tile-tabs { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 12px; padding: 3px; border: 1px solid rgba(92, 168, 222, .34); border-radius: 10px; background: rgba(6, 19, 42, .8); }
+.math-sim-tile-tabs button { min-width: 0; min-height: 37px; padding: 6px 5px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: #aec9e5; font-size: 12px; font-weight: 800; }
+.math-sim-tile-tabs button[aria-selected="true"] { border-color: rgba(112, 218, 255, .78); background: linear-gradient(180deg, #2368ae, #164484); color: #f3fbff; box-shadow: 0 0 14px rgba(43, 161, 238, .2), inset 0 1px rgba(255, 255, 255, .2); }
+.math-sim-tile-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+.math-sim-tile-grid button { display: grid; min-width: 0; min-height: 45px; place-items: center; padding: 4px 2px; border: 1px solid rgba(179, 233, 255, .62); border-radius: 8px; color: #122b40; font-size: clamp(12px, 1.15vw, 17px); font-weight: 900; box-shadow: inset 0 2px rgba(255, 255, 255, .55), 0 4px 7px rgba(0, 0, 0, .25); transition: transform .12s ease, filter .12s ease, box-shadow .12s ease; }
+.math-sim-tile-grid button.is-positive { border-color: #94f2c5; background: linear-gradient(145deg, #80f2bd, #35c88e); color: #073d35; }
+.math-sim-tile-grid button.is-negative { border-color: #ffc0cb; background: linear-gradient(145deg, #ffb0bc, #f06d85); color: #571c30; }
+.math-sim-tile-grid button.is-variable { border-color: #e2b4ff; background: linear-gradient(145deg, #e4a5ff, #ad67ec); color: #301052; }
+.math-sim-tile-grid button.is-selected { transform: translateY(-2px); filter: brightness(1.12); box-shadow: 0 0 0 3px rgba(72, 196, 255, .45), 0 7px 14px rgba(0, 0, 0, .32); }
+.math-sim-tile-grid button:disabled { cursor: default; opacity: .55; }
+.math-sim-dock-step { display: flex; align-items: center; gap: 9px; margin-top: 12px; color: #aec9e5; font-size: 11px; font-weight: 850; }
+.math-sim-dock-step .math-sim-progress { flex: 1; margin: 0; }
+
+.math-sim-balance-footer { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; margin-top: 12px; padding: 10px 13px; border: 1px solid rgba(87, 157, 211, .32); border-radius: 13px; background: linear-gradient(100deg, rgba(8, 29, 58, .97), rgba(5, 18, 39, .98)); }
+.math-sim-balance-guide { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.math-sim-guide-mascot { display: grid; width: 43px; height: 43px; flex: 0 0 43px; place-items: center; border: 1px solid rgba(117, 214, 255, .64); border-radius: 14px; background: linear-gradient(145deg, #1d79be, #2143a1); color: #e1f9ff; font-size: 24px; text-shadow: 0 0 13px #62d2ff; box-shadow: inset 0 1px rgba(255, 255, 255, .25), 0 4px 10px rgba(0, 0, 0, .28); }
+.math-sim-balance-guide p { margin: 0; color: #dcecff; font-size: 12px; font-weight: 750; line-height: 1.4; }
+.math-sim-balance-actions { display: flex; align-items: center; gap: 8px; }
+.math-sim-balance-actions button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; padding: 8px 15px; border: 1px solid rgba(115, 184, 236, .46); border-radius: 999px; background: linear-gradient(180deg, #183868, #10264d); color: #f1f7ff; font-size: 12px; font-weight: 900; box-shadow: inset 0 1px rgba(255, 255, 255, .16), 0 4px 10px rgba(0, 0, 0, .3); }
+.math-sim-balance-actions button:disabled { opacity: .45; }
+.math-sim-balance-actions .math-sim-apply { min-width: 190px; border-color: rgba(123, 222, 255, .92); border-radius: 14px; background: linear-gradient(180deg, #49caff, #1674df 52%, #1149b7); color: white; font-size: 14px; box-shadow: inset 0 2px rgba(255, 255, 255, .4), 0 5px 14px rgba(25, 107, 230, .35); }
+.math-sim-balance-actions .math-sim-apply:disabled { cursor: wait; }
+.math-sim-balance-reference .math-sim-zero { justify-content: center; margin-top: 8px; }
+.math-sim-balance-reference .math-sim-message { padding: 8px 11px; border: 1px solid rgba(236, 188, 102, .34); border-radius: 8px; background: rgba(70, 49, 17, .36); color: #ffe7a6; font-size: 12px; }
+.math-sim-balance-reference .math-sim-ready { margin: 0; color: #bdf4d5; font-size: 12px; font-weight: 800; }
+
+@media (max-width: 900px) {
+  .battle-reference-arena .math-sim-balance-reference { width: min(820px, calc(100% - 20px)); }
+  .math-sim-balance-workspace { grid-template-columns: minmax(0, 1.45fr) minmax(240px, .85fr); }
+  .math-sim-tile-dock { padding: 10px; }
+  .math-sim-tile-grid { gap: 5px; }
+  .math-sim-tile-grid button { min-height: 39px; }
+}
+
 @media (max-width: 900px) and (min-width: 701px) {
   .battle-reference-arena .math-sim { width:min(510px,72vw); }
   .battle-reference-arena .math-sim-balance { width:min(620px,78vw); }
+  .battle-reference-arena .math-sim-balance-reference { width:min(820px,calc(100% - 20px)); }
 }
 @media (max-width: 760px) {
   .battle-reference-arena {
@@ -219,6 +319,21 @@
     box-sizing: border-box;
   }
   .battle-reference-arena .math-sim-balance { width: 100%; }
+  .battle-reference-arena .math-sim-balance-reference { width: 100%; max-height: none; padding: 12px; border-radius: 14px; }
+  .math-sim-reference-question { gap: 7px 10px; padding: 11px 12px; }
+  .math-sim-balance-workspace { grid-template-columns: 1fr; }
+  .math-sim-balance-stage { min-height: 270px; }
+  .math-sim-balance-scale { height: 250px; }
+  .math-sim-scale-pans { top: 39%; }
+  .math-sim-scale-pan > small { min-width: 100px; font-size: 11px; }
+  .math-sim-balance .math-sim-scale-pan .math-sim-side { min-height: 65px; }
+  .math-sim-balance .math-sim-scale-pan .math-sim-tiles span { min-width: 30px; min-height: 34px; font-size: 15px; }
+  .math-sim-tile-dock { min-height: 0; }
+  .math-sim-tile-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .math-sim-tile-grid button { min-height: 48px; font-size: 15px; }
+  .math-sim-balance-footer { grid-template-columns: 1fr; }
+  .math-sim-balance-actions { justify-content: space-between; }
+  .math-sim-balance-actions .math-sim-apply { flex: 1; }
   .math-sim-head small { font-size: 11px; }
   .math-sim-head b { font-size: 12px; }
   .math-sim-head button { min-height: 44px; padding: 8px 12px; font-size: 12px; touch-action: manipulation; }

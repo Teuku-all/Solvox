@@ -475,7 +475,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
               playerId={playerId}
               onHit={() => showImpact('boss', damagePerQuestion, 'player')}
             />
-            <MathSimulation key={q.id} questionId={q.id} lang={lang} hintsUsed={currentHints} busy={busy} onProgress={setSimulation} />
+            <MathSimulation key={q.id} questionId={q.id} questionText={q.text} lang={lang} hintsUsed={currentHints} busy={busy} onProgress={setSimulation} />
           </div>
 
           <BattleQuestionPanel

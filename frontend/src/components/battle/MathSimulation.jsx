@@ -21,6 +21,11 @@ const copy = {
     modelDone: 'Model sudah sesuai. Sekarang selesaikan persamaannya.',
     stepDone: 'Langkah sah. Persamaan tetap setara.',
     ready: 'Persamaan selesai. Konfirmasi nilai variabel di kolom jawaban untuk menyerang.',
+    balancePrompt: 'Selesaikan persamaan berikut dengan menggunakan timbangan.',
+    chapter: 'Chapter', question: 'Soal',
+    tilePicker: 'Pilih ubin', tileNumbers: 'Ubin bilangan', tileVariables: 'Ubin variabel',
+    applyBoth: 'Terapkan ke kedua ruas', tileWrong: 'Pilih ubin yang menghilangkan suku pada langkah ini.',
+    balanceGuide: 'Pilih ubin yang sesuai, lalu terapkan pada kedua sisi agar timbangan tetap seimbang.',
     hint: 'Petunjuk langkah berikutnya',
     zero: '+1 dan −1 membentuk pasangan nol.',
     result: 'Nilai variabel',
@@ -44,6 +49,11 @@ const copy = {
     modelDone: 'The model matches the story. Now solve the equation.',
     stepDone: 'Valid step. The equation remains equal.',
     ready: 'Equation solved. Confirm the variable value in the answer field to attack.',
+    balancePrompt: 'Solve the equation below using the balance scale.',
+    chapter: 'Chapter', question: 'Question',
+    tilePicker: 'Choose a tile', tileNumbers: 'Number tiles', tileVariables: 'Variable tiles',
+    applyBoth: 'Apply to both sides', tileWrong: 'Choose a tile that removes a term in this step.',
+    balanceGuide: 'Choose the matching tile, then apply it to both sides to keep the scale balanced.',
     hint: 'Hint for the next step',
     zero: '+1 and −1 form a zero pair.',
     result: 'Variable value',
@@ -62,7 +72,7 @@ function balanceTiles(term) {
   if (variable && Number(variable[2]) <= 6) return Array.from({ length: Number(variable[2]) }, (_, index) => <span className="is-variable" key={index}>{variable[1]}{variable[3]}</span>);
   const number = Number(token.replace(',', '.'));
   if (Number.isInteger(number) && Math.abs(number) > 0 && Math.abs(number) <= 9) return Array.from({ length: Math.abs(number) }, (_, index) => <span className={number < 0 ? 'is-negative' : 'is-unit'} key={index}>{number < 0 ? '−1' : '+1'}</span>);
-  return <span className={/[a-z]/i.test(token) ? 'is-variable' : number < 0 ? 'is-negative' : 'is-unit'}>{token}</span>;
+  return <span className={/[a-z]/i.test(token) ? 'is-variable' : number < 0 ? 'is-negative' : Number.isFinite(number) && Math.abs(number) > 9 ? 'is-total' : 'is-unit'}>{token}</span>;
 }
 
 function Side({ text, mode, groups = 0 }) {
@@ -91,7 +101,38 @@ function Side({ text, mode, groups = 0 }) {
   </div>;
 }
 
-export default function MathSimulation({ questionId, lang, hintsUsed, busy, onProgress }) {
+const numberTiles = ['+1', '+2', '+3', '+5', '−1', '−2', '−3', '−5', '+7', '−7', '+10', '−10', '×2', '÷2', '×3', '÷3', '+½', '−½', '+¼', '−¼'];
+const variableTiles = ['+x', '−x', '+2x', '−2x'];
+const normalizeOperation = (operation) => operation.replace(/\s+/g, '').replace(/−/g, '-').replace(/×/g, '*').replace(/÷/g, '/');
+function tileForOperation(operation) {
+  const match = operation?.match(/^([+\-*/])\s*(.+)$/);
+  if (!match) return '';
+  const [, operator, value] = match;
+  const symbol = operator === '*' ? '×' : operator === '/' ? '÷' : operator === '-' ? '−' : '+';
+  return `${symbol}${value.replace(/\s+/g, '')}`;
+}
+
+function BalanceScale({ left, right, equation, sides }) {
+  return <div className="math-sim-balance-scale" aria-label={equation}>
+    <div className="math-sim-scale-beam" aria-hidden="true"><span /></div>
+    <div className="math-sim-scale-crystal" aria-hidden="true">◆</div>
+    <div className="math-sim-scale-post" aria-hidden="true" />
+    <div className="math-sim-scale-pans">
+      <div className="math-sim-scale-pan">
+        <small>{sides[0]}</small>
+        <Side text={left} mode="balance" />
+      </div>
+      <span className="math-sim-scale-equals" aria-hidden="true">=</span>
+      <div className="math-sim-scale-pan">
+        <small>{sides[1]}</small>
+        <Side text={right} mode="balance" />
+      </div>
+    </div>
+    <div className="math-sim-scale-base" aria-hidden="true" />
+  </div>;
+}
+
+export default function MathSimulation({ questionId, questionText, lang, hintsUsed, busy, onProgress }) {
   const config = SIMULATIONS[Number(questionId)];
   const model = (lang === 'en' ? STORY_MODELS_EN : STORY_MODELS)[Number(questionId)] || [];
   const c = copy[lang === 'en' ? 'en' : 'id'];
@@ -100,6 +141,8 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
   const [modelErrors, setModelErrors] = useState(0);
   const [stepErrors, setStepErrors] = useState(0);
   const [message, setMessage] = useState('');
+  const [tileTab, setTileTab] = useState('number');
+  const [selectedTile, setSelectedTile] = useState('');
 
   const modelReady = modelIndex >= model.length;
   const ready = Boolean(config && modelReady && stepIndex >= config.steps.length);
@@ -115,6 +158,7 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
   const [left, right] = splitEquation(equation);
   const initialGroup = config.mode === 'groups' && !stepIndex ? Number(config.equation.match(/^(\d+)(?:[a-z]|\()/i)?.[1] || 0) : 0;
   const next = config.steps[stepIndex];
+  useEffect(() => { setSelectedTile(''); }, [stepIndex, questionId]);
   const currentModel = model[modelIndex];
   const choices = currentModel ? [currentModel.correct, currentModel.wrong] : [];
   if (currentModel && (Number(questionId) + modelIndex) % 2 === 0) choices.reverse();
@@ -146,6 +190,17 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
     setMessage(stepIndex + 1 === config.steps.length ? c.ready : c.stepDone);
   };
 
+  const applyBalanceTile = () => {
+    if (busy || !next) return;
+    if (!selectedTile || normalizeOperation(tileForOperation(next.operation)) !== normalizeOperation(selectedTile)) {
+      setStepErrors((count) => count + 1);
+      setMessage(selectedTile ? c.tileWrong : c.choose);
+      return;
+    }
+    setStepIndex((index) => index + 1);
+    setMessage(stepIndex + 1 === config.steps.length ? c.ready : c.stepDone);
+  };
+
   const undo = () => {
     if (busy) return;
     if (stepIndex > 0) setStepIndex((index) => index - 1);
@@ -160,6 +215,56 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
   ] : [];
   if ((Number(questionId) + stepIndex) % 2 === 0) stepOptions.reverse();
   const progress = Math.round(((modelIndex + stepIndex) / (model.length + config.steps.length)) * 100);
+
+  if (config.mode === 'balance') {
+    const chapterNumber = Math.ceil(Number(questionId) / 10);
+    const chapterQuestion = ((Number(questionId) - 1) % 10) + 1;
+    const requiredTile = next ? tileForOperation(next.operation) : '';
+    const activeTiles = tileTab === 'number' ? [...numberTiles] : [...variableTiles];
+    if (requiredTile && (tileTab === 'number') !== /[a-z]/i.test(requiredTile) && !activeTiles.includes(requiredTile)) activeTiles.unshift(requiredTile);
+    const [balanceLeft, balanceRight] = splitEquation(equation);
+
+    return <section className="math-sim math-sim-balance math-sim-balance-reference" aria-label={c.modes.balance}>
+      <header className="math-sim-reference-question">
+        <div className="math-sim-reference-heading"><span className="math-sim-chapter-gem" aria-hidden="true">✦</span><strong>{c.chapter} {chapterNumber}</strong><i>•</i><b>{c.question} {chapterQuestion}/10</b></div>
+        <p>{questionText || c.balancePrompt}</p>
+        <strong className="math-sim-reference-equation">{localizeEquation(config.equation, lang)}</strong>
+        <div className="math-sim-reference-progress" aria-label={`${progress}%`}><span style={{ width: `${progress}%` }} /></div>
+      </header>
+
+      <div className="math-sim-balance-workspace">
+        <div className="math-sim-balance-stage"><BalanceScale left={balanceLeft} right={balanceRight} equation={equation} sides={c.sides} /></div>
+        <aside className="math-sim-tile-dock">
+          <div className="math-sim-dock-heading"><h2>{c.tilePicker}</h2><span aria-hidden="true">i</span></div>
+          <div className="math-sim-tile-tabs" role="tablist" aria-label={c.tilePicker}>
+            <button type="button" role="tab" aria-selected={tileTab === 'number'} onClick={() => { setTileTab('number'); setSelectedTile(''); }}>{c.tileNumbers}</button>
+            <button type="button" role="tab" aria-selected={tileTab === 'variable'} onClick={() => { setTileTab('variable'); setSelectedTile(''); }}>{c.tileVariables}</button>
+          </div>
+          <div className="math-sim-tile-grid">
+            {activeTiles.map((tile) => <button
+              type="button"
+              key={tile}
+              className={`${/[a-z]/i.test(tile) ? 'is-variable' : /^[−-]/.test(tile) ? 'is-negative' : 'is-positive'} ${selectedTile === tile ? 'is-selected' : ''}`}
+              aria-pressed={selectedTile === tile}
+              disabled={busy || ready}
+              onClick={() => { setSelectedTile(tile); setMessage(''); }}
+            >{tile}</button>)}
+          </div>
+          <div className="math-sim-dock-step"><span>{c.step} {Math.min(stepIndex + 1, config.steps.length)}/{config.steps.length}</span><div className="math-sim-progress"><span style={{ width: `${progress}%` }} /></div></div>
+        </aside>
+      </div>
+
+      <footer className="math-sim-balance-footer">
+        <div className="math-sim-balance-guide"><span className="math-sim-guide-mascot" aria-hidden="true">✦</span><p>{c.balanceGuide}</p></div>
+        <div className="math-sim-balance-actions">
+          <button type="button" className="math-sim-reset" onClick={undo} disabled={busy || (!stepIndex && !modelIndex)}>↶ <span>{c.undo}</span></button>
+          {next ? <button type="button" className="math-sim-apply" onClick={applyBalanceTile} disabled={busy}><span>{c.applyBoth}</span></button> : <p className="math-sim-ready">{c.ready}</p>}
+        </div>
+      </footer>
+      {config.mode === 'balance' && /-\s*\d/.test(equation) && <small className="math-sim-zero"><span>+1</span><span>−1</span><b>= 0</b> {c.zero}</small>}
+      {message && !(ready && message === c.ready) && <p className="math-sim-message" role="status">{message}</p>}
+    </section>;
+  }
 
   return <section className={`math-sim math-sim-${config.mode}`} aria-label={c.modes[config.mode]}>
     <div className="math-sim-head">
