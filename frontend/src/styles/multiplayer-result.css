@@ -143,6 +143,66 @@
 .multiplayer .multi-room:not(.is-battling) .match-result-actions .result-rematch-btn { border: 1px solid rgba(83, 198, 198, .42); background: linear-gradient(135deg, #176078, #124657 58%, #153b4a); color: #effbfa; box-shadow: 0 9px 22px rgba(5, 54, 65, .28), inset 0 1px rgba(255, 255, 255, .13); }
 .multiplayer .multi-room:not(.is-battling) .match-result .match-review { max-width: 780px; margin: 14px auto 0; padding: 15px 17px; border-color: rgba(210, 184, 104, .2); border-radius: 10px; background: linear-gradient(145deg, rgba(41, 34, 21, .28), rgba(14, 23, 25, .72)); }
 
+/* Give the winner's finish screen a distinct, celebratory finish. */
+.multiplayer .multi-room:not(.is-battling) .match-result.is-win {
+  border-color: rgba(103, 220, 169, .28);
+  background:
+    radial-gradient(ellipse at 50% -8%, rgba(93, 224, 164, .2), transparent 43%),
+    radial-gradient(ellipse at 50% 0%, rgba(226, 193, 98, .09), transparent 58%),
+    linear-gradient(155deg, rgba(5, 21, 20, .98), rgba(4, 13, 16, .98));
+  box-shadow: inset 0 1px rgba(220, 255, 234, .08), 0 22px 60px rgba(0, 0, 0, .34), 0 0 42px rgba(62, 197, 132, .07);
+}
+
+.multiplayer .multi-room:not(.is-battling) .match-result.is-win::before {
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(107, 229, 170, .88), rgba(239, 211, 130, .82), rgba(107, 229, 170, .88), transparent);
+}
+
+.multiplayer .match-result.is-win .result-status-pill {
+  border-color: rgba(112, 231, 174, .38);
+  background: linear-gradient(100deg, rgba(46, 142, 101, .2), rgba(165, 136, 58, .12));
+  color: #c0f4d6;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .06), 0 5px 20px rgba(49, 165, 111, .1);
+}
+
+.multiplayer .match-result.is-win .result-emblem {
+  position: relative;
+  border-color: rgba(126, 235, 181, .42);
+  background: linear-gradient(145deg, rgba(91, 211, 151, .28), rgba(152, 127, 54, .2) 58%, rgba(36, 88, 75, .2));
+  color: #b5f2cd;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .16), 0 0 0 6px rgba(101, 219, 163, .045), 0 12px 35px rgba(78, 212, 145, .19);
+}
+
+.multiplayer .match-result.is-win > h2 {
+  color: #d9f8e5;
+  text-shadow: 0 0 28px rgba(103, 223, 161, .2);
+}
+
+.multiplayer .match-result.is-win .result-score-strip > div.is-self,
+.multiplayer .match-result.is-win .match-evaluation-grid article.is-winner {
+  border-color: rgba(107, 222, 164, .34);
+  background: linear-gradient(135deg, rgba(30, 82, 58, .4), rgba(13, 29, 28, .88));
+  box-shadow: inset 0 1px rgba(191, 255, 219, .055), 0 8px 24px rgba(20, 98, 62, .09);
+}
+
+.multiplayer .match-result.is-win .result-score-strip > div.is-self > b,
+.multiplayer .match-result.is-win .match-evaluation-grid article.is-winner .result-eval-player > i {
+  color: #a7edc3;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .multiplayer .multi-room:not(.is-battling) .match-result.is-win .result-emblem {
+    animation: result-win-arrive .55s cubic-bezier(.2, .8, .25, 1) both;
+  }
+
+  @keyframes result-win-arrive {
+    from { opacity: .55; transform: translateY(8px) scale(.88); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+}
+
 @media (max-width: 620px) {
   .multiplayer .multi-room:not(.is-battling) .match-result { margin-top: 12px; padding: 24px 12px 18px; border-radius: 12px; }
   .multiplayer .match-result .result-emblem { width: 54px; height: 54px; margin-top: 14px; border-radius: 15px; }
