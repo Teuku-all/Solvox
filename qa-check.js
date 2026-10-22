@@ -63,7 +63,10 @@ must(!home.includes('SpriteCharacter') && !home.includes('home-v31-character'), 
 must(home.includes('home-menu') && home.includes("id: 'play'") && home.includes("id: 'tutorial'") && home.includes("labelKey: 'homeMain'") && home.includes("labelKey: 'homeTutorial'") && home.includes("labelKey: 'homeDashboard'") && home.includes("labelKey: 'homeSettings'") && home.includes("labelKey: 'homeFeedback'"), 'V103 Home menu is missing one or more core text navigation items');
 must(!home.includes('SolvoxUtilityArt') && !home.includes('home-v31') && !home.includes('homeHeroTitle') && !home.includes('continueAdventure') && !home.includes('viewProfile'), 'Legacy Home icon/hero implementation remains in HomeMenu');
 must(home.includes('onTutorial') && home.includes("id: 'tutorial'"), 'Home tutorial entry point is missing');
-must(exists('frontend/src/components/menu/Tutorial.jsx') && read('frontend/src/components/menu/Tutorial.jsx').includes('tutorial-title') && read('frontend/src/components/menu/Tutorial.jsx').includes('tutorialGotIt'), 'Tutorial component is missing or incomplete');
+const tutorial = read('frontend/src/components/menu/Tutorial.jsx');
+const tutorialStyles = read('frontend/src/styles/tutorial.css');
+must(exists('frontend/src/components/menu/Tutorial.jsx') && tutorial.includes('tutorial-title') && tutorial.includes('tutorialGotIt'), 'Tutorial component is missing or incomplete');
+must(tutorial.includes('handlePracticePointerDown') && tutorial.includes("data-tutorial-pan=\"left\"") && tutorial.includes("data-tutorial-pan=\"right\"") && tutorial.includes('Drag and drop tiles') && tutorialStyles.includes('@media (max-width: 720px)') && tutorialStyles.includes('.tutorial-unit-tile.is-tray'), 'Tutorial must teach working balance-tile drag and drop on desktop and mobile');
 
 /* -------------------------------------------------------------------------- */
 /* Main mode selection / learning surfaces                                   */
@@ -319,6 +322,64 @@ must(multi.includes('home-background-v83.mp4') && multi.includes('multi-home-bg'
 must(profile.includes('profile-screen-back" type="button" onClick={()=>dismiss()}') && profile.includes('profile-screen-close profile-close-btn" type="button" onClick={()=>dismiss()}') && profile.includes("if(e.key==='Escape')dismiss()"), 'Profile back, close, or Escape dismissal is missing');
 must(settings.includes('settings-about-row') && settings.includes('settings-close-btn') && !settings.includes('success'), 'Settings V96 about/close cleanup is incomplete');
 must(battlePanel.includes('is-story-chapter'), 'Story chapter class is missing');
+const storySource = read('frontend/src/data/story.js');
+const cutsceneStory = read('frontend/src/components/battle/CutsceneStory.jsx');
+const loreSource = read('lore.md');
+const wolfStoryLines = loreSource.split(/\r?\n/)
+  .map((line) => line.match(/^\s*>?\s*-\s*\*\*(ID|EN) · ([^:*]+):\*\*\s*(.*)$/))
+  .filter((match) => match && match[2].trim().toLowerCase() === 'wolf');
+must(storySource.includes('markdown.split(/\\r?\\n/)') && wolfStoryLines.length > 0, 'Story parser must handle CRLF and keep Wolf speaker lines');
+const storySections = new Map();
+let storyRoute = null;
+let storyChapter = null;
+let storySegment = null;
+const normalizeStorySpeaker = (label) => {
+  const normalized = label.replace(/\s*\([^)]*\)\s*$/, '').trim().toLowerCase();
+  return ({ narration: 'narrator', narasi: 'narrator', 'equation drake': 'drake', 'naga persamaan': 'drake', '{pov}': 'pov' })[normalized] || normalized;
+};
+for (const line of loreSource.split(/\r?\n/)) {
+  let match = line.match(/^## Bagian ([45])\b/);
+  if (match) { storyRoute = match[1]; storyChapter = null; storySegment = null; continue; }
+  if (/^## Bagian [67]\b/.test(line)) { storyRoute = null; storyChapter = null; storySegment = null; continue; }
+  match = line.match(/^### Bab (\d+)\b/);
+  if (match && storyRoute) { storyChapter = match[1]; storySegment = null; continue; }
+  match = line.match(/^#### `(intro|win|lose)`/);
+  if (match && storyRoute && storyChapter) {
+    storySegment = `${storyRoute}/${storyChapter}/${match[1]}`;
+    storySections.set(storySegment, { id: new Map(), en: new Map() });
+    continue;
+  }
+  match = line.match(/^\s*>?\s*-?\s*\*\*(ID|EN) · ([^:*]+):\*\*/);
+  if (!match || !storySegment) continue;
+  const [, locale, label] = match;
+  const speakers = storySections.get(storySegment)[locale.toLowerCase()];
+  const speaker = normalizeStorySpeaker(label);
+  speakers.set(speaker, (speakers.get(speaker) || 0) + 1);
+}
+for (const [segment, translations] of storySections) {
+  const speakers = new Set([...translations.id.keys(), ...translations.en.keys()]);
+  for (const speaker of speakers) must(
+    translations.id.get(speaker) === translations.en.get(speaker),
+    `Story translation mismatch in route/chapter/scene ${segment} for ${speaker}`,
+  );
+}
+must(cutsceneStory.includes("currentBeat[lang] || ''"), 'Cutscenes must not silently show Indonesian dialogue in English mode');
+must(cutsceneStory.includes('Object.prototype.hasOwnProperty.call(CUTSCENE_ASSETS.speakers, currentBeat.speaker)') && cutsceneStory.includes('const opponent = isOpponentSpeaking && speakerAsset?.splash ? speakerAsset : defaultOpponent;') && cutsceneStory.includes('key={isOpponentSpeaking ? activeSpeakerId : CUTSCENE_ASSETS.chapterOpponents[chapterId]}'), 'Cutscene portrait and speaking state must follow the active dialogue speaker');
+const simulationSource = read('frontend/src/data/algebraSimulation.js');
+const simulationRaw = simulationSource.match(/const raw = \{([\s\S]*?)\n\};/)?.[1] || '';
+const simulationIds = [...simulationRaw.matchAll(/^\s*(\d+):\s*\[/gm)].map((match) => Number(match[1]));
+must(simulationIds.length === 50 && Array.from({ length: 50 }, (_, index) => index + 1).every((id) => simulationIds.includes(id)), 'Every bank question in Chapters 1–5 must have a simulation configuration');
+const simulationConfig = Function(`return ({${simulationRaw}})`)();
+const questionBank = JSON.parse(read('backend/solvoxQuestions.json'));
+const { isSameAnswer } = require('./backend/singlePlayerGame');
+const simulationMismatches = Object.entries(simulationConfig).filter(([id, [, , route]]) => {
+  const question = questionBank.find((entry) => entry.id === Number(id));
+  const finalEquation = route.split('; ').at(-1).split('|').at(-1);
+  const value = finalEquation.split('=').map((side) => side.trim()).find((side) => !/^[a-z]$/i.test(side));
+  return !question || !value || !isSameAnswer(value, question.answer);
+});
+must(simulationMismatches.length === 0, 'Simulation end results must agree with the bank answer for all chapters');
+must(battle.includes('<MathSimulation key={q.id}') && simulationSource.includes('const STORY_MODELS =') && Array.from({ length: 10 }, (_, index) => 41 + index).every((id) => new RegExp(`^\\s*${id}:`, 'm').test(simulationSource.slice(simulationSource.indexOf('const models ='), simulationSource.indexOf('export const STORY_MODELS')))), 'Every question must use the shared math panel and Chapter 5 must build a story model');
 must(exists('frontend/src/components/menu/AboutDevelopers.jsx') && main.includes("import './styles/typography-modals.css';"), 'About Us page/style is not wired');
 must(app.includes("screen==='about'&&<AboutDevelopers") && app.includes('onAboutUs'), 'About Us navigation is not wired through App');
 must(utilityArt.includes("back: '/assets/ui/utility/icons/back-v82.webp'") && utilityArt.includes("close: '/assets/ui/utility/icons/close-v96.png'"), 'Back/close icon routing is incorrect');
@@ -539,4 +600,6 @@ const { evaluateAttempt } = require('./backend/singlePlayerGame');
 must(evaluateAttempt({questionId:7,answer:'2.5',lang:'en'}).correct, 'Decimal form of a multi-answer question should be accepted');
 must(evaluateAttempt({questionId:7,answer:'5/2',lang:'en'}).correct, 'Fraction form of a multi-answer question should be accepted');
 must(!evaluateAttempt({questionId:7,answer:'2.5,5/2',lang:'en'}).correct, 'A joined list of acceptable answers must not count as one answer');
+must(!evaluateAttempt({questionId:1,answer:'wrong',attempt:3}).correctAnswer && !evaluateAttempt({questionId:1,answer:'wrong',attempt:20}).correctAnswer, 'Wrong answers must allow unlimited retries without revealing the answer');
+must(battle.includes('const handleWrongAnswer = () => {') && !battle.match(/const handleWrongAnswer = \(\) => \{([\s\S]*?)\n  \};/)?.[1]?.match(/bossAttack|bossHurt|setHp\(/), 'Wrong answers must not trigger boss attacks or reduce player HP');
 console.log('Single-player answer variants PASS');

@@ -33,9 +33,11 @@ function normalizeSpeaker(label, pov) {
 
 function parseDialogues(markdown, pov) {
   const dialogues = [];
-  const dialogueLine = /^\s*>?\s*-\s*\*\*(ID|EN) · ([^:*]+):\*\*\s*(.*)$/;
+  const dialogueLine = /^\s*>?\s*-?\s*\*\*(ID|EN) · ([^:*]+):\*\*\s*(.*)$/;
 
-  for (const line of markdown.split('\n')) {
+  // lore.md is checked out with CRLF on Windows. Normalize both line endings
+  // before matching so the trailing carriage return cannot swallow the beat.
+  for (const line of markdown.split(/\r?\n/)) {
     const match = line.match(dialogueLine);
     if (!match) continue;
     const [, language, label, rawText] = match;

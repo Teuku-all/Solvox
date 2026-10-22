@@ -1279,3 +1279,16 @@
   .is-balance-open .math-sim-tile-dock { padding: 5px; }
   .is-balance-open .math-sim-operation-panel > p { line-height: 1.15; }
 }
+
+@media (max-width: 760px) {
+  .is-balance-open .math-sim-tile-grid .math-sim-picker-tile { min-height: 40px; font-size: 14px; }
+  .is-balance-open .math-sim-operation-options button { min-height: 36px; font-size: 12px; }
+  .is-balance-open .math-sim-operation-sides button { min-height: 40px; font-size: 10px; }
+  .is-balance-open .math-sim-add-controls button,
+  .is-balance-open .math-sim-balance-actions button { min-height: 38px; }
+}
+
+@media (max-width: 380px) {
+  .is-balance-open .math-sim-operation-options button { min-height: 34px; }
+  .is-balance-open .math-sim-operation-sides button { min-height: 38px; }
+}

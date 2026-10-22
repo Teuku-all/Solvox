@@ -333,6 +333,7 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 - **ID · Narasi:** Titan meremukkan serpihan berikut Kazura di dalamnya. Ia kalah karena mencoba menyatukan sebelum menyamakan penyebutnya.
 - **EN · Narration:** Titan crushes the shard with Kazura inside. He lost because he tried to unite before equalizing the denominators.
 - **ID · KAZURA:** (Penyebut dulu. Aku menyusun sebelum menyamakan. Kesalahanku sendiri.)
+- **EN · KAZURA:** (Denominators first. I assembled before finding a common denominator. That was my mistake.)
 
 ### Bab 5 — Benteng Bayangan (`Shadow Fortress — FINAL BOSS`)
 
@@ -392,7 +393,7 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 #### `intro` — Beat 2 · ASUNA (background)
 - **ID · ASUNA:** Namaku Asuna. Kristal ini bukan perhiasan—ia pecahan tablet hukum kerajaanku, yang menempel saat aku lari. Aku pembaca terakhirnya. Dan aku satu-satunya yang selamat justru karena pergi.
 
-> **EN · ASUNA:** My name is Asuna. These crystals are not jewelry—they are fragments of my kingdom's tablet of laws, clinging to me as I fled. I am its last reader. And I am the only one who survived precisely because I left.
+- **EN · ASUNA:** My name is Asuna. These crystals are not jewelry—they are fragments of my kingdom's tablet of laws, clinging to me as I fled. I am its last reader. And I am the only one who survived precisely because I left.
 - **ID · ASUNA:** Aku tidak akan berlari lagi sebelum tahu mengapa aturan ini rusak.
 - **EN · ASUNA:** I will not run again before I know why this rule broke.
 
@@ -460,6 +461,7 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 - **ID · Narasi:** Tumpukan angka menelan Asuna dalam pengulangan yang sama. Terlalu banyak untuk dibaca—terlalu cepat untuk dipahami.
 - **EN · Narration:** A stack of numbers swallows Asuna in the same repetition. Too many to read—too fast to understand.
 - **ID · ASUNA:** (Aku mencoba memahami semuanya sekaligus. Kau tidak bisa membaca tak berhingga. Satu suku dulu.)
+- **EN · ASUNA:** (I tried to understand everything at once. You cannot read infinity. One term at a time.)
 
 ### Bab 3 — Ruang Persamaan (`Equation Chamber`)
 
@@ -491,6 +493,7 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 - **ID · Narasi:** Ruang miring lebih jauh. Naga menahan Asuna sebagai "perusak keseimbangan". Ia kalah karena menahan terlalu lama, bukan karena salah membaca.
 - **EN · Narration:** The chamber tilts further. The Drake holds Asuna as a "destroyer of balance". She lost from holding too long, not from misreading.
 - **ID · ASUNA:** (Aku menahan keseimbangan orang lain sampai melupakan milikku sendiri.)
+- **EN · ASUNA:** (I kept everyone else in balance until I forgot my own.)
 
 ### Bab 4 — Kuil Pecahan (`Fraction Temple`)
 
@@ -518,6 +521,7 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 - **ID · Narasi:** Titan meremukkan serpihan berikut Asuna di dalamnya. Ia menyusun sebelum menyamakan penyebut.
 - **EN · Narration:** Titan crushes the shard with Asuna inside. She assembled before equalizing the denominators.
 - **ID · ASUNA:** (Penyebut dulu. Selalu penyebut dulu. Aku tahu itu—kenapa aku melupakannya?)
+- **EN · ASUNA:** (Denominators first. Always denominators first. I know that—why did I forget?)
 
 ### Bab 5 — Benteng Bayangan (`Shadow Fortress — FINAL BOSS`)
 

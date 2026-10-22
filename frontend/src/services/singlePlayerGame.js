@@ -12,12 +12,12 @@ const fallbackFeedback = {
   id: [
     'Coba periksa kembali langkah pengerjaanmu. Apakah ada operasi atau perhitungan yang keliru?',
     'Belum tepat. Masukkan jawabanmu ke persamaan dan periksa kembali kedua ruasnya.',
-    'Jawaban masih belum tepat. Lihat pembahasan soal ini sebelum melanjutkan.',
+    'Jawaban masih belum tepat. Periksa kembali persamaan atau gunakan hint, lalu coba lagi.',
   ],
   en: [
     'Check your solution again. Is there an operation or calculation that is incorrect?',
     'Not quite. Substitute your answer into the equation and check both sides.',
-    'That answer is still incorrect. Review the solution before continuing.',
+    'That answer is still incorrect. Check the equation or use a hint, then try again.',
   ],
 };
 
@@ -105,6 +105,8 @@ export async function validateChapterAnswer(questionId, answer, attempt, lang = 
   }
 
   const correct = isSameAnswer(submittedAnswer, question.answer);
+  // Attempts are unlimited. Only cap the feedback index so later mistakes
+  // continue using the final retry message without revealing the answer.
   const safeAttempt = Math.max(1, Math.min(3, Math.trunc(Number(attempt) || 1)));
   const match = correct ? null : feedbackMatch(question.id, submittedAnswer, locale);
   const result = {
@@ -115,6 +117,6 @@ export async function validateChapterAnswer(questionId, answer, attempt, lang = 
     feedbackBankRow: match?.id || null,
     errorType: match?.errorType || question.errorTag,
   };
-  if (correct || safeAttempt >= 3) result.correctAnswer = question.answer;
+  if (correct) result.correctAnswer = question.answer;
   return result;
 }

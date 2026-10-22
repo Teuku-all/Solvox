@@ -15,11 +15,14 @@ export default function CutsceneStory({
   const [isAuto, setIsAuto] = useState(false);
   const currentBeat = dialogues[currentIndex] || {};
   const playerSpeaker = characterType === 'asuka' ? 'asuna' : 'kazura';
-  const isPlayerSpeaking = currentBeat.speaker === playerSpeaker;
-  const speakerAsset = CUTSCENE_ASSETS.speakers[currentBeat.speaker];
+  const activeSpeakerId = Object.prototype.hasOwnProperty.call(CUTSCENE_ASSETS.speakers, currentBeat.speaker)
+    ? currentBeat.speaker
+    : 'narrator';
+  const isPlayerSpeaking = activeSpeakerId === playerSpeaker;
+  const speakerAsset = CUTSCENE_ASSETS.speakers[activeSpeakerId];
   const defaultOpponent = CUTSCENE_ASSETS.speakers[CUTSCENE_ASSETS.chapterOpponents[chapterId]];
-  const opponent = speakerAsset?.splash ? speakerAsset : defaultOpponent;
-  const isOpponentSpeaking = currentBeat.speaker !== 'narrator' && !isPlayerSpeaking;
+  const isOpponentSpeaking = activeSpeakerId !== 'narrator' && !isPlayerSpeaking;
+  const opponent = isOpponentSpeaking && speakerAsset?.splash ? speakerAsset : defaultOpponent;
   const english = lang === 'en';
 
   useEffect(() => {
@@ -57,8 +60,11 @@ export default function CutsceneStory({
           />
           <span>{playerName}</span>
         </div>
-        <div className={`cutscene__portrait cutscene__portrait--npc${isOpponentSpeaking ? ' is-speaking' : ''}`}>
-          {opponent?.splash&&<img className="cutscene__splash" src={opponent.splash} alt="" />}
+        <div
+          key={isOpponentSpeaking ? activeSpeakerId : CUTSCENE_ASSETS.chapterOpponents[chapterId]}
+          className={`cutscene__portrait cutscene__portrait--npc${isOpponentSpeaking ? ' is-speaking' : ''}`}
+        >
+          {opponent?.splash && <img className="cutscene__splash" src={opponent.splash} alt="" />}
           <span>{isOpponentSpeaking ? speakerName : (english ? defaultOpponent?.en : defaultOpponent?.id)}</span>
         </div>
       </div>
@@ -66,7 +72,7 @@ export default function CutsceneStory({
       <section className="cutscene__panel" aria-live="polite">
         <div className="cutscene__speaker">{speakerName}</div>
         <button className="cutscene__text" type="button" onClick={handleNext}>
-          {currentBeat[lang] || currentBeat.id || ''}
+          {currentBeat[lang] || ''}
         </button>
         <div className="cutscene__controls">
           <span className="cutscene__counter">{currentIndex + 1} / {dialogues.length}</span>
