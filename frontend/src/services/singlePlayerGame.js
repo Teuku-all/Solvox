@@ -65,17 +65,28 @@ function isSameAnswer(answer, expected) {
     && Math.abs(leftNumber - rightNumber) < 1e-7;
 }
 
+function feedbackAnswerKeys(value) {
+  const source = String(value ?? '').trim();
+  const variants = [source, source.replace(/\s*\([^)]*\)\s*$/, '').trim()];
+  const keys = new Set();
+  variants.forEach((variant) => {
+    if (!variant) return;
+    const numeric = parseNumber(variant);
+    if (Number.isFinite(numeric)) keys.add(`num:${Math.round(numeric * 1e6) / 1e6}`);
+    const normalized = normalizeAnswer(variant);
+    if (normalized) keys.add(`text:${normalized}`);
+  });
+  return keys;
+}
+
 function feedbackMatch(questionId, answer, lang) {
-  const numeric = parseNumber(answer);
-  const normalized = numeric == null ? normalizeAnswer(answer) : `num:${Math.round(numeric * 1e6) / 1e6}`;
+  const submittedKeys = feedbackAnswerKeys(answer);
   const rows = feedbackByLanguage[lang].filter((row) => Number(row.id) === Number(questionId));
   for (const row of rows) {
     const variants = String(row.wrongAnswers || '').split(/\s+(?:atau|or)\s+/i);
     for (const variant of variants) {
-      const number = parseNumber(variant);
-      const candidate = number == null
-        ? `text:${normalizeAnswer(variant)}` : `num:${Math.round(number * 1e6) / 1e6}`;
-      if (candidate === normalized) {
+      const candidates = feedbackAnswerKeys(variant);
+      if ([...candidates].some((candidate) => submittedKeys.has(candidate))) {
         return { id: row.id, code: row.code, errorType: row.errorType, feedback: row.feedback };
       }
     }

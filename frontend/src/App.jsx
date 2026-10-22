@@ -1,10 +1,10 @@
-import React,{useEffect,useState} from 'react';
+import React,{Suspense,lazy,useEffect,useState} from 'react';
 import HomeMenu from './components/menu/HomeMenu';
-import Battle from './components/battle/Battle';
-import Evaluation from './components/screens/Evaluation';
+const Battle = lazy(() => import('./components/battle/Battle'));
+const Evaluation = lazy(() => import('./components/screens/Evaluation'));
 import ProfilePanel from './components/menu/ProfilePanel';
 import Feedback from './components/menu/Feedback';
-import Multiplayer from './components/multiplayer/Multiplayer';
+const Multiplayer = lazy(() => import('./components/multiplayer/Multiplayer'));
 import ModeSelect from './components/menu/ModeSelect';
 import ChapterSelect from './components/menu/ChapterSelect';
 import SinglePlayerCharacterSelect from './components/character/SinglePlayerCharacterSelect';
@@ -42,8 +42,12 @@ function loadVisitedChapters(){
     return saved&&typeof saved==='object'&&!Array.isArray(saved)?saved:{};
   }catch{return {}}
 }
+function loadLanguage(){
+  const saved=localStorage.getItem('solvox.lang')||localStorage.getItem('numericore.lang')||localStorage.getItem('aljabarmaster.lang');
+  return saved==='en'?'en':'id';
+}
 export default function App(){
-  const [state,setState]=useState(load),[screen,setScreen]=useState('home'),[level,setLevel]=useState(1),[playerId,setPlayerId]=useState(()=>localStorage.getItem(PLAYER_STORAGE)||'traveler'),[playerSelectionLocked,setPlayerSelectionLocked]=useState(()=>localStorage.getItem(PLAYER_LOCK_STORAGE)==='1'),[battleSession,setBattleSession]=useState(0),[evaluation,setEvaluation]=useState(null),[feedback,setFeedback]=useState(false),[settings,setSettings]=useState(false),[profileOpen,setProfileOpen]=useState(false),[tutorialOpen,setTutorialOpen]=useState(false),[multiplayerBattle,setMultiplayerBattle]=useState(false),[lang,setLang]=useState(()=>localStorage.getItem('solvox.lang')||localStorage.getItem('numericore.lang')||localStorage.getItem('aljabarmaster.lang')||'id');
+  const [state,setState]=useState(load),[screen,setScreen]=useState('home'),[level,setLevel]=useState(1),[playerId,setPlayerId]=useState(()=>localStorage.getItem(PLAYER_STORAGE)||'traveler'),[playerSelectionLocked,setPlayerSelectionLocked]=useState(()=>localStorage.getItem(PLAYER_LOCK_STORAGE)==='1'),[battleSession,setBattleSession]=useState(0),[evaluation,setEvaluation]=useState(null),[feedback,setFeedback]=useState(false),[settings,setSettings]=useState(false),[profileOpen,setProfileOpen]=useState(false),[tutorialOpen,setTutorialOpen]=useState(false),[multiplayerBattle,setMultiplayerBattle]=useState(false),[lang,setLang]=useState(loadLanguage);
   const [activeCutscene,setActiveCutscene]=useState(null);
   const [visitedChapters,setVisitedChapters]=useState(loadVisitedChapters);
   const t=(k,vars)=>{let value=T[lang]?.[k] ?? T.id?.[k] ?? k; if(vars) Object.entries(vars).forEach(([name,val])=>{value=value.replaceAll(`{${name}}`,String(val))}); return value;};
@@ -62,10 +66,12 @@ export default function App(){
     const next={...DEFAULT,profile:{...DEFAULT.profile,createdAt:Date.now()}};
     save(next);
     LEGACY_STORAGES.forEach((key)=>localStorage.removeItem(key));
+    localStorage.removeItem(VISITED_CHAPTERS_STORAGE);
     localStorage.removeItem(PLAYER_LOCK_STORAGE);
     localStorage.setItem(PLAYER_STORAGE,'traveler');
     setState(next);
     setPlayerSelectionLocked(false);
+    setVisitedChapters({});
     setPlayerId('traveler');
     setLevel(1);
     setActiveCutscene(null);
@@ -173,6 +179,7 @@ export default function App(){
   const saveProfile=(profile)=>{const clean={...state.profile,...profile,name:String(profile?.name||state.profile?.name||'Player').trim().slice(0,18)||'Player'};setState(v=>({...v,profile:clean,playerName:clean.name}));setProfileOpen(false)};
   return <div className={`app-shell ${screen==='battle'?'battle-active':''}`} data-screen={screen}>
     {screen!=='battle'&&!(screen==='multi'&&multiplayerBattle)&&screen!=='home'&&screen!=='modes'&&screen!=='chapters'&&screen!=='character'&&screen!=='about'&&screen!=='dashboard'&&<header className="global-bar"><div className="global-brand"><SolvoxBrandLogo compact/><span className="global-brand-copy"><b>{t('online')}</b><small>{t('subtitle')}</small></span></div><nav className="global-actions" aria-label={lang==='en'?'Game options':'Pengaturan game'}><button className="global-action" title={t('feedback')} aria-label={t('feedback')} onClick={()=>setFeedback(true)}><PixelIcon name="feedback" size={17}/><span>{t('feedback')}</span></button><button className="global-action" title={t('settingsTitle')} aria-label={t('settingsTitle')} onClick={()=>setSettings(true)}><PixelIcon name="gear" size={17}/><span>{t('settingsTitle')}</span></button></nav></header>}
+    <Suspense fallback={<div className="loading-screen" role="status"><p>{t('loading')}</p></div>}>
     {screen==='home'&&<HomeMenu t={t} profileName={state.profile?.name||state.playerName} onMain={()=>setScreen('modes')} onTutorial={()=>setTutorialOpen(true)} onSettings={()=>setSettings(true)} onFeedback={()=>setFeedback(true)} onDashboard={()=>setScreen('dashboard')} onProfile={()=>setProfileOpen(true)}/>} 
     {screen==='modes'&&<ModeSelect lang={lang} t={t} onBack={()=>setScreen('home')} onSingle={()=>setScreen('chapters')} onMulti={()=>setScreen('multi')}/>}
     {screen==='chapters'&&<ChapterSelect progress={state} lang={lang} t={t} onBack={()=>setScreen('modes')} onSelectChapter={selectChapter}/>}
@@ -187,5 +194,6 @@ export default function App(){
     {screen==='about'&&<AboutDevelopers lang={lang} t={t} onBack={()=>setScreen('home')}/>}
     {profileOpen&&<ProfilePanel progress={state} profile={state.profile} playerId={playerId} onClose={()=>setProfileOpen(false)} onSave={saveProfile} t={t} lang={lang}/>}
     {tutorialOpen&&<Tutorial t={t} lang={lang} onClose={()=>setTutorialOpen(false)} onPlay={()=>{setTutorialOpen(false);setScreen('modes')}}/>}
+    </Suspense>
   </div>
 }

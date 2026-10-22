@@ -50,6 +50,7 @@ must(
 );
 must(!app.includes('MathActivities') && !app.includes("screen==='activities'") && !app.includes('activityLogs:'), 'Legacy Math Lab wiring still present');
 must(app.includes('summarizePerformance(result).mastery'), 'Completed runs do not persist mastery');
+must(app.includes('function loadLanguage()') && app.includes("return saved==='en'?'en':'id';") && app.includes('localStorage.removeItem(VISITED_CHAPTERS_STORAGE);') && app.includes('setVisitedChapters({});'), 'Reset must clear visited-story progress and invalid saved languages must fall back to Indonesian');
 must(
   !home.includes("id: 'activities'") &&
     home.includes("id: 'settings'") &&
@@ -609,4 +610,13 @@ const bankEn = feedbackEn.find((row) => row.id === 1 && row.wrongAnswers === '22
 const verdictId = evaluateAttempt({questionId:1,answer:'22',attempt:1,lang:'id'});
 const verdictEn = evaluateAttempt({questionId:1,answer:'22',attempt:1,lang:'en'});
 must(bankId && bankEn && verdictId.feedbackBankMatched && verdictEn.feedbackBankMatched && verdictId.feedback === bankId.feedback && verdictEn.feedback === bankEn.feedback, 'Wrong-answer feedback must use the matching question-bank entry in the selected language');
+for (const [locale, rows] of [['id', feedbackId], ['en', feedbackEn]]) {
+  for (const row of rows) {
+    const variants = String(row.wrongAnswers || '').split(locale === 'en' ? ' or ' : ' atau ');
+    for (const variant of variants) {
+      const verdict = evaluateAttempt({ questionId: row.id, answer: variant, attempt: 1, lang: locale });
+      must(verdict?.feedbackBankMatched && verdict.feedbackBankCode === row.code, `Question ${row.id} feedback ${row.code} must match its ${locale} bank answer variant`);
+    }
+  }
+}
 console.log('Single-player retry damage and localized question-bank feedback PASS');
