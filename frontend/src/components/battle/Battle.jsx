@@ -29,6 +29,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [questionRequest, setQuestionRequest] = useState(0);
+  const [devQuestionIndex, setDevQuestionIndex] = useState('0');
   const [actionError, setActionError] = useState('');
   const [idx, setIdx] = useState(0);
   const [answer, setAnswer] = useState('');
@@ -100,6 +101,18 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     setImpactAmount(amount);
     setImpactTheme(theme);
     later(() => setImpact(null), 650);
+  };
+
+  const devJumpToQuestion = () => {
+    if (!import.meta.env.DEV || busy) return;
+    const targetIndex = Number(devQuestionIndex);
+    if (!Number.isInteger(targetIndex) || targetIndex < 0 || targetIndex >= questions.length || targetIndex === idx) return;
+    setFeedback(null);
+    setAnswer('');
+    setSimulation({ ready: false, modelCorrect: false, modelErrors: 0, stepErrors: 0, stepsCompleted: 0, stepsTotal: 0 });
+    setBalanceSolvedQuestionId(null);
+    setRound(targetIndex + 1);
+    setIdx(targetIndex);
   };
 
   /* --------------------------- Reset on chapter --------------------------- */
@@ -514,6 +527,14 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
             </div>
           )}
           {actionError && <div className="question-fallback-banner" role="alert"><PixelIcon name="warning" size={14}/><span>{actionError}</span></div>}
+
+          {import.meta.env.DEV && <div className="battle-dev-question-jump">
+            <label htmlFor="battle-dev-question">DEV · {lang === 'en' ? 'Jump to question' : 'Lompat ke soal'}</label>
+            <select id="battle-dev-question" value={devQuestionIndex} onChange={(event) => setDevQuestionIndex(event.target.value)} disabled={busy}>
+              {questions.map((question, index) => <option key={`${question.id}-${index}`} value={index}>{lang === 'en' ? 'Question' : 'Soal'} {question.id ?? index + 1}</option>)}
+            </select>
+            <button type="button" onClick={devJumpToQuestion} disabled={busy || Number(devQuestionIndex) === idx}>{lang === 'en' ? 'Jump' : 'Lompat'}</button>
+          </div>}
 
           {feedback?.type === 'wrong' && (
             <aside className="battle-mistake-banner" role="alert" aria-live="polite">

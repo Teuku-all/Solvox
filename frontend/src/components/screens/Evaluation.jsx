@@ -63,7 +63,7 @@ export default function Evaluation({ result, onClose, onRematch, onNext, nextLev
       <div ref={dialogRef} className={`eval-card eval-card-detailed eval-card--detailed ${result.won ? 'win' : 'loss'}`} role="dialog" aria-modal="true" aria-labelledby="evaluation-title">
         <header className="eval-summary">
           <div className="eval-summary-copy">
-            <div className="eval-heading-row"><div className="eyebrow">{t('evaluation')}</div><button className="dialog-icon-close evaluation-close" type="button" onClick={() => dismiss()} aria-label={t('backToMap')}><PixelIcon name="close" size={18}/></button></div>
+            <div className="eval-heading-row"><div className="eyebrow">{t('evaluation')}</div><button className="dialog-icon-close evaluation-close" type="button" onClick={() => dismiss()} aria-label={lang === 'en' ? 'Back to home' : 'Kembali ke beranda'}><PixelIcon name="close" size={18}/></button></div>
             <h2 id="evaluation-title">{statusText}</h2>
             <p>{outcomeNote}</p>
           </div>
@@ -147,7 +147,7 @@ export default function Evaluation({ result, onClose, onRematch, onNext, nextLev
 
         <p className="eval-note">{t('masteryNote')}</p>
         <div className="eval-actions">
-          <button className="secondary-btn" onClick={() => dismiss()}>{t('backToMap')}</button>
+          <button className="secondary-btn" onClick={() => dismiss()}>{lang === 'en' ? 'Back to home' : 'Kembali ke beranda'}</button>
           <button className="secondary-btn rematch-btn" onClick={() => dismiss(onRematch)}><PixelIcon name="retry" size={15} /><span>{t('rematch')}</span></button>
           {nextLevel && <button className="primary-btn" onClick={() => dismiss(() => onNext(nextLevel))}>{t('nextChapter')} →</button>}
         </div>

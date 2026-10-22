@@ -22,20 +22,18 @@ const GUIDE = {
     ],
     chapterTitle: 'Perjalanan chapter',
     practiceTitle: 'Coba timbangan dan ubin',
-    practiceIntro: 'Seret ubin +1 dari salah satu piring untuk mengurangi, atau dari kotak opsi ke piring untuk menambahkan. Seimbangkan kedua ruas sebelum memasukkan jawaban. Latihan ini tidak mengubah HP atau progres.',
+    practiceIntro: 'Seret ubin dari kotak opsi ke piring. Ubin dalam timbangan hanya bisa digeser ke ruas lain. Ubin −1 akan meniadakan satu ubin +1 pada piring yang sama. Latihan ini tidak mengubah HP atau progres.',
     practicePanLeft: 'Ruas kiri',
     practicePanRight: 'Ruas kanan',
-    practiceTileTray: 'Kotak opsi · seret +1 ke piring',
-    practiceDragHint: 'Seret satu ubin +1 keluar dari piring, lalu lakukan hal yang sama pada piring satunya. Ulangi sampai x tersisa sendiri.',
+    practiceTileTray: 'Kotak opsi · seret +1 atau −1 ke piring',
+    practiceDragHint: 'Seret −1 ke tiap piring. Setiap −1 meniadakan satu +1. Ubin di piring hanya bisa digeser ke ruas lain.',
     practiceBalance: 'Seimbang',
     practiceLeftHeavy: 'Ruas kiri lebih berat',
     practiceRightHeavy: 'Ruas kanan lebih berat',
-    practiceRemoveLeft: 'Kurangi kiri',
-    practiceRemoveRight: 'Kurangi kanan',
     practiceAddLeft: 'Tambah kiri',
     practiceAddRight: 'Tambah kanan',
     practiceUndo: 'Urungkan',
-    practiceDragWrong: 'Lepaskan ubin di luar kedua piring untuk mengurangi, atau jatuhkan ubin opsi ke salah satu piring untuk menambah.',
+    practiceDragWrong: 'Jatuhkan ubin dari kotak opsi ke salah satu piring.',
     practiceStep: 'Langkah',
     practicePrompt: ['Apa yang kamu lakukan pada 2x + 4 = 12?', 'Sekarang bagaimana membuat x sendiri?', 'Nilai x sudah ditemukan. Masukkan hanya angkanya.'],
     practiceChoices: [
@@ -52,7 +50,7 @@ const GUIDE = {
     ],
     practiceGood: 'Benar! Kedua ruas tetap setara. Lanjutkan langkah berikutnya.',
     practiceWrong: 'Belum tepat. Operasi yang sama harus diterapkan pada kedua ruas agar persamaan tetap setara.',
-    practiceAnswerWrong: 'Selesaikan ubin hingga tersisa x = 7, lalu masukkan angka 7.',
+    practiceAnswerWrong: 'Tambahkan −1 pada kedua ruas sampai tersisa x = 7, lalu masukkan angka 7.',
     practiceAnswerPlaceholder: 'Nilai x',
     practiceAttack: 'Jawab & Serang',
     practiceDoneTitle: 'Serangan berhasil!',
@@ -63,7 +61,7 @@ const GUIDE = {
     battleCards: [
       { icon: 'book', title: 'Baca misi dan konsep', body: 'Perhatikan cerita, pertanyaan, dan konsep pada panel soal. Pada Chapter 5, pilih model cerita yang benar sebelum menyelesaikan persamaan.' },
       { icon: 'shield', title: 'Jaga kedua ruas setara', body: 'Terapkan operasi yang sama pada kedua ruas. Tombol Urungkan memulihkan langkah sebelumnya. Jawaban aktif setelah simulasi selesai.' },
-      { icon: 'spark', title: 'Seret dan jatuhkan ubin', body: 'Pada mode timbangan, seret ubin dari kotak opsi ke piring untuk menambahkannya. Seret ubin yang sudah ada keluar dari piring untuk menguranginya; ulangi pada ruas lain agar seimbang.' },
+      { icon: 'spark', title: 'Seret dan jatuhkan ubin', body: 'Pada mode timbangan, seret ubin dari kotak opsi ke piring. Pasangkan ubin bernilai lawan pada piring yang sama agar keduanya hilang; lakukan operasi setara pada ruas lain.' },
       { icon: 'keyboard', title: 'Isi nilai variabel', body: 'Ketik nilainya saja, misalnya 4. Kamu bisa memakai keyboard perangkat atau tombol Tampilkan keypad, lalu tekan Jawab & Serang.' },
       { icon: 'hint', title: 'Gunakan petunjuk saat buntu', body: 'Ada maksimal 3 petunjuk per soal. Biayanya berturut-turut 5, 10, dan 15 HP. Lihat sisa HP sebelum memakainya.' },
       { icon: 'retry', title: 'Salah? Baca umpan balik', body: 'Pilihan langkah atau jawaban yang keliru menampilkan penjelasan. Kesalahan itu tidak langsung mengurangi HP; perbaiki langkah lalu coba lagi.' },
@@ -98,20 +96,18 @@ const GUIDE = {
     ],
     chapterTitle: 'Chapter journey',
     practiceTitle: 'Try the scale and tiles',
-    practiceIntro: 'Drag a +1 tile from a pan to remove it, or drag one from the tile tray onto a pan to add it. Balance both sides before entering the answer. This practice does not change your HP or progress.',
+    practiceIntro: 'Drag a tile from the tray onto a pan. Tiles on a pan can only move to the other side. A −1 tile cancels one +1 tile on the same pan. This practice does not change your HP or progress.',
     practicePanLeft: 'Left side',
     practicePanRight: 'Right side',
-    practiceTileTray: 'Tile tray · drag +1 to a pan',
-    practiceDragHint: 'Drag one +1 tile out of a pan, then do the same on the other side. Repeat until x is alone.',
+    practiceTileTray: 'Tile tray · drag +1 or −1 to a pan',
+    practiceDragHint: 'Drag −1 onto each pan. Each −1 cancels a +1. Tiles on a pan can only move to the other side.',
     practiceBalance: 'Balanced',
     practiceLeftHeavy: 'Left side is heavier',
     practiceRightHeavy: 'Right side is heavier',
-    practiceRemoveLeft: 'Remove from left',
-    practiceRemoveRight: 'Remove from right',
     practiceAddLeft: 'Add to left',
     practiceAddRight: 'Add to right',
     practiceUndo: 'Undo',
-    practiceDragWrong: 'Drop a tile outside both pans to remove it, or drop a tray tile onto either pan to add it.',
+    practiceDragWrong: 'Drop a tile from the tray onto either pan.',
     practiceStep: 'Step',
     practicePrompt: ['What should you do to 2x + 4 = 12?', 'How do you leave x on its own?', 'You have found x. Enter only its value.'],
     practiceChoices: [
@@ -128,7 +124,7 @@ const GUIDE = {
     ],
     practiceGood: 'Correct! Both sides stay equal. Continue to the next step.',
     practiceWrong: 'Not quite. Apply the same operation to both sides to keep the equation equal.',
-    practiceAnswerWrong: 'Remove the tiles until the equation is x = 7, then enter 7.',
+    practiceAnswerWrong: 'Add −1 to both sides until the equation is x = 7, then enter 7.',
     practiceAnswerPlaceholder: 'Value of x',
     practiceAttack: 'Answer & Attack',
     practiceDoneTitle: 'Attack successful!',
@@ -139,7 +135,7 @@ const GUIDE = {
     battleCards: [
       { icon: 'book', title: 'Read the mission and concept', body: 'Check the story, question, and concept in the question panel. In Chapter 5, choose the correct story model before solving the equation.' },
       { icon: 'shield', title: 'Keep both sides equal', body: 'Apply the same operation to both sides. Undo restores the previous step. The answer field unlocks after the simulation is complete.' },
-      { icon: 'spark', title: 'Drag and drop tiles', body: 'In balance mode, drag a tile from the tray onto a pan to add it. Drag a tile already on a pan out to remove it; repeat on the other side to balance the scale.' },
+      { icon: 'spark', title: 'Drag and drop tiles', body: 'In balance mode, drag a tile from the tray onto a pan. Opposite values on the same pan cancel each other; apply an equal operation to the other side.' },
       { icon: 'keyboard', title: 'Enter the variable value', body: 'Type only the value, such as 4. Use your device keyboard or Show keypad, then press Answer & Attack.' },
       { icon: 'hint', title: 'Use hints when stuck', body: 'You can reveal up to 3 hints per question. They cost 5, 10, and 15 HP in order. Check your remaining HP first.' },
       { icon: 'retry', title: 'Wrong? Read the feedback', body: 'An incorrect step or answer gives an explanation. It does not immediately cost HP; correct your work and try again.' },
@@ -182,6 +178,7 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
   const [rightUnits, setRightUnits] = useState(10);
   const [practiceHistory, setPracticeHistory] = useState([]);
   const [practiceDrag, setPracticeDrag] = useState(null);
+  const [practiceSelectedTile, setPracticeSelectedTile] = useState(-1);
   const practiceDragRef = useRef(null);
   const cardRef = useRef(null);
   const bodyRef = useRef(null);
@@ -223,18 +220,18 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
     setPracticeMessage(null);
   };
   const rememberPracticeBoard = () => setPracticeHistory((history) => [...history, { leftUnits, rightUnits }]);
-  const addPracticeUnit = (side) => {
+  const addPracticeUnit = (side, value) => {
     rememberPracticeBoard();
-    if (side === 'left') setLeftUnits((count) => count + 1);
-    else setRightUnits((count) => count + 1);
+    if (side === 'left') setLeftUnits((count) => count + value);
+    else setRightUnits((count) => count + value);
     setPracticeMessage(null);
   };
-  const removePracticeUnit = (side) => {
-    const count = side === 'left' ? leftUnits : rightUnits;
-    if (count <= 0) return;
+  const movePracticeUnit = (from, to, value) => {
     rememberPracticeBoard();
-    if (side === 'left') setLeftUnits((value) => Math.max(0, value - 1));
-    else setRightUnits((value) => Math.max(0, value - 1));
+    if (from === 'left') setLeftUnits((count) => count - value);
+    else setRightUnits((count) => count - value);
+    if (to === 'left') setLeftUnits((count) => count + value);
+    else setRightUnits((count) => count + value);
     setPracticeMessage(null);
   };
   const undoPractice = () => {
@@ -245,19 +242,19 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
     setPracticeHistory((history) => history.slice(0, -1));
     setPracticeMessage(null);
   };
-  const handlePracticePointerDown = (event, source, side = null) => {
+  const handlePracticePointerDown = (event, value, source = 'tray', fromSide = null) => {
     event.preventDefault();
     practiceDragRef.current?.cleanup?.();
     const pointerId = event.pointerId;
     const startX = event.clientX;
     const startY = event.clientY;
-    const drag = { source, side, pointerId, startX, startY, moved: false, cleanup: null };
+    const drag = { pointerId, startX, startY, moved: false, source, fromSide, cleanup: null };
     practiceDragRef.current = drag;
-    setPracticeDrag({ label: '+1', x: startX, y: startY });
+    setPracticeDrag({ label: value < 0 ? '−1' : '+1', x: startX, y: startY });
     const move = (moveEvent) => {
       if (moveEvent.pointerId !== pointerId || practiceDragRef.current !== drag) return;
       if (Math.abs(moveEvent.clientX - startX) + Math.abs(moveEvent.clientY - startY) > 7) drag.moved = true;
-      setPracticeDrag({ label: '+1', x: moveEvent.clientX, y: moveEvent.clientY });
+      setPracticeDrag({ label: value < 0 ? '−1' : '+1', x: moveEvent.clientX, y: moveEvent.clientY });
     };
     const finish = (upEvent) => {
       if (upEvent.pointerId !== pointerId || practiceDragRef.current !== drag) return;
@@ -266,9 +263,9 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
       practiceDragRef.current = null;
       setPracticeDrag(null);
       if (!drag.moved) return;
-      if (source === 'tray' && pan) addPracticeUnit(pan);
-      else if (source === 'pan' && !pan) removePracticeUnit(side);
-      else setPracticeMessage({ good: false, text: c.practiceDragWrong });
+      if (source === 'tray' && pan) addPracticeUnit(pan, value);
+      else if (source === 'pan' && pan && pan !== fromSide) movePracticeUnit(fromSide, pan, value);
+      else if (source === 'tray') setPracticeMessage({ good: false, text: c.practiceDragWrong });
     };
     const cancel = () => {
       drag.cleanup();
@@ -291,10 +288,12 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
     setLeftUnits(3);
     setRightUnits(10);
     setPracticeHistory([]);
+    setPracticeSelectedTile(-1);
   };
   const balanceDelta = 7 + leftUnits - rightUnits;
   const practiceSolved = leftUnits === 0 && rightUnits === 7;
   const pairedRemovals = Math.max(0, Math.min(3, 3 - leftUnits, 10 - rightUnits));
+  const practiceLeftExpression = leftUnits > 0 ? `x + ${leftUnits}` : leftUnits < 0 ? `x − ${Math.abs(leftUnits)}` : 'x';
 
   return createPortal(
     <div className={`tutorial-backdrop${closing ? ' is-closing' : ''}`} role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) dismiss(); }}>
@@ -327,26 +326,26 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
             <div className="tutorial-practice">
               <div className="tutorial-practice-top"><span>{c.practiceStep} {practiceSolved ? 3 : Math.min(2, pairedRemovals + 1)} / 3</span><div aria-label={`${pairedRemovals}/3`}>{[0, 1, 2].map((step) => <i key={step} className={3 - leftUnits > step && 10 - rightUnits > step ? 'done' : 3 - leftUnits === step || 10 - rightUnits === step ? 'current' : ''}/>)}</div></div>
               {practiceStep < 3 ? <>
-                <div className="tutorial-practice-equation" aria-label={`${leftUnits ? `x + ${leftUnits}` : 'x'} = ${rightUnits}`}><span>{leftUnits ? `x + ${leftUnits}` : 'x'}</span><b>=</b><span>{rightUnits}</span></div>
+                <div className="tutorial-practice-equation" aria-label={`${practiceLeftExpression} = ${rightUnits}`}><span>{practiceLeftExpression}</span><b>=</b><span>{rightUnits}</span></div>
                 <p className="tutorial-practice-prompt">{c.practiceDragHint}</p>
                 <div className={`tutorial-balance-stage ${balanceDelta > 0 ? 'is-left-heavy' : balanceDelta < 0 ? 'is-right-heavy' : 'is-level'}`}>
                   <div className="tutorial-balance-beam" aria-hidden="true"><i/></div>
                   <div className="tutorial-balance-pans">
                     <div className="tutorial-balance-pan" data-tutorial-pan="left">
                       <small>{c.practicePanLeft}</small>
-                      <div className="tutorial-balance-tiles"><span className="tutorial-x-tile">x</span>{Array.from({ length: leftUnits }, (_, index) => <button key={`left-${index}`} type="button" className="tutorial-unit-tile" aria-label={c.practiceRemoveLeft} title={c.practiceRemoveLeft} onPointerDown={(event) => handlePracticePointerDown(event, 'pan', 'left')} onClick={(event) => { if (event.detail === 0) removePracticeUnit('left'); }}>+1</button>)}</div>
-                      <strong>{leftUnits ? `x + ${leftUnits}` : 'x'}</strong>
+                      <div className="tutorial-balance-tiles"><span className="tutorial-x-tile">x</span>{Array.from({ length: Math.abs(leftUnits) }, (_, index) => <button key={`left-${index}`} type="button" className={`tutorial-unit-tile ${leftUnits < 0 ? 'is-negative' : ''}`} aria-label={leftUnits < 0 ? '−1, geser ke ruas lain' : '+1, geser ke ruas lain'} onPointerDown={(event) => handlePracticePointerDown(event, leftUnits < 0 ? -1 : 1, 'pan', 'left')}>{leftUnits < 0 ? '−1' : '+1'}</button>)}</div>
+                      <strong>{practiceLeftExpression}</strong>
                     </div>
                     <span className="tutorial-balance-equals" aria-hidden="true">=</span>
                     <div className="tutorial-balance-pan" data-tutorial-pan="right">
                       <small>{c.practicePanRight}</small>
-                      <div className="tutorial-balance-tiles">{Array.from({ length: rightUnits }, (_, index) => <button key={`right-${index}`} type="button" className="tutorial-unit-tile" aria-label={c.practiceRemoveRight} title={c.practiceRemoveRight} onPointerDown={(event) => handlePracticePointerDown(event, 'pan', 'right')} onClick={(event) => { if (event.detail === 0) removePracticeUnit('right'); }}>+1</button>)}</div>
+                      <div className="tutorial-balance-tiles">{Array.from({ length: Math.abs(rightUnits) }, (_, index) => <button key={`right-${index}`} type="button" className={`tutorial-unit-tile ${rightUnits < 0 ? 'is-negative' : ''}`} aria-label={rightUnits < 0 ? '−1, geser ke ruas lain' : '+1, geser ke ruas lain'} onPointerDown={(event) => handlePracticePointerDown(event, rightUnits < 0 ? -1 : 1, 'pan', 'right')}>{rightUnits < 0 ? '−1' : '+1'}</button>)}</div>
                       <strong>{rightUnits}</strong>
                     </div>
                   </div>
                   <div className="tutorial-balance-meter" role="status" aria-live="polite"><span className={balanceDelta > 0 ? 'left' : balanceDelta < 0 ? 'right' : 'center'}/><small>{balanceDelta > 0 ? c.practiceLeftHeavy : balanceDelta < 0 ? c.practiceRightHeavy : c.practiceBalance}</small></div>
                 </div>
-                <div className="tutorial-tile-tray"><strong>{c.practiceTileTray}</strong><div><button type="button" className="tutorial-unit-tile is-tray" onPointerDown={(event) => handlePracticePointerDown(event, 'tray')} aria-label={c.practiceTileTray}>+1</button><button type="button" onClick={() => addPracticeUnit('left')}>{c.practiceAddLeft}</button><button type="button" onClick={() => addPracticeUnit('right')}>{c.practiceAddRight}</button></div></div>
+                <div className="tutorial-tile-tray"><strong>{c.practiceTileTray}</strong><div>{[1, -1].map((value) => <button key={value} type="button" className={`tutorial-unit-tile is-tray ${value < 0 ? 'is-negative' : ''} ${practiceSelectedTile === value ? 'is-selected' : ''}`} onPointerDown={(event) => handlePracticePointerDown(event, value)} onClick={() => setPracticeSelectedTile(value)} aria-label={`${value < 0 ? '−1' : '+1'} ${c.practiceTileTray}`}>{value < 0 ? '−1' : '+1'}</button>)}<button type="button" onClick={() => addPracticeUnit('left', practiceSelectedTile)}>{c.practiceAddLeft} {practiceSelectedTile < 0 ? '−1' : '+1'}</button><button type="button" onClick={() => addPracticeUnit('right', practiceSelectedTile)}>{c.practiceAddRight} {practiceSelectedTile < 0 ? '−1' : '+1'}</button></div></div>
                 <div className="tutorial-practice-actions"><button type="button" onClick={undoPractice} disabled={!practiceHistory.length}><PixelIcon name="retry" size={15}/>{c.practiceUndo}</button>{practiceSolved && <form className="tutorial-practice-answer" onSubmit={submitPractice}><label><PixelIcon name="keyboard" size={17}/><input value={practiceAnswer} onChange={(event) => setPracticeAnswer(event.target.value)} inputMode="numeric" autoComplete="off" aria-label={c.practiceAnswerPlaceholder} placeholder={c.practiceAnswerPlaceholder}/></label><button type="submit" disabled={!practiceAnswer.trim()}><PixelIcon name="sword" size={17}/>{c.practiceAttack}</button></form>}</div>
                 {practiceMessage && <p className={`tutorial-practice-feedback ${practiceMessage.good ? 'good' : 'bad'}`} role="status">{practiceMessage.text}</p>}
               </> : <div className="tutorial-practice-done"><span><PixelIcon name="trophy" size={32}/></span><h4>{c.practiceDoneTitle}</h4><p>{c.practiceDoneBody}</p><button type="button" onClick={resetPractice}><PixelIcon name="retry" size={16}/>{c.practiceReset}</button></div>}

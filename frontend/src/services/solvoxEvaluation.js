@@ -145,15 +145,15 @@ export function evaluateSolvoxChapter(result = {}) {
   const accuracy = Math.round((correct / total) * 100);
   const hintsUsed = logs.reduce((sum, item) => sum + (Number(item.hintsUsed) || 0), 0);
   const avgTime = answered ? logs.reduce((sum, item) => sum + (Number(item.timeSec) || 0), 0) / answered : 0;
-  const wrongIds = idsOf(logs, (item) => !item.correct);
+  const wrongIds = idsOf(logs, (item) => !item.correct || Number(item.wrongAttempts) > 0 || Number(item.simulation?.stepErrors) > 0 || Number(item.simulation?.modelErrors) > 0);
   const hintHeavyRatio = logs.length ? logs.filter((item) => Number(item.hintsUsed) >= 2).length / logs.length : 0;
   const accuracyHigh = accuracy >= 70;
 
-  if ((chapterId === 1 && accuracy === 100 && hintsUsed === 0) ||
+  if (wrongIds.length === 0 && ((chapterId === 1 && accuracy === 100 && hintsUsed === 0) ||
       (chapterId === 2 && accuracy === 100 && hintsUsed === 0 && avgTime <= 15) ||
-      (chapterId === 3 && accuracy === 100 && !hits(wrongIds, ORDER_OF_OPERATIONS.concat(DISTRIBUTIVE))) ||
+      (chapterId === 3 && accuracy === 100) ||
       (chapterId === 4 && accuracy === 100) ||
-      (chapterId === 5 && accuracy === 100)) {
+      (chapterId === 5 && accuracy === 100))) {
     return { category: 'master', title: CATEGORY_TITLES[lang].master, message: rules.master, source: 'Solvox learning rules' };
   }
 

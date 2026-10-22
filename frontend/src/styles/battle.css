@@ -100,6 +100,26 @@
   background: rgba(7, 21, 23, .70);
 }
 
+.battle-dev-question-jump {
+  position: absolute;
+  z-index: 70;
+  top: 91px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid rgba(240,205,126,.55);
+  border-radius: 8px;
+  background: rgba(5,15,24,.92);
+  box-shadow: 0 6px 20px rgba(0,0,0,.35);
+}
+.battle-dev-question-jump label { color: #f3d98d; font-size: 9px; font-weight: 900; }
+.battle-dev-question-jump select,.battle-dev-question-jump button { min-height: 28px; padding: 4px 7px; border: 1px solid #486a86; border-radius: 5px; background: #122b43; color: #eaf5f6; font-size: 10px; }
+.battle-dev-question-jump button { border-color: #d5b66f; background: linear-gradient(180deg,#806b39,#544524); color: #fff1c1; font-weight: 850; cursor: pointer; }
+.battle-dev-question-jump button:disabled { opacity: .5; cursor: default; }
+.battle-dev-question-jump button:not(:disabled):hover,.battle-dev-question-jump button:focus-visible { filter: brightness(1.16); outline: 2px solid rgba(245,220,153,.55); outline-offset: 2px; }
+
 
 .stage-crown {
   width: 100%;

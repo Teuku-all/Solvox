@@ -155,7 +155,7 @@ export default function App(){
     const won=result.won!==false;
     const canSkip=hasPlayedBefore();
     const completed=new Set(normalizeCompleted(state.completedLevels));
-    if(won)completed.add(id);
+    if(won||result.completionReason==='chapter-complete')completed.add(id);
     const run={level:id,chapterId:id,...result,mastery:summarizePerformance(result).mastery,ts:Date.now()};
     const next={...state,completedLevels:normalizeCompleted([...completed]),playerEXP:state.playerEXP+(won?100:20),playerName:state.profile?.name||state.playerName,analytics:[...(state.analytics||[]),run]};
     const chapterStory=storyScript.chapters[id];
@@ -166,7 +166,7 @@ export default function App(){
     setState(next);
     setEvaluation(result);
   };
-  const finishEval=()=>{setEvaluation(null);setScreen('chapters')};
+  const finishEval=()=>{setEvaluation(null);setScreen('home')};
   const goNext=(nextId)=>{
     setEvaluation(null);
     if(!nextId){setScreen('chapters');return;}
@@ -188,7 +188,7 @@ export default function App(){
     {activeCutscene&&<CutsceneStory dialogues={activeCutscene.dialogues} chapterId={activeCutscene.chapterId} characterType={activeCutscene.characterId} canSkip={activeCutscene.canSkip} lang={lang} onComplete={finishCutscene} onSkip={finishCutscene}/>}
     {screen==='multi'&&<Multiplayer lang={lang} t={t} playerName={state.profile?.name||state.playerName} onBack={()=>setScreen('modes')} onBattleStateChange={setMultiplayerBattle}/>}
     {screen==='dashboard'&&<Multiplayer dashboardOnly lang={lang} t={t} playerName={state.profile?.name||state.playerName} onBack={()=>setScreen('home')} onPlay={()=>setScreen('multi')}/>}
-    {evaluation&&<Evaluation result={evaluation} onClose={finishEval} onRematch={rematch} onNext={goNext} nextLevel={evaluation.won&&Number(evaluation.chapterId||level)<LEVELS.length?Number(evaluation.chapterId||level)+1:null} t={t} lang={lang}/>} 
+    {evaluation&&!activeCutscene&&<Evaluation result={evaluation} onClose={finishEval} onRematch={rematch} onNext={goNext} nextLevel={(evaluation.won||evaluation.completionReason==='chapter-complete')&&Number(evaluation.chapterId||level)<LEVELS.length?Number(evaluation.chapterId||level)+1:null} t={t} lang={lang}/>}
     {feedback&&<Feedback lang={lang} t={t} onClose={()=>setFeedback(false)}/>}
     {settings&&<Settings lang={lang} t={t} onClose={()=>setSettings(false)} onReset={reset} onChangeLang={changeLang} onAboutUs={()=>{setSettings(false);setScreen('about')}}/>}
     {screen==='about'&&<AboutDevelopers lang={lang} t={t} onBack={()=>setScreen('home')}/>}
