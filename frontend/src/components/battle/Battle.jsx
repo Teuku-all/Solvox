@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ArenaBackground from './ArenaBackground';
 import BattleQuestionPanel from './BattleQuestionPanel';
 import MathSimulation from './MathSimulation';
+import { SIMULATIONS } from '../../data/algebraSimulation';
 import CombatStage from './CombatStage';
 import HitEffect from './HitEffect';
 import { loadChapterQuestions, validateChapterAnswer } from '../../services/singlePlayerGame';
@@ -46,6 +47,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   const [startedAt, setStartedAt] = useState(Date.now());
   const [questionLogs, setQuestionLogs] = useState([]);
   const [simulation, setSimulation] = useState({ ready: false, modelCorrect: false, modelErrors: 0, stepErrors: 0, stepsCompleted: 0, stepsTotal: 0 });
+  const [balanceSolvedQuestionId, setBalanceSolvedQuestionId] = useState(null);
   const [keypadVisible, setKeypadVisible] = useState(() => {
     const value = localStorage.getItem('solvox.keypad');
     const legacy = localStorage.getItem('numericore.keypad');
@@ -122,6 +124,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     setStartedAt(now);
     setQuestionLogs([]);
     setSimulation({ ready: false, modelCorrect: false, modelErrors: 0, stepErrors: 0, stepsCompleted: 0, stepsTotal: 0 });
+    setBalanceSolvedQuestionId(null);
     setLoadError('');
     questionAttemptRef.current = {
       wrongAttempts: 0,
@@ -354,6 +357,12 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
 
   const q = questions[idx];
   const maxEnemy = boss.hp;
+  const isBalanceQuestion = SIMULATIONS[Number(q?.id)]?.mode === 'balance';
+  const hideBalancePopup = isBalanceQuestion && (
+    balanceSolvedQuestionId === Number(q?.id)
+    || (simulation.ready && simulation.questionId === Number(q?.id))
+    || feedback?.type === 'correct'
+  );
 
   if (loading) {
     return (
@@ -475,7 +484,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
               playerId={playerId}
               onHit={() => showImpact('boss', damagePerQuestion, 'player')}
             />
-            <MathSimulation key={q.id} questionId={q.id} questionText={q.text} lang={lang} hintsUsed={currentHints} busy={busy} onProgress={setSimulation} />
+            {!hideBalancePopup && <MathSimulation key={q.id} questionId={q.id} lang={lang} hintsUsed={currentHints} busy={busy} onProgress={setSimulation} onBalanceSolved={(result) => { setBalanceSolvedQuestionId(result.questionId); setSimulation(result); }} />}
           </div>
 
           <BattleQuestionPanel

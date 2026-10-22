@@ -4,6 +4,8 @@
 
 The Vercel project serves the static frontend. Run the Node server (API and Socket.IO) as one persistent web service, for example on Render. Multiplayer rooms are held in server memory, so the API and Socket.IO connections must reach the same running server process.
 
+Set the Vercel project's Root Directory to the repository root and its Framework Preset to **Vite**. The root `vercel.json` also pins `framework: "vite"`, builds the frontend workspace, and publishes `frontend/dist`. A **Services** preset without a `services` declaration produces `[MISSING_SERVICES]` before the build starts; this project uses the persistent Render backend instead of Vercel Services.
+
 1. Create a Render web service from this repository using the included `render.yaml` blueprint. Wait until its `/health` endpoint returns `ok: true`.
 2. Set `FRONTEND_ORIGIN` on Render to the exact Vercel site origin, such as `https://your-game.vercel.app` (no trailing slash). For preview deployments, include each allowed origin separated by commas.
 3. Set these Vercel environment variables to the Render service URL, with no trailing slash:
