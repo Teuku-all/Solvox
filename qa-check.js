@@ -151,7 +151,8 @@ must(responsive105.includes('.chapter-select') && responsive105.includes('overfl
 must(responsive105.includes('.battle-reference-arena') && responsive105.includes('touch-action: pan-y') && responsive105.includes('.settings-head') && responsive105.includes('filter:none!important'), 'V103 responsive battle/mobile/settings layer is incomplete');
 must(!exists('frontend/src/components/OrientationNotice.jsx') && !main.includes('OrientationNotice'), 'Legacy orientation blocker remains after portrait-responsive update');
 must(Array.isArray(englishQuestions) && englishQuestions.length === 50 && englishQuestions.every(q => q.text && q.feedback && Array.isArray(q.hints) && q.hints.length === 3), 'English question pack must contain 50 complete questions');
-must(read('frontend/src/services/singlePlayerGame.js').includes("lang: lang === 'en' ? 'en' : 'id'") && singlePlayerGame.includes("lang === 'en' ? 'en' : 'id'"), 'Single-player question and answer APIs must support English and Indonesian');
+const frontendSinglePlayer = read('frontend/src/services/singlePlayerGame.js');
+must(frontendSinglePlayer.includes("const locale = lang === 'en' ? 'en' : 'id'") && frontendSinglePlayer.includes('questionsByLanguage[locale]') && frontendSinglePlayer.includes('fallbackFeedback[locale]') && singlePlayerGame.includes("lang === 'en' ? 'en' : 'id'"), 'Single-player question and answer services must support English and Indonesian');
 must(read('backend/question-generator.js').includes('packEn') && read('backend/question-generator.js').includes("lang === 'en' ? packEn : packId"), 'Multiplayer question generator is not language-aware');
 must(read('frontend/src/services/solvoxEvaluation.js').includes('CHAPTER_RULES_EN') && read('frontend/src/services/solvoxEvaluation.js').includes("result.lang === 'en'"), 'English chapter evaluation rules are missing');
 must(!css.includes('.home-v31') && !ui42.includes('.home-v31'), 'Legacy V31 Home CSS remains after the V77 rewrite');

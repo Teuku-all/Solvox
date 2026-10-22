@@ -53,4 +53,10 @@
   .home-menu-menu{gap:2px}
   .home-menu-item{font-size:26px;min-height:48px}
 }
+@media (max-height:620px){
+  .home-menu{overflow-x:hidden;overflow-y:auto}
+  .home-menu-nav{min-height:100dvh;padding-top:14px;padding-bottom:16px}
+  .home-menu-brand{margin-bottom:14px}
+  .home-menu-item{min-height:42px;padding-top:4px;padding-bottom:4px;font-size:clamp(20px,3.5vw,25px)}
+}
 @media (prefers-reduced-motion:reduce){.home-menu *{animation:none!important;transition:none!important}}

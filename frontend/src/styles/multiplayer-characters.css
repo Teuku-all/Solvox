@@ -758,9 +758,9 @@
   .multiplayer-battle-ui .hp-footer { display:none !important; }
 }
 
-/* Short phone viewports cannot fit the HUD, arena, and the question/hint/keypad
-   stack at once. Let the battle surface scroll so the keypad is never clipped. */
-@media(max-width:760px) and (max-height:900px) {
+/* The question, hint, and keypad need their natural height on every phone,
+   including tall viewports where the fixed dock was still too short. */
+@media(max-width:760px) {
   .multiplayer-battle-page {
     overflow-x:hidden !important;
     overflow-y:auto !important;
@@ -775,8 +775,33 @@
   .multiplayer-battle-page .multiplayer-battle-ui {
     height:auto !important;
     min-height:100dvh !important;
-    grid-template-rows:84px clamp(180px,26dvh,230px) auto !important;
+    grid-template-rows:84px clamp(195px,27dvh,285px) auto !important;
     overflow:visible !important;
+  }
+  .multiplayer-battle-ui .battle-reference-arena.multiplayer-arena {
+    grid-row:2 !important;
+    height:100% !important;
+    min-height:0 !important;
+    max-height:none !important;
+  }
+  .multiplayer-battle-ui .battle-question-panel {
+    grid-row:3 !important;
+    grid-template-rows:auto auto auto !important;
+  }
+  .multiplayer-battle-ui .battle-question-panel.is-no-hint {
+    grid-template-rows:auto auto !important;
+  }
+  .multiplayer-battle-ui .battle-question-panel.is-no-hint .battle-keypad-side {
+    grid-row:2 !important;
+  }
+  .multiplayer-battle-ui .battle-mistake-banner {
+    position:absolute !important;
+    grid-column:auto !important;
+    grid-row:auto !important;
+    top:88px !important;
+    left:50% !important;
+    width:min(700px,calc(100% - 32px)) !important;
+    transform:translateX(-50%) !important;
   }
 }
 
