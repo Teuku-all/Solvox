@@ -575,7 +575,7 @@ must(appV117.includes("localStorage.setItem(PLAYER_LOCK_STORAGE,'1')") && appV11
 must(appV117.includes('save(next);') && appV117.includes('LEGACY_STORAGES.forEach') && appV117.includes('setSettings(false);') && appV117.includes("setScreen('home');"), 'Reset must clear legacy progress, close overlays, and return to a playable home screen');
 must(assetsV117.includes("idle: 'idle-asuka'") && assetsV117.includes("attack: 'attack-asuka'") && assetsV117.includes("hurt: 'hurt-asuka'") && assetsV117.includes("die: 'die-asuka'"), 'V117 Asuka supplied folder mappings are missing');
 must(spriteV117.includes('activeAsset.sequenceFolders?.[mode] || mode'), 'V117 sprite loader ignores character-specific animation folders');
-must(battleV117.includes('value - hintCost') && battleV117.includes('const handleWrongAnswer = () =>') && battleV117.includes('setBusy(false);') && !battleV117.includes('hp - 8') && multi.includes('match-evaluation'), 'Single-player retry, hint HP cost, or multiplayer evaluation is missing');
+must(battleV117.includes('value - hintCost') && battleV117.includes('const handleWrongAnswer = ({ elapsed, attemptNow, history, tracker, bankAwareFeedback }) =>') && battleV117.includes('setBusy(false);') && multi.includes('match-evaluation'), 'Single-player retries, hint HP cost, or multiplayer evaluation is missing');
 must(battlePanelV117.includes(`{t('attempt')}: {attempts}`), 'Single-player attempt counter is missing');
 must(viteV117.includes("'/socket.io'") && viteV117.includes('ws: true') && viteV117.includes('http://127.0.0.1:3000'), 'V117 Vite Socket.IO proxy target is missing or may resolve to the wrong localhost interface');
 must(multiplayerV117.includes("socket.on('connect_error',onConnectError)") && multiplayerV117.includes('SOCKET_CONNECTION') && multiplayerV117.includes('socket.emit(\'room:join\'') && multiplayerV117.includes('pendingActionRef.current=action') && multiplayerV117.includes('pendingAction();'), 'V120 multiplayer connection/token recovery or queued click handling is incomplete');
@@ -601,5 +601,12 @@ must(evaluateAttempt({questionId:7,answer:'2.5',lang:'en'}).correct, 'Decimal fo
 must(evaluateAttempt({questionId:7,answer:'5/2',lang:'en'}).correct, 'Fraction form of a multi-answer question should be accepted');
 must(!evaluateAttempt({questionId:7,answer:'2.5,5/2',lang:'en'}).correct, 'A joined list of acceptable answers must not count as one answer');
 must(!evaluateAttempt({questionId:1,answer:'wrong',attempt:3}).correctAnswer && !evaluateAttempt({questionId:1,answer:'wrong',attempt:20}).correctAnswer, 'Wrong answers must allow unlimited retries without revealing the answer');
-must(battle.includes('const handleWrongAnswer = () => {') && !battle.match(/const handleWrongAnswer = \(\) => \{([\s\S]*?)\n  \};/)?.[1]?.match(/bossAttack|bossHurt|setHp\(/), 'Wrong answers must not trigger boss attacks or reduce player HP');
-console.log('Single-player answer variants PASS');
+must(battle.includes('tracker.wrongAttempts % 3 === 0') && battle.includes('combatRef.current?.bossAttack();') && battle.includes('const nextHp = Math.max(0, hp - boss.damage);') && battle.includes('combatRef.current?.playerHurt();'), 'The boss must attack and damage the player after every three wrong answers');
+const feedbackId = JSON.parse(read('backend/feedbackBank.id.json'));
+const feedbackEn = JSON.parse(read('backend/feedbackBank.en.json'));
+const bankId = feedbackId.find((row) => row.id === 1 && row.wrongAnswers === '22');
+const bankEn = feedbackEn.find((row) => row.id === 1 && row.wrongAnswers === '22');
+const verdictId = evaluateAttempt({questionId:1,answer:'22',attempt:1,lang:'id'});
+const verdictEn = evaluateAttempt({questionId:1,answer:'22',attempt:1,lang:'en'});
+must(bankId && bankEn && verdictId.feedbackBankMatched && verdictEn.feedbackBankMatched && verdictId.feedback === bankId.feedback && verdictEn.feedback === bankEn.feedback, 'Wrong-answer feedback must use the matching question-bank entry in the selected language');
+console.log('Single-player retry damage and localized question-bank feedback PASS');

@@ -271,7 +271,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
       return;
     }
 
-    handleWrongAnswer();
+    handleWrongAnswer({ elapsed, attemptNow, history, tracker, bankAwareFeedback });
   };
 
   const handleCorrectAnswer = ({ elapsed, attemptNow, history, tracker, verdict }) => {
@@ -345,14 +345,69 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     }, 380);
   };
 
-  const handleWrongAnswer = () => {
-    // A wrong attempt is feedback, not damage. The existing hint HP cost still
-    // applies when the player explicitly requests help.
-    setBusy(false);
+  const handleWrongAnswer = ({ elapsed, attemptNow, history, tracker, bankAwareFeedback }) => {
+    const shouldBossAttack = tracker.wrongAttempts > 0 && tracker.wrongAttempts % 3 === 0;
     setAnswer('');
-    window.requestAnimationFrame(() => {
-      document.querySelector('.battle-answer-input')?.focus();
-    });
+
+    if (!shouldBossAttack) {
+      setBusy(false);
+      window.requestAnimationFrame(() => document.querySelector('.battle-answer-input')?.focus());
+      return;
+    }
+
+    setBusy(true);
+    combatRef.current?.bossAttack();
+    playBossAttack(levelId);
+    later(() => {
+      const nextHp = Math.max(0, hp - boss.damage);
+      setHp(nextHp);
+      showImpact('player', boss.damage, 'boss');
+      combatRef.current?.playerHurt();
+
+      if (nextHp > 0) {
+        setBusy(false);
+        window.requestAnimationFrame(() => document.querySelector('.battle-answer-input')?.focus());
+        return;
+      }
+
+      const log = {
+        idx,
+        questionId: q.id ?? idx + 1,
+        text: q.text,
+        concept: q.concept,
+        errorTag: q.errorTag,
+        feedback: q.feedback,
+        correct: false,
+        answer,
+        attempts: attemptNow,
+        wrongAttempts: tracker.wrongAttempts,
+        timeSec: elapsed,
+        hintsUsed: currentHints,
+        hintMaxUsed: currentHints,
+        answerHistory: history,
+        feedbackBankHistory: [...(tracker.feedbackBankHistory || [])],
+        feedbackBankMatched: (tracker.feedbackBankHistory || []).some((entry) => entry.matched),
+        firstAttemptCorrect: false,
+        explanation: bankAwareFeedback || q.feedback,
+        simulation: { ...simulation },
+      };
+      const logs = [...questionLogs, log];
+      combatRef.current?.playerDie();
+      playSound('defeat');
+      later(() => finish({
+        accuracy: questions.length ? Math.round((correct / questions.length) * 100) : 0,
+        attempts: logs.reduce((sum, item) => sum + item.attempts, 0),
+        hints: logs.reduce((sum, item) => sum + item.hintsUsed, 0),
+        timeSec: Math.round((Date.now() - startedAt) / 1000),
+        correct,
+        won: false,
+        nextEnemyHp: enemyHp,
+        nextHp,
+        completionReason: 'player-defeated',
+        questionLogs: logs,
+        chapterEvaluation: evaluateSolvoxChapter({ chapterId: levelId, totalQuestions: questions.length, questionLogs: logs, won: false, nextHp, nextEnemyHp: enemyHp, lang }),
+      }), 500);
+    }, bossAttackImpactMs);
   };
 
   const q = questions[idx];
