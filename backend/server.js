@@ -317,7 +317,7 @@ app.get('/api/dashboard',(req,res)=>{
       if(new Date(row.ts)>new Date(item.lastPlayed))item.lastPlayed=row.ts;
       players.set(key,item);
     }
-    const leaderboard=[...players.values()].map(item=>({...item,accuracy:item.matches?Math.round(item.totalAccuracy/item.matches):0,avgScore:item.matches?Math.round(item.totalScore/item.matches):0,answerRate:item.totalAnswered?Math.round(item.totalCorrect/item.totalAnswered*100):0,avgHints:item.matches?Math.round(item.totalHints/item.matches*10)/10:0})).sort((a,b)=>(b.matches-a.matches)||(b.accuracy-a.accuracy)).slice(0,limit);
+    const leaderboard=[...players.values()].map(item=>({...item,accuracy:item.matches?Math.round(item.totalAccuracy/item.matches):0,avgScore:item.matches?Math.round(item.totalScore/item.matches):0,answerRate:item.totalAnswered?Math.round(item.totalCorrect/item.totalAnswered*100):0,avgHints:item.matches?Math.round(item.totalHints/item.matches*10)/10:0})).sort((a,b)=>(b.totalScore-a.totalScore)||(b.accuracy-a.accuracy)).slice(0,limit);
     res.json({ok:true,summary:{matches:new Set(rows.map(r=>r.matchId)).size,playerEntries:rows.length,uniquePlayers:players.size,totalAnswered:rows.reduce((n,x)=>n+(x.answered||0),0),avgAccuracy:rows.length?Math.round(rows.reduce((n,x)=>n+(x.accuracy||0),0)/rows.length):0,totalHints:rows.reduce((n,x)=>n+(x.hintsUsed||0),0)},players:leaderboard,recent:rows.slice(-limit).reverse()});
   }catch(e){res.status(500).json({ok:false,message:'Dashboard gagal dimuat'});}
 });

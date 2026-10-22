@@ -13,7 +13,7 @@ import {LEVELS} from '../../data/levels';
 import { playCharacterAttack, playSound } from '../../services/sound';
 import {apiJson} from '../../services/api';
 
-export default function Multiplayer({lang,onBack,t,playerName='',onBattleStateChange,dashboardOnly=false}){
+export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattleStateChange,dashboardOnly=false}){
   const [socket]=useState(()=>io(import.meta.env.VITE_SOCKET_URL || undefined,{autoConnect:false}));
   const [socketConnected,setSocketConnected]=useState(false);
   const roomRef=useRef(null);
@@ -35,10 +35,12 @@ export default function Multiplayer({lang,onBack,t,playerName='',onBattleStateCh
   const [showMatchReview,setShowMatchReview]=useState(false);
   const [dashboard,setDashboard]=useState(null);
   const [dashboardLoading,setDashboardLoading]=useState(false);
+  const [dashboardError,setDashboardError]=useState(false);
 
   const loadDashboard=()=>{
     setDashboardLoading(true);
-    apiJson('/api/dashboard?limit=20').then(data=>setDashboard(data)).catch(()=>setDashboard(null)).finally(()=>setDashboardLoading(false));
+    setDashboardError(false);
+    apiJson('/api/dashboard?limit=20').then(data=>setDashboard(data)).catch(()=>{setDashboard(null);setDashboardError(true)}).finally(()=>setDashboardLoading(false));
   };
   useEffect(()=>{if(playerName)setName(playerName)},[playerName]);
   useEffect(()=>{loadDashboard();},[]);
@@ -240,11 +242,13 @@ useEffect(()=>{
     else finishLeave();
   };
 
-  const myStats=dashboard?.players?.find(p=>String(p.name).trim().toLowerCase()===String(name).trim().toLowerCase());
-  const rankedPlayers=useMemo(()=>[...(dashboard?.players||[])].sort((a,b)=>((Number(b.totalScore)||Number(b.avgScore)||0)-(Number(a.totalScore)||Number(a.avgScore)||0))||(Number(b.accuracy)||0)-(Number(a.accuracy)||0)),[dashboard?.players]);
+  const leaderboardScore=(player)=>Number(player?.totalScore ?? player?.avgScore)||0;
+  const rankedPlayers=useMemo(()=>[...(dashboard?.players||[])].sort((a,b)=>(leaderboardScore(b)-leaderboardScore(a))||(Number(b.accuracy)||0)-(Number(a.accuracy)||0)),[dashboard?.players]);
+  const myStats=rankedPlayers.find(p=>String(p.name).trim().toLowerCase()===String(name).trim().toLowerCase());
   const myRank=rankedPlayers.findIndex(p=>String(p.name).trim().toLowerCase()===String(name).trim().toLowerCase());
-  const leaderboardScore=(player)=>Number(player?.totalScore)||Number(player?.avgScore)||0;
   const maxLeaderboardScore=Math.max(1,...rankedPlayers.map(leaderboardScore));
+  const nextRival=myRank>0?rankedPlayers[myRank-1]:null;
+  const rivalGap=nextRival?Math.max(0,leaderboardScore(nextRival)-leaderboardScore(myStats)):0;
   const bestAccuracy=Math.max(...(dashboard?.players||[]).map(p=>p.accuracy||0),0);
   const totalWins=(dashboard?.players||[]).reduce((n,p)=>n+(p.wins||0),0);
   const badges=[
@@ -292,29 +296,41 @@ useEffect(()=>{
       </div>}
 
       <section className="leaderboard-card">
-        {dashboardLoading && !dashboard ? <div className="leaderboard-loading">{t('loading')}</div> : dashboard?.summary?.playerEntries ? <>
-          <header className="leaderboard-header">
-            <div className="leaderboard-heading"><span className="leaderboard-heading-mark" aria-hidden="true">‹</span><div><span className="leaderboard-eyebrow">SOLVOX ARENA</span><h2>{lang==='en'?'LEADERBOARD':'PAPAN PERINGKAT'}</h2></div></div>
-            <SolvoxBrandLogo compact className="leaderboard-brand" />
-            <div className="leaderboard-header-meta"><span>{lang==='en'?'ALL TIME':'SEMUA WAKTU'}</span><span className="leaderboard-online"><i/>{dashboard.summary.uniquePlayers} {lang==='en'?'PLAYERS':'PEMAIN'}</span></div>
-          </header>
+        <header className="leaderboard-header">
+          <div className="leaderboard-heading"><span className="leaderboard-heading-mark" aria-hidden="true">‹</span><div><span className="leaderboard-eyebrow">SOLVOX ARENA</span><h2>{lang==='en'?'LEADERBOARD':'PAPAN PERINGKAT'}</h2></div></div>
+          <SolvoxBrandLogo compact className="leaderboard-brand" />
+          <div className="leaderboard-header-meta"><span>{lang==='en'?'ALL TIME':'SEMUA WAKTU'}</span>{dashboard?.summary&&<span className="leaderboard-online"><i/>{dashboard.summary.uniquePlayers} {lang==='en'?'PLAYERS':'PEMAIN'}</span>}</div>
+        </header>
+        {dashboardLoading && !dashboard ? <div className="leaderboard-loading"><PixelIcon name="spark" size={26}/><span>{t('loading')}</span></div> : dashboard?.summary?.playerEntries ? <>
+          <div className="leaderboard-overview" aria-label={lang==='en'?'Arena summary':'Ringkasan arena'}>
+            <div><small>{lang==='en'?'PLAYERS':'PEMAIN'}</small><strong>{Number(dashboard.summary.uniquePlayers||0).toLocaleString(lang==='en'?'en-US':'id-ID')}</strong></div>
+            <div><small>{lang==='en'?'MATCHES':'PERTANDINGAN'}</small><strong>{Number(dashboard.summary.matches||0).toLocaleString(lang==='en'?'en-US':'id-ID')}</strong></div>
+            <div><small>{lang==='en'?'YOUR RANK':'PERINGKATMU'}</small><strong>{myStats?`#${myRank+1}`:'—'}</strong></div>
+            <div className="leaderboard-overview-action"><button type="button" onClick={loadDashboard} disabled={dashboardLoading} aria-label={t('dashboardRefresh')} title={t('dashboardRefresh')}><PixelIcon name="retry" size={17}/></button></div>
+          </div>
+          <div className="leaderboard-rival">
+            <span className="leaderboard-rival-icon"><PixelIcon name={myRank===0?'crown':'sword'} size={20}/></span>
+            <div><small>{myRank===0?(lang==='en'?'ARENA LEADER':'PEMIMPIN ARENA'):(lang==='en'?'NEXT RIVAL':'RIVAL BERIKUTNYA')}</small><strong>{nextRival?nextRival.name:myStats?name:lang==='en'?'Enter the ranking':'Masuk papan peringkat'}</strong><span>{nextRival?`${lang==='en'?'Point gap':'Selisih poin'}: ${rivalGap.toLocaleString(lang==='en'?'en-US':'id-ID')} PTS`:myStats?(lang==='en'?'Defend your top spot in the next duel.':'Pertahankan posisi teratas di duel berikutnya.'):(lang==='en'?'Finish a match to claim your place.':'Selesaikan match untuk merebut posisi.')}</span></div>
+            {dashboardOnly&&<button className="leaderboard-duel-btn" type="button" onClick={onPlay}><PixelIcon name="sword" size={15}/>Duel</button>}
+          </div>
           <section className="leaderboard-podium" aria-label={lang==='en'?'Top three players':'Tiga pemain teratas'}>
             {[1,0,2].map((index)=>{
               const player=rankedPlayers[index];
-              if(!player)return <div className="leaderboard-podium-empty" key={`empty-${index}`}/>;
               const rank=index+1;
+              if(!player)return <div className="leaderboard-podium-empty" key={`empty-${index}`}><span>{rank}</span><small>{lang==='en'?'OPEN SPOT':'POSISI TERBUKA'}</small></div>;
               const initials=String(player.name||'?').trim().split(/\s+/).slice(0,2).map(part=>part[0]).join('').toUpperCase();
-              return <article className={`leaderboard-podium-card rank-${rank}`} key={player.name}>
+              const isSelf=String(player.name).trim().toLowerCase()===String(name).trim().toLowerCase();
+              return <article className={`leaderboard-podium-card rank-${rank} ${isSelf?'is-self':''}`} key={player.name}>
                 <span className="leaderboard-medal" aria-label={`${lang==='en'?'Rank':'Peringkat'} ${rank}`}>{rank===1?'★':rank}</span>
                 <div className="leaderboard-avatar">{initials}</div>
-                <strong className="leaderboard-player-name">{player.name}</strong>
+                <strong className="leaderboard-player-name">{player.name}{isSelf&&<em>{lang==='en'?'YOU':'KAMU'}</em>}</strong>
                 <small className="leaderboard-player-handle">@{String(player.name||'player').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,16)||'player'}</small>
                 <b className="leaderboard-points">{leaderboardScore(player).toLocaleString(lang==='en'?'en-US':'id-ID')} <small>PTS</small></b>
                 <span className="leaderboard-player-meta">{player.matches} {t('matchesPlayed')} · {player.wins} {t('wins')}</span>
               </article>;
             })}
           </section>
-          <section className="leaderboard-list" aria-label={lang==='en'?'Player rankings':'Peringkat pemain'}>
+          {rankedPlayers.length>3&&<section className="leaderboard-list" aria-label={lang==='en'?'Player rankings':'Peringkat pemain'}>
             <div className="leaderboard-list-head"><span>{lang==='en'?'RANK & PLAYER':'PERINGKAT & PEMAIN'}</span><span>{lang==='en'?'TOTAL POINTS':'TOTAL POIN'}</span></div>
             <div className="leaderboard-list-scroll">
               {rankedPlayers.slice(3).filter(player=>String(player.name).trim().toLowerCase()!==String(name).trim().toLowerCase()).map((player)=>{
@@ -324,17 +340,23 @@ useEffect(()=>{
                 return <article className="leaderboard-row" key={player.name}>
                   <span className="leaderboard-row-rank">{rank}</span><span className="leaderboard-row-avatar">{initials}</span>
                   <span className="leaderboard-row-copy"><strong>{player.name}</strong><small>@{String(player.name||'player').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,16)||'player'}</small></span>
-                  <span className="leaderboard-row-score"><b>{score.toLocaleString(lang==='en'?'en-US':'id-ID')} <small>PTS</small></b><i><span style={{width:`${Math.max(5,score/maxLeaderboardScore*100)}%`}}/></i></span>
+                  <span className="leaderboard-row-score"><b>{score.toLocaleString(lang==='en'?'en-US':'id-ID')} <small>PTS</small></b><i><span style={{width:`${score>0?Math.max(5,score/maxLeaderboardScore*100):0}%`}}/></i></span>
                 </article>;
               })}
             </div>
             {myStats&&myRank>=3&&<div className="leaderboard-self-row">
               <span className="leaderboard-row-rank">{myRank+1}</span><span className="leaderboard-row-avatar">{String(name||'?').trim().split(/\s+/).slice(0,2).map(part=>part[0]).join('').toUpperCase()}</span>
               <span className="leaderboard-row-copy"><strong>{name} <em>{lang==='en'?'YOU':'KAMU'}</em></strong><small>@{String(name||'player').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,16)||'player'}</small></span>
-              <span className="leaderboard-row-score"><b>{leaderboardScore(myStats).toLocaleString(lang==='en'?'en-US':'id-ID')} <small>PTS</small></b><i><span style={{width:`${Math.max(5,leaderboardScore(myStats)/maxLeaderboardScore*100)}%`}}/></i></span>
+              <span className="leaderboard-row-score"><b>{leaderboardScore(myStats).toLocaleString(lang==='en'?'en-US':'id-ID')} <small>PTS</small></b><i><span style={{width:`${leaderboardScore(myStats)>0?Math.max(5,leaderboardScore(myStats)/maxLeaderboardScore*100):0}%`}}/></i></span>
             </div>}
-          </section>
-        </> : <div className="leaderboard-empty"><div><PixelIcon name="chart" size={28}/></div><b>{t('dashboardEmpty')}</b><span>{t('startMatchForStats')}</span></div>}
+          </section>}
+        </> : <div className={`leaderboard-empty ${dashboardError?'is-error':''}`}>
+          <div className="leaderboard-empty-art" aria-hidden="true"><span/><span/><span/><i><PixelIcon name={dashboardError?'warning':'trophy'} size={30}/></i></div>
+          <small>{dashboardError?(lang==='en'?'CONNECTION ISSUE':'KONEKSI ARENA'):(lang==='en'?'THE RANKING STARTS HERE':'PEREBUTAN PERINGKAT DIMULAI')}</small>
+          <h3>{dashboardError?(lang==='en'?'Leaderboard unavailable':'Papan peringkat belum tersedia'):(lang==='en'?'The podium is waiting':'Podium menunggu penantang')}</h3>
+          <p>{dashboardError?(lang==='en'?'Could not reach the multiplayer server. Check the connection and try again.':'Server multiplayer belum dapat dihubungi. Periksa koneksi lalu coba lagi.'):(lang==='en'?'Complete a multiplayer match to earn points and appear on the board.':'Selesaikan match multiplayer untuk mendapat poin dan masuk papan peringkat.')}</p>
+          <div className="leaderboard-empty-actions"><button type="button" className="leaderboard-refresh-btn" onClick={loadDashboard} disabled={dashboardLoading}><PixelIcon name="retry" size={16}/>{t('dashboardRefresh')}</button>{dashboardOnly&&!dashboardError&&<button type="button" className="leaderboard-duel-btn" onClick={onPlay}><PixelIcon name="sword" size={16}/>{lang==='en'?'Start a duel':'Mulai duel'}</button>}</div>
+        </div>}
       </section>
     </>}
 
