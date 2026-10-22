@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { SIMULATIONS, STORY_MODELS, STORY_MODELS_EN, operationLabel } from '../../data/algebraSimulation';
 import PixelIcon from '../shared/PixelIcon';
+import Chapter2Partition from './Chapter2Partition';
 
 const copy = {
   id: {
@@ -24,6 +25,7 @@ const copy = {
     stepDone: 'Langkah sah. Persamaan tetap setara.',
     ready: 'Persamaan selesai. Konfirmasi nilai variabel di kolom jawaban untuk menyerang.',
     balancePrompt: 'Selesaikan persamaan berikut dengan menggunakan timbangan.',
+    groupPrompt: 'Bagi kedua ruas menjadi kelompok yang sama banyak untuk menemukan nilai setiap kelompok.',
     chapter: 'Chapter', question: 'Soal',
     tilePicker: 'Seret ubin', tileNumbers: 'Ubin bilangan', tileVariables: 'Ubin variabel',
     applyBoth: 'Terapkan ke kedua ruas', tileWrong: 'Pilih operasi yang membantu menyederhanakan persamaan saat ini.',
@@ -31,7 +33,7 @@ const copy = {
     addUnit: 'Kotak +1', removeTile: 'Keluarkan ubin', balanceHint: 'Coba lakukan hal yang sama pada ruas satunya agar timbangan kembali seimbang.',
     balanceStates: { left: 'Ruas kiri lebih berat', center: 'Timbangan seimbang', right: 'Ruas kanan lebih berat' },
     solvedLabel: 'Timbangan seimbang!',
-    applyOperation: 'Pilih operasi, lalu terapkan pada kedua ruas.', applyLeft: 'Terapkan di ruas kiri', applyRight: 'Sekarang terapkan juga di ruas kanan',
+    applyOperation: 'Pilih operasi, lalu terapkan pada kedua ruas.', applyOtherSide: 'Sekarang terapkan operasi yang sama pada ruas lainnya.', applyLeft: 'Terapkan di ruas kiri', applyRight: 'Sekarang terapkan juga di ruas kanan',
     operationMismatch: 'Operasi yang sama harus diterapkan pada kedua ruas. Coba pilih operasi yang menyederhanakan persamaan.',
     hint: 'Petunjuk langkah berikutnya',
     zero: '+1 dan −1 membentuk pasangan nol.',
@@ -57,6 +59,7 @@ const copy = {
     stepDone: 'Valid step. The equation remains equal.',
     ready: 'Equation solved. Confirm the variable value in the answer field to attack.',
     balancePrompt: 'Solve the equation below using the balance scale.',
+    groupPrompt: 'Split both sides into the same number of equal groups to find the value in each group.',
     chapter: 'Chapter', question: 'Question',
     tilePicker: 'Drag a tile', tileNumbers: 'Number tiles', tileVariables: 'Variable tiles',
     applyBoth: 'Apply to both sides', tileWrong: 'Choose an operation that simplifies the current equation.',
@@ -64,7 +67,7 @@ const copy = {
     addUnit: '+1 tile', removeTile: 'Remove tile', balanceHint: 'Try doing the same on the other side to balance the scale again.',
     balanceStates: { left: 'Left side is heavier', center: 'Scale balanced', right: 'Right side is heavier' },
     solvedLabel: 'Balance restored!',
-    applyOperation: 'Choose an operation, then apply it to both sides.', applyLeft: 'Apply to left side', applyRight: 'Now apply it to the right side too',
+    applyOperation: 'Choose an operation, then apply it to both sides.', applyOtherSide: 'Now apply the same operation to the other side.', applyLeft: 'Apply to left side', applyRight: 'Now apply it to the right side too',
     operationMismatch: 'Apply the same operation to both sides. Choose the operation that simplifies the equation.',
     hint: 'Hint for the next step',
     zero: '+1 and −1 form a zero pair.',
@@ -73,6 +76,15 @@ const copy = {
 };
 
 const splitEquation = (equation) => equation.split('=').map((side) => side.trim());
+function showOperationOnBothSides(equation, operation, lang) {
+  const [left, right] = splitEquation(equation);
+  const [, rawSymbol, rawValue] = operation.match(/^([+\-*/])\s*(.+)$/) || [];
+  if (!rawSymbol || !rawValue) return equation;
+  const symbols = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+  const value = rawValue.replace(/-/g, '−');
+  const operand = /^[−+]/.test(value) || /[\/.,]/.test(value) ? `(${value})` : value;
+  return `(${left}) ${symbols[rawSymbol]} ${operand} = (${right}) ${symbols[rawSymbol]} ${operand}`;
+}
 const localizeEquation = (equation, lang) => lang === 'en'
   ? equation.replace(/\b\d{1,3}(?:\.\d{3})+\b/g, (number) => number.replace(/\./g, ','))
     .replace(/(\d),(\d)(?!\d{2,})/g, '$1.$2')
@@ -116,6 +128,21 @@ const numberTiles = [1, -1].map((value) => ({
   label: `${value < 0 ? '−' : '+'}${Math.abs(value) === 0.5 ? '½' : Math.abs(value) === 0.25 ? '¼' : Math.abs(value)}`,
   shape: value < 0 ? 'triangle' : 'square',
 }));
+const halfNumberTiles = [0.5, -0.5].map((value) => ({
+  key: `number-${value}`, type: 'unit', value, parts: 2,
+  label: `${value < 0 ? '−' : '+'}1/2`, shape: 'triangle',
+}));
+const decimalNumberTiles = (config, lang) => {
+  const source = [config?.equation, ...(config?.steps || []).map((step) => `${step.operation} ${step.after}`)].join(' ');
+  const values = [...new Set((source.match(/\d+,\d+/g) || [])
+    .map((number) => Number(number.replace(',', '.')))
+    .filter((number) => Number.isFinite(number) && Math.abs(number) > 0))];
+  return values.flatMap((number) => [1, -1].map((sign) => {
+    const value = number * sign;
+    const magnitude = Math.abs(value).toLocaleString(lang === 'en' ? 'en-US' : 'id-ID', { maximumFractionDigits: 3, useGrouping: false });
+    return { key: `decimal-${value}`, type: 'unit', value, label: `${value < 0 ? '−' : '+'}${magnitude}`, shape: 'crystal' };
+  }));
+};
 const variableTiles = (symbol) => [1, -1].map((value) => ({
   key: `variable-${value}`, type: 'variable', value,
   label: `${value < 0 ? '−' : '+'}${Math.abs(value) === 1 ? '' : Math.abs(value)}${symbol}`,
@@ -133,9 +160,12 @@ const BALANCE_RESULT_HOLD_MS = 4000;
 const BALANCE_EXIT_MS = 650;
 const normalizeOperation = (operation) => operation.replace(/\s+/g, '').replace(/−/g, '-').replace(/×/g, '*').replace(/÷/g, '/');
 
-function parseBalanceSide(expression) {
+function parseBalanceSide(expression, lang = 'id') {
+  if (/[()]/.test(expression)) {
+    return [{ id: 'expression-0', type: /[a-z]/i.test(expression) ? 'variable' : 'unit', variable: expression.match(/[a-z]/i)?.[0], value: 0, label: expression, shape: 'crystal', expression: true }];
+  }
   const items = [];
-  const terms = expression.match(/[+-]?\s*(?:\d+(?:[.,]\d+)?\s*[a-z](?:\s*\/\s*\d+(?:[.,]\d+)?)?|[a-z](?:\s*\/\s*\d+(?:[.,]\d+)?)?|\d+(?:[.,]\d+)?)/gi) || [];
+  const terms = expression.match(/[+-]?\s*(?:(?:\d+\/\d+)\s*[a-z]|\d+\/\d+|\d+(?:[.,]\d+)?\s*[a-z](?:\s*\/\s*\d+(?:[.,]\d+)?)?|[a-z](?:\s*\/\s*\d+(?:[.,]\d+)?)?|\d+(?:[.,]\d+)?)/gi) || [];
   terms.forEach((term, index) => {
     const token = term.replace(/\s/g, '').replace(/−/g, '-');
     const variable = token.match(/^([+-]?)(\d+(?:[.,]\d+)?)?([a-z])(?:\/(\d+(?:[.,]\d+)?))?$/i);
@@ -147,11 +177,35 @@ function parseBalanceSide(expression) {
         items.push({ id: `v-${index}`, type: 'variable', variable: variable[3], value: coefficient, label: `${variable[3]}/${variable[4]}`, parts: denominator, shape: 'diamond' });
       } else if (Number.isInteger(Math.abs(coefficient)) && Math.abs(coefficient) <= 12) {
         for (let count = 0; count < Math.abs(coefficient); count += 1) items.push({ id: `v-${index}-${count}`, type: 'variable', variable: variable[3], value: Math.sign(coefficient) || 1, label: coefficient < 0 ? `−${variable[3]}` : variable[3], shape: 'diamond' });
-      } else items.push({ id: `v-${index}`, type: 'variable', variable: variable[3], value: coefficient, label: `${coefficient}${variable[3]}`, shape: 'diamond' });
+      } else items.push({ id: `v-${index}`, type: 'variable', variable: variable[3], value: coefficient, label: `${variable[1]}${variable[2]}${variable[3]}`, shape: 'diamond' });
       return;
     }
-    const value = Number(token.replace(',', '.'));
+    const fraction = token.match(/^([+-]?)(\d+)\/(\d+)$/);
+    if (fraction) {
+      const denominator = Number(fraction[3]);
+      const numerator = Number(fraction[2]);
+      if (!denominator) return;
+      const value = (fraction[1] === '-' ? -1 : 1) * numerator / denominator;
+      const fractionLabel = `${fraction[1] === '-' ? '−' : ''}${numerator}/${denominator}`;
+      items.push({ id: `n-${index}-fraction`, type: 'unit', value, label: fractionLabel, parts: denominator, shape: denominator === 2 ? 'triangle' : 'crystal' });
+      return;
+    }
+    const groupedThousands = lang === 'en'
+      ? /^[-+]?\d{1,3}(?:,\d{3})+$/.test(token)
+      : /^[-+]?\d{1,3}(?:\.\d{3})+$/.test(token);
+    const normalized = lang === 'en' ? token.replace(/,/g, '') : token.replace(/\./g, '').replace(',', '.');
+    const value = Number(normalized);
     if (!Number.isFinite(value)) return;
+    if (/[.,]/.test(token) && !groupedThousands) {
+      const magnitude = token.replace(/^[+-]/, '');
+      items.push({ id: `n-${index}-decimal`, type: 'unit', value, label: `${value < 0 ? '−' : '+'}${magnitude}`, shape: 'crystal' });
+      return;
+    }
+    if (Math.abs(value) > 36) {
+      const magnitude = Math.abs(value).toLocaleString(lang === 'en' ? 'en-US' : 'id-ID', { maximumFractionDigits: 0, useGrouping: true });
+      items.push({ id: `n-${index}-total`, type: 'unit', value, label: `${value < 0 ? '−' : '+'}${magnitude}`, shape: 'crystal' });
+      return;
+    }
     const count = Math.min(36, Math.floor(Math.abs(value)));
     for (let unit = 0; unit < count; unit += 1) items.push({ id: `n-${index}-${unit}`, type: 'unit', value: Math.sign(value) || 1, shape: 'square' });
     const remainder = Math.abs(value) - count;
@@ -160,7 +214,16 @@ function parseBalanceSide(expression) {
   return items;
 }
 
-function formatBalanceSide(items) {
+function formatBalanceSide(items, lang = 'id') {
+  const formatNumber = (value) => Number(value.toFixed(3)).toLocaleString(lang === 'en' ? 'en-US' : 'id-ID', { maximumFractionDigits: 3, useGrouping: true });
+  const expressionItem = items.find((item) => item.expression);
+  const regularItems = items.filter((item) => !item.expression);
+  if (expressionItem && !regularItems.length) return expressionItem.label;
+  if (expressionItem && regularItems.length) {
+    const addition = formatBalanceSide(regularItems, lang);
+    const delta = regularItems.reduce((sum, item) => sum + item.value, 0);
+    return `${expressionItem.label} ${delta < 0 ? '−' : '+'} ${addition}`;
+  }
   const coefficients = new Map();
   items.filter((item) => item.type === 'variable').forEach((item) => {
     const symbol = item.variable || item.label.match(/[a-z]/i)?.[0] || 'x';
@@ -169,11 +232,18 @@ function formatBalanceSide(items) {
   const terms = [...coefficients].filter(([, value]) => Math.abs(value) > 0.001).map(([symbol, value]) => {
     const magnitude = Math.abs(value);
     const fraction = items.find((item) => item.variable === symbol && item.parts && Math.abs(magnitude - 1 / item.parts) < 0.001);
-    const label = fraction ? `${symbol}/${fraction.parts}` : `${Math.abs(magnitude - 1) < 0.001 ? '' : Number(magnitude.toFixed(3))}${symbol}`;
+    const label = fraction ? `${symbol}/${fraction.parts}` : `${Math.abs(magnitude - 1) < 0.001 ? '' : formatNumber(magnitude)}${symbol}`;
     return { value, label };
   });
-  const constant = items.filter((item) => item.type === 'unit').reduce((sum, item) => sum + item.value, 0);
-  if (Math.abs(constant) > 0.001) terms.push({ value: constant, label: `${Number(Math.abs(constant).toFixed(3))}` });
+  const unitItems = items.filter((item) => item.type === 'unit');
+  const constant = unitItems.reduce((sum, item) => sum + item.value, 0);
+  if (Math.abs(constant) > 0.001) {
+    const hasHalf = unitItems.some((item) => item.parts === 2);
+    const label = hasHalf && Math.abs(constant - Math.round(constant)) > 0.001
+      ? `${Math.round(Math.abs(constant) * 2)}/2`
+      : formatNumber(Math.abs(constant));
+    terms.push({ value: constant, label });
+  }
   return terms.reduce((text, term) => text ? `${text} ${term.value < 0 ? '−' : '+'} ${term.label}` : `${term.value < 0 ? '−' : ''}${term.label}`, '') || '0';
 }
 
@@ -182,29 +252,72 @@ function BalanceTile({ item, side, onRemoveTile, removeLabel, draggingSource }) 
   return <button
     type="button"
     draggable="false"
-    className={`math-sim-balance-item ${item.type === 'variable' ? 'is-variable' : item.value < 0 ? 'is-negative' : 'is-positive'} shape-${item.shape || 'square'} ${item.parts ? 'is-divided' : ''} ${item.id.startsWith('added-') ? 'is-new' : ''} ${draggingSource === `pan-${side}-${item.id}` ? 'is-lifting' : ''}`}
+    className={`math-sim-balance-item ${item.expression ? 'is-expression' : ''} ${item.type === 'variable' ? 'is-variable' : item.value < 0 ? 'is-negative' : 'is-positive'} shape-${item.shape || 'square'} ${item.parts ? 'is-divided' : ''} ${item.id.startsWith('added-') ? 'is-new' : ''} ${draggingSource === `pan-${side}-${item.id}` ? 'is-lifting' : ''}`}
     aria-label={`${removeLabel} ${label}`}
     onPointerDown={(event) => onRemoveTile(event, side, item)}
     onClick={(event) => { if (event.detail === 0) onRemoveTile(event, side, item); }}
   ><span>{label}</span></button>;
 }
 
-function BalanceOperationVisual({ items, operation, value }) {
-  const amount = Math.max(2, Math.min(8, Math.abs(Number(String(value).replace(',', '.'))) || 2));
+function BalanceOperationVisual({ items, operation, value, result, lang }) {
+  if (operation === 'expand' || operation === 'simplify') {
+    const action = operation === 'expand'
+      ? (lang === 'en' ? 'Expand brackets' : 'Buka kurung')
+      : (lang === 'en' ? 'Combine like terms' : 'Gabungkan suku');
+    return <div className="math-sim-operation-visual" aria-live="polite"><small>{operation === 'expand' ? '↗' : '≋'}</small><div className="math-sim-operation-groups"><div className="math-sim-operation-group"><i>{action}</i><span>{items.length ? items.map((item, index) => <b key={`${item.id}-${index}`} className={item.type === 'variable' ? 'is-variable' : item.value < 0 ? 'is-negative' : ''}>{item.label || (item.value < 0 ? '−1' : '1')}</b>) : <b>0</b>}</span></div></div>{result && <strong className="math-sim-operation-result">→ {result}</strong>}</div>;
+  }
   const divide = operation.startsWith('/');
+  const arithmetic = operation.startsWith('+') || operation.startsWith('-');
+  if (arithmetic) {
+    const symbol = operation.startsWith('+') ? '+' : '−';
+    return <div className="math-sim-operation-visual" aria-live="polite">
+      <small>{symbol} {value}</small>
+      <div className="math-sim-operation-groups is-compact"><div className="math-sim-operation-group">
+        <i>{lang === 'en' ? 'Both sides' : 'Kedua ruas'}</i>
+        <span>{items.length ? items.map((item, index) => <b key={`${item.id}-${index}`} className={item.type === 'variable' ? 'is-variable' : item.value < 0 ? 'is-negative' : ''}>{item.label || (item.value < 0 ? '−1' : '1')}</b>) : <b>0</b>}</span>
+      </div></div>
+      {result && <strong className="math-sim-operation-result">→ {result}</strong>}
+    </div>;
+  }
+  const rawAmount = String(value || '2');
+  const fractionAmount = rawAmount.match(/^([+-]?\d+)\/(\d+)$/);
+  const numericAmount = fractionAmount ? Number(fractionAmount[1]) / Number(fractionAmount[2]) : Number(rawAmount.replace(',', '.'));
+  const groupCount = fractionAmount ? Math.abs(Number(fractionAmount[1])) : Math.round(Math.abs(numericAmount));
+  const amount = Math.max(2, groupCount || 2);
+  if (amount > 8) {
+    const perGroup = formatBalanceSide(items.map((item) => ({ ...item, value: item.value / amount })), lang);
+    return <div className="math-sim-operation-visual" aria-live="polite">
+      <small>{divide ? `÷ ${rawAmount}` : `× ${rawAmount}`}</small>
+      <div className="math-sim-operation-groups is-compact"><div className="math-sim-operation-group">
+        <i>{lang === 'en' ? `${amount} equal groups` : `${amount} kelompok sama`}</i>
+        <span><b>{formatBalanceSide(items, lang)}</b><b>{lang === 'en' ? `Each group: ${perGroup}` : `Tiap kelompok: ${perGroup}`}</b></span>
+      </div></div>
+      {result && <strong className="math-sim-operation-result">→ {result}</strong>}
+    </div>;
+  }
+  const expandedItems = items.flatMap((item) => item.type === 'unit' && Number.isInteger(Math.abs(item.value)) && Math.abs(item.value) > 1 && Math.abs(item.value) <= 120
+    ? Array.from({ length: Math.abs(item.value) }, (_, index) => ({ ...item, id: `${item.id}-unit-${index}`, value: Math.sign(item.value), label: item.value < 0 ? '−1' : '1' }))
+    : [item]);
   const groups = divide
-    ? Array.from({ length: amount }, (_, index) => items.filter((_, itemIndex) => itemIndex % amount === index))
+    ? Array.from({ length: amount }, (_, index) => expandedItems.flatMap((item, itemIndex) => {
+      if (item.type === 'unit' && Math.abs(item.value) > 120) {
+        const eachGroup = item.value / amount;
+        return [{ ...item, id: `${item.id}-group-${index}`, value: eachGroup, label: `${eachGroup} × 1` }];
+      }
+      return itemIndex % amount === index ? [item] : [];
+    }))
     : Array.from({ length: amount }, () => items);
   return <div className="math-sim-operation-visual" aria-live="polite">
-    <small>{divide ? `÷ ${amount}` : `× ${amount}`}</small>
+    <small>{divide ? `÷ ${rawAmount}` : `× ${rawAmount}`}</small>
     <div className="math-sim-operation-groups">{groups.map((group, index) => <div className="math-sim-operation-group" key={index}>
       <i>{divide ? `G${index + 1}` : `×${index + 1}`}</i>
       <span>{group.length ? group.map((item, itemIndex) => <b key={`${item.id}-${itemIndex}`} className={item.type === 'variable' ? 'is-variable' : item.value < 0 ? 'is-negative' : ''}>{item.label || (item.value < 0 ? '−1' : '1')}</b>) : <b>0</b>}</span>
     </div>)}</div>
+    {result && <strong className="math-sim-operation-result">→ {result}</strong>}
   </div>;
 }
 
-function BalanceScale({ left, right, equation, sides, selectedTile, overPans, tilt, indicator, statusText, balanceDelta, operationAnimation, onRemoveTile, removeLabel, draggingSource }) {
+function BalanceScale({ left, right, equation, sides, selectedTile, overPans, tilt, indicator, statusText, balanceDelta, operationAnimation, onRemoveTile, removeLabel, draggingSource, lang }) {
   const swing = balanceDelta ? Math.min(8, 4.5 + Math.abs(balanceDelta) * 1.1) : 0;
   const drop = balanceDelta ? Math.min(18, 8 + Math.abs(balanceDelta) * 2) : 0;
   const direction = Math.sign(balanceDelta);
@@ -226,12 +339,12 @@ function BalanceScale({ left, right, equation, sides, selectedTile, overPans, ti
     <div className={`math-sim-scale-pans ${overPans ? 'is-drop-target' : ''}`}>
       <div className={`math-sim-scale-pan is-left ${overPans === 'left' ? 'is-drop-target' : ''}`}>
         <small>{sides[0]}</small>
-        <div className="math-sim-balance-pan-content"><div className="math-sim-balance-tiles">{left.map((item) => <BalanceTile key={item.id} item={item} side="left" onRemoveTile={onRemoveTile} removeLabel={removeLabel} draggingSource={draggingSource} />)}</div><strong className="math-sim-balance-expression">{formatBalanceSide(left)}</strong>{operationAnimation && <BalanceOperationVisual items={left} {...operationAnimation} />}</div>
+        <div className="math-sim-balance-pan-content"><div className="math-sim-balance-tiles">{left.map((item) => <BalanceTile key={item.id} item={item} side="left" onRemoveTile={onRemoveTile} removeLabel={removeLabel} draggingSource={draggingSource} />)}</div><strong className="math-sim-balance-expression">{formatBalanceSide(left, lang)}</strong>{operationAnimation && <BalanceOperationVisual items={left} {...operationAnimation} result={operationAnimation.results?.[0]} lang={lang} />}</div>
       </div>
       <span className="math-sim-scale-equals" aria-hidden="true">=</span>
       <div className={`math-sim-scale-pan is-right ${overPans === 'right' ? 'is-drop-target' : ''}`}>
         <small>{sides[1]}</small>
-        <div className="math-sim-balance-pan-content"><div className="math-sim-balance-tiles">{right.map((item) => <BalanceTile key={item.id} item={item} side="right" onRemoveTile={onRemoveTile} removeLabel={removeLabel} draggingSource={draggingSource} />)}</div><strong className="math-sim-balance-expression">{formatBalanceSide(right)}</strong>{operationAnimation && <BalanceOperationVisual items={right} {...operationAnimation} />}</div>
+        <div className="math-sim-balance-pan-content"><div className="math-sim-balance-tiles">{right.map((item) => <BalanceTile key={item.id} item={item} side="right" onRemoveTile={onRemoveTile} removeLabel={removeLabel} draggingSource={draggingSource} />)}</div><strong className="math-sim-balance-expression">{formatBalanceSide(right, lang)}</strong>{operationAnimation && <BalanceOperationVisual items={right} {...operationAnimation} result={operationAnimation.results?.[1]} lang={lang} />}</div>
       </div>
     </div>
     <div className="math-sim-scale-base" aria-hidden="true" />
@@ -241,6 +354,9 @@ function BalanceScale({ left, right, equation, sides, selectedTile, overPans, ti
 
 export default function MathSimulation({ questionId, lang, hintsUsed, busy, onProgress, onBalanceSolved }) {
   const config = SIMULATIONS[Number(questionId)];
+  const questionNumber = Number(questionId);
+  const chapter2Symbolic = questionNumber >= 12 && questionNumber <= 19 && config?.mode === 'symbolic';
+  const chapter2Groups = (questionNumber === 11 || questionNumber === 20) && config?.mode === 'groups';
   const model = (lang === 'en' ? STORY_MODELS_EN : STORY_MODELS)[Number(questionId)] || [];
   const c = copy[lang === 'en' ? 'en' : 'id'];
   const [modelIndex, setModelIndex] = useState(0);
@@ -254,11 +370,12 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
   const [draggingSource, setDraggingSource] = useState('');
   const [overPans, setOverPans] = useState('');
   const [balancePhase, setBalancePhase] = useState('active');
-  const [balanceRows, setBalanceRows] = useState(() => config?.mode === 'balance' ? splitEquation(config.equation).map(parseBalanceSide) : [[], []]);
+  const [balanceRows, setBalanceRows] = useState(() => config ? splitEquation(localizeEquation(config.equation, lang)).map((side) => parseBalanceSide(side, lang)) : [[], []]);
   const [balanceDelta, setBalanceDelta] = useState(0);
   const [balanceHistory, setBalanceHistory] = useState([]);
   const [balanceHintVisible, setBalanceHintVisible] = useState(false);
   const [balanceOperation, setBalanceOperation] = useState('');
+  const [balanceOperationNumber, setBalanceOperationNumber] = useState('');
   const [operationSides, setOperationSides] = useState([]);
   const [operationAnimation, setOperationAnimation] = useState(null);
   const activeDrag = useRef(null);
@@ -282,7 +399,7 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
 
   const modelReady = modelIndex >= model.length;
   const ready = Boolean(config && modelReady && stepIndex >= config.steps.length);
-  const reportedReady = config?.mode === 'balance' ? ready && balancePhase === 'dismissed' : ready;
+  const reportedReady = config ? ready && balancePhase === 'dismissed' : ready;
 
   useEffect(() => {
     onProgress({ questionId: Number(questionId), ready: reportedReady, modelCorrect: modelReady, modelErrors, stepErrors, stepsCompleted: stepIndex, stepsTotal: config?.steps.length || 0 });
@@ -290,7 +407,7 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
 
   useEffect(() => { onBalanceSolvedRef.current = onBalanceSolved; }, [onBalanceSolved]);
   useEffect(() => {
-    if (config?.mode !== 'balance' || !ready) return undefined;
+    if (!config || !ready) return undefined;
     setBalancePhase('solved');
     const exitTimer = window.setTimeout(() => setBalancePhase('exiting'), BALANCE_RESULT_HOLD_MS);
     const dismissTimer = window.setTimeout(() => {
@@ -312,10 +429,10 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
     if (operationTimerRef.current) window.clearTimeout(operationTimerRef.current);
   }, []);
   useEffect(() => {
-    if (config?.mode !== 'balance') return;
+    if (!config) return;
     if (operationTimerRef.current) window.clearTimeout(operationTimerRef.current);
     operationTimerRef.current = null;
-    setBalanceRows(splitEquation(localizeEquation(config.equation, lang)).map(parseBalanceSide));
+    setBalanceRows(splitEquation(localizeEquation(config.equation, lang)).map((side) => parseBalanceSide(side, lang)));
     setBalanceDelta(0);
     setBalanceHintVisible(false);
     setBalanceHistory([]);
@@ -325,7 +442,7 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
     setBalancePhase('active');
   }, [questionId, config, lang]);
   useEffect(() => {
-    if (!balanceDelta || ready || busy || config?.mode !== 'balance') { setBalanceHintVisible(false); return undefined; }
+    if (!balanceDelta || ready || busy || !config) { setBalanceHintVisible(false); return undefined; }
     const timer = window.setTimeout(() => setBalanceHintVisible(true), 6500);
     return () => window.clearTimeout(timer);
   }, [balanceDelta, ready, busy, config]);
@@ -335,9 +452,10 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
   const previousEquation = stepIndex ? localizeEquation(stepIndex === 1 ? config.equation : config.steps[stepIndex - 2].after, lang) : null;
   const [left, right] = splitEquation(equation);
   const variableSymbol = config.equation.match(/[a-z]/i)?.[0] || 'x';
-  const balanceTileCatalog = [...numberTiles, ...variableTiles(variableSymbol)];
+  const balanceNumberTiles = [...numberTiles, ...([6, 7].includes(questionNumber) ? halfNumberTiles : []), ...decimalNumberTiles(config, lang)];
+  const balanceTileCatalog = [...balanceNumberTiles, ...variableTiles(variableSymbol)];
   const selectedTileOption = balanceTileCatalog.find((tile) => tile.key === selectedTile) || numberTiles[0];
-  const balanceEquation = `${formatBalanceSide(balanceRows[0])} = ${formatBalanceSide(balanceRows[1])}`;
+  const balanceEquation = `${formatBalanceSide(balanceRows[0], lang)} = ${formatBalanceSide(balanceRows[1], lang)}`;
   const initialGroup = config.mode === 'groups' && !stepIndex ? Number(config.equation.match(/^(\d+)(?:[a-z]|\()/i)?.[1] || 0) : 0;
   const next = config.steps[stepIndex];
   useEffect(() => { setSelectedTile('number-1'); setTileTab('number'); }, [questionId]);
@@ -378,7 +496,7 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
     return canonical(actual) === canonical(localizeEquation(expected, lang));
   };
   const updateBalanceRows = (sideIndex, update) => {
-    if (busy || ready || !next || operationAnimation) return;
+    if (busy || !modelReady || ready || !next || operationAnimation) return;
     const updated = balanceRows.map((row, index) => index === sideIndex ? update(row) : row);
     const deltaChange = sideIndex === 0 ? update.delta : -update.delta;
     const nextDelta = balanceDelta + deltaChange;
@@ -389,10 +507,10 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
     setBalanceDelta(nextDelta);
     setBalanceHintVisible(false);
     setMessage('');
-    const visibleEquation = `${formatBalanceSide(updated[0])} = ${formatBalanceSide(updated[1])}`;
+    const visibleEquation = `${formatBalanceSide(updated[0], lang)} = ${formatBalanceSide(updated[1], lang)}`;
     if (equationsMatch(visibleEquation, next.after)) {
       const done = stepIndex + 1 === config.steps.length;
-      setBalanceRows(splitEquation(localizeEquation(next.after, lang)).map(parseBalanceSide));
+      setBalanceRows(splitEquation(localizeEquation(next.after, lang)).map((side) => parseBalanceSide(side, lang)));
       setStepIndex((index) => index + 1);
       setBalanceDelta(0);
       setBalanceHistory((history) => [...history.slice(0, -1), { rows: balanceRows, delta: balanceDelta, stepIndex, operation: balanceOperation, operationSides }]);
@@ -401,7 +519,7 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
   };
   const removeBalanceItem = (event, side, item) => {
     event.preventDefault();
-    if (busy || ready || !next || operationAnimation) return;
+    if (busy || !modelReady || ready || !next || operationAnimation) return;
     const sideIndex = side === 'left' ? 0 : 1;
     const value = item.type === 'unit' ? item.value : item.value;
     const commitRemoval = () => updateBalanceRows(sideIndex, Object.assign((row) => row.filter((entry) => entry.id !== item.id), { delta: -value }));
@@ -434,11 +552,11 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
     window.addEventListener('pointermove', move); window.addEventListener('pointerup', finish); window.addEventListener('pointercancel', cancel);
   };
   const addBalanceTile = (sideIndex, tile) => {
-    if (busy || ready || !next || operationAnimation) return;
+    if (busy || !modelReady || ready || !next || operationAnimation) return;
     const id = `added-${Date.now()}-${Math.random().toString(16).slice(2)}`;
     const additions = tile.type === 'variable'
       ? Array.from({ length: Math.abs(tile.value) }, (_, index) => ({ id: `${id}-${index}`, type: 'variable', variable: variableSymbol, value: Math.sign(tile.value), label: tile.value < 0 ? `−${variableSymbol}` : variableSymbol, shape: tile.shape }))
-      : [{ id, type: 'unit', value: tile.value, label: tile.label, shape: tile.shape }];
+      : [{ id, type: 'unit', value: tile.value, label: tile.label, parts: tile.parts, shape: tile.shape }];
     updateBalanceRows(sideIndex, Object.assign((row) => [...row, ...additions], { delta: tile.value }));
   };
   const undoBalance = () => {
@@ -455,17 +573,41 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
     setMessage('');
   };
   const operationValueMatch = next?.operation?.match(/^([+\-*/])\s*(.+)$/);
-  const operationValues = [...new Set([operationValueMatch?.[2], ...((equation.match(/\d+(?:[.,]\d+)?/g) || []))].filter((value) => value && (Number.isNaN(Number(value.replace(',', '.'))) || Number(value.replace(',', '.')) !== 0)))].slice(0, 3);
-  const operationOptions = operationValues.flatMap((value) => ['+', '-', '*', '/'].map((symbol) => `${symbol} ${value}`));
+  const variableCoefficients = [...equation.matchAll(/(?:^|[+\-])\s*(\d+(?:[.,]\d+)?)(?=\s*[a-z])/gi)].map((match) => match[1]);
+  const variableDivisors = [...equation.matchAll(/[a-z]\s*\/\s*(\d+(?:[.,]\d+)?)/gi)].map((match) => match[1]);
+  const operationValues = [...new Set([operationValueMatch?.[2], ...variableCoefficients, ...variableDivisors].filter((value) => value && (Number.isNaN(Number(value.replace(',', '.'))) || Number(value.replace(',', '.')) !== 0)))];
+  const operationAmount = operationValues.includes(balanceOperationNumber) ? balanceOperationNumber : operationValueMatch?.[2] || operationValues[0] || '1';
+  const operationOptions = next?.operation === 'expand' || next?.operation === 'simplify' ? [next.operation] : ['+', '-', '*', '/'];
+  const selectBalanceOperationNumber = (value) => {
+    setBalanceOperationNumber(value);
+    if (/^[+\-*/]/.test(balanceOperation)) setBalanceOperation(`${balanceOperation[0]} ${value}`);
+  };
   const chooseBalanceOperation = (operation) => {
-    if (busy || !next || operationAnimation) return;
-    setBalanceOperation(operation);
+    if (busy || !modelReady || !next || operationAnimation) return;
+    setBalanceOperation(['expand', 'simplify'].includes(operation) ? operation : `${operation} ${operationAmount}`);
     setOperationSides([]);
     setBalanceDelta(0);
     setMessage('');
   };
   const applyOperationToSide = (sideIndex) => {
-    if (busy || !next || !balanceOperation || operationAnimation || operationSides.includes(sideIndex)) return;
+    if (busy || !modelReady || !next || !balanceOperation || operationAnimation || operationSides.includes(sideIndex)) return;
+    if (balanceOperation === 'expand' || balanceOperation === 'simplify') {
+      const done = stepIndex + 1 === config.steps.length;
+      setBalanceHistory((history) => [...history, { rows: balanceRows, delta: balanceDelta, stepIndex, operation: balanceOperation, operationSides }]);
+      setBalanceDelta(0);
+      setOperationAnimation({ operation: balanceOperation, value: '', results: splitEquation(localizeEquation(next.after, lang)) });
+      setMessage('');
+      operationTimerRef.current = window.setTimeout(() => {
+        operationTimerRef.current = null;
+        setBalanceRows(splitEquation(localizeEquation(next.after, lang)).map((side) => parseBalanceSide(side, lang)));
+        setStepIndex((index) => index + 1);
+        setOperationSides([]);
+        setBalanceOperation('');
+        setOperationAnimation(null);
+        if (!done) setMessage(c.stepDone);
+      }, 1050);
+      return;
+    }
     const snapshot = { rows: balanceRows, delta: balanceDelta, stepIndex, operation: balanceOperation, operationSides };
     setBalanceHistory((history) => [...history, snapshot]);
     const sidesAfter = [...operationSides, sideIndex];
@@ -473,7 +615,7 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
     if (sidesAfter.length < 2) {
       setBalanceDelta(sideIndex === 0 ? -1 : 1);
       setBalanceHintVisible(false);
-      setMessage(c.applyOperation);
+      setMessage(c.applyOtherSide);
       return;
     }
     setBalanceDelta(0);
@@ -485,11 +627,11 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
       return;
     }
     const done = stepIndex + 1 === config.steps.length;
-    setOperationAnimation({ operation: balanceOperation, value: operationValueMatch?.[2] || '' });
+    setOperationAnimation({ operation: balanceOperation, value: balanceOperation.match(/^[+\-*/]\s*(.+)$/)?.[1] || '', results: splitEquation(localizeEquation(next.after, lang)) });
     setMessage('');
     operationTimerRef.current = window.setTimeout(() => {
       operationTimerRef.current = null;
-      setBalanceRows(splitEquation(localizeEquation(next.after, lang)).map(parseBalanceSide));
+      setBalanceRows(splitEquation(localizeEquation(next.after, lang)).map((side) => parseBalanceSide(side, lang)));
       setStepIndex((index) => index + 1);
       setBalanceDelta(0);
       setOperationSides([]);
@@ -500,7 +642,7 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
   };
 
   const handleBalanceTilePointerDown = (event, tile) => {
-    if (busy || ready || operationAnimation) { event.preventDefault(); return; }
+    if (busy || !modelReady || ready || operationAnimation) { event.preventDefault(); return; }
     event.preventDefault();
     activeDrag.current?.cleanup?.();
     const pointerId = event.pointerId;
@@ -552,19 +694,38 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
   if ((Number(questionId) + stepIndex) % 2 === 0) stepOptions.reverse();
   const progress = Math.round(((modelIndex + stepIndex) / (model.length + config.steps.length)) * 100);
 
-  if (config.mode === 'balance') {
+  if (chapter2Groups) return <Chapter2Partition
+    key={questionId}
+    config={config}
+    questionId={questionId}
+    lang={lang}
+    busy={busy}
+    onSolved={() => setStepIndex(config.steps.length)}
+    onUndo={() => setStepIndex(0)}
+    onMistake={() => setStepErrors((count) => count + 1)}
+  />;
+
+  if (config && !chapter2Symbolic) {
     if (balancePhase === 'dismissed') return null;
     const chapterNumber = Math.ceil(Number(questionId) / 10);
     const chapterQuestion = ((Number(questionId) - 1) % 10) + 1;
-    const activeTiles = tileTab === 'number' ? numberTiles : variableTiles(variableSymbol);
+    const activeTiles = tileTab === 'number' ? balanceNumberTiles : variableTiles(variableSymbol);
     return <>
-      <section className={`math-sim math-sim-balance math-sim-balance-reference chapter-${chapterNumber} ${balancePhase === 'active' ? '' : `is-${balancePhase}`}`} aria-label={c.modes.balance}>
+      <section className={`math-sim math-sim-balance math-sim-balance-reference chapter-${chapterNumber} ${balancePhase === 'active' ? '' : `is-${balancePhase}`}`} aria-label={c.modes[config.mode]}>
       <header className="math-sim-reference-question">
         <div className="math-sim-reference-heading"><span className="math-sim-chapter-gem" aria-hidden="true"><img src="/assets/ui/character-select/icons/crystal-star.webp" alt="" /></span><strong>{c.chapter} {chapterNumber}</strong><i>•</i><b>{c.question} {chapterQuestion}/10</b></div>
-        <p>{c.balancePrompt}</p>
+        <p>{config.mode === 'groups' ? c.groupPrompt : c.balancePrompt}</p>
         <strong className="math-sim-reference-equation">{localizeEquation(config.equation, lang)}</strong>
         <div className="math-sim-reference-progress" aria-label={`${progress}%`}><span style={{ width: `${progress}%` }} /></div>
       </header>
+
+      {!modelReady && currentModel && <div className="math-sim-model math-sim-balance-model">
+        <p>{c.prompts[currentModel.kind]}</p>
+        <div className="math-sim-choices">
+          {choices.map((choice) => <button key={choice} type="button" disabled={busy} onClick={() => selectModel(choice)}>{choice}</button>)}
+        </div>
+        {modelIndex > 0 && <small className="math-sim-model-progress">{model.slice(0, modelIndex).map((stage) => stage.correct).join(' â†’ ')}</small>}
+      </div>}
 
       <div className="math-sim-balance-workspace">
         <div className={`math-sim-balance-stage ${overPans ? 'is-awaiting-drop' : ''} ${balanceDelta > 0 ? 'is-left-heavy' : balanceDelta < 0 ? 'is-right-heavy' : 'is-level'}`}>
@@ -584,6 +745,7 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
             onRemoveTile={removeBalanceItem}
             removeLabel={c.removeTile}
             draggingSource={draggingSource}
+            lang={lang}
           />
           <span className="math-sim-drop-hint" aria-live="polite">{balanceHintVisible ? c.balanceHint : (lang === 'en' ? 'Drag a tile to a pan; drag one away to remove it' : 'Seret ubin ke alas; seret keluar untuk menguranginya')}</span>
         </div>
@@ -597,16 +759,17 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
             {activeTiles.map((tile) => <button type="button" key={tile.key}
               className={`math-sim-picker-tile ${tile.type === 'variable' ? 'is-variable' : tile.value < 0 ? 'is-negative' : 'is-positive'} shape-${tile.shape} ${selectedTile === tile.key ? 'is-selected' : ''} ${draggingSource === `dock-${tile.key}` ? 'is-lifting' : ''}`}
               aria-label={tile.label} aria-pressed={selectedTile === tile.key}
-              disabled={busy || ready || Boolean(operationAnimation)}
+              disabled={busy || !modelReady || ready || Boolean(operationAnimation)}
               onPointerDown={(event) => handleBalanceTilePointerDown(event, tile)}
               onClick={(event) => { if (event.detail === 0) setSelectedTile(tile.key); }}
             ><span>{tile.label}</span></button>)}
           </div>
-          <div className="math-sim-add-controls"><button type="button" disabled={busy || ready || Boolean(operationAnimation)} onClick={() => addBalanceTile(0, selectedTileOption)}>{lang === 'en' ? `Add ${selectedTileOption.label} left` : `Tambah ${selectedTileOption.label} kiri`}</button><button type="button" disabled={busy || ready || Boolean(operationAnimation)} onClick={() => addBalanceTile(1, selectedTileOption)}>{lang === 'en' ? `Add ${selectedTileOption.label} right` : `Tambah ${selectedTileOption.label} kanan`}</button></div>
+          <div className="math-sim-add-controls"><button type="button" disabled={busy || !modelReady || ready || Boolean(operationAnimation)} onClick={() => addBalanceTile(0, selectedTileOption)}>{lang === 'en' ? `Add ${selectedTileOption.label} left` : `Tambah ${selectedTileOption.label} kiri`}</button><button type="button" disabled={busy || !modelReady || ready || Boolean(operationAnimation)} onClick={() => addBalanceTile(1, selectedTileOption)}>{lang === 'en' ? `Add ${selectedTileOption.label} right` : `Tambah ${selectedTileOption.label} kanan`}</button></div>
           <div className="math-sim-operation-panel">
             <strong>{lang === 'en' ? 'Operations on both sides' : 'Operasi pada kedua ruas'}</strong>
-            <p>{operationAnimation ? (lang === 'en' ? 'Grouping both sides…' : 'Mengelompokkan kedua ruas…') : balanceOperation ? c.applyOperation : (lang === 'en' ? 'Choose an operation' : 'Pilih operasi')}</p>
-            <div className="math-sim-operation-options">{operationOptions.map((operation) => <button type="button" key={operation} disabled={busy || ready || Boolean(operationAnimation)} className={balanceOperation === operation ? 'is-selected' : ''} aria-label={operationLabel(operation, lang)} onClick={() => chooseBalanceOperation(operation)}>{operation.replace(/\s/g, '').replace('*', '×').replace('/', '÷').replace('-', '−')}</button>)}</div>
+            <p>{operationAnimation ? (lang === 'en' ? 'Applying the operation to both sides…' : 'Menerapkan operasi pada kedua ruas…') : balanceOperation ? c.applyOperation : (lang === 'en' ? 'Choose an operation' : 'Pilih operasi')}</p>
+            {!['expand', 'simplify'].includes(next?.operation) && <div className="math-sim-operation-values" aria-label={lang === 'en' ? 'Choose a number' : 'Pilih angka'}>{operationValues.map((value) => <button type="button" key={value} disabled={busy || !modelReady || ready || Boolean(operationAnimation)} className={operationAmount === value ? 'is-selected' : ''} onClick={() => selectBalanceOperationNumber(value)}>{value}</button>)}</div>}
+            <div className="math-sim-operation-options">{operationOptions.map((operation) => <button type="button" key={operation} disabled={busy || !modelReady || ready || Boolean(operationAnimation)} className={balanceOperation === operation || balanceOperation === `${operation} ${operationAmount}` ? 'is-selected' : ''} aria-label={operationLabel(['expand', 'simplify'].includes(operation) ? operation : `${operation} ${operationAmount}`, lang)} onClick={() => chooseBalanceOperation(operation)}>{['expand', 'simplify'].includes(operation) ? operationLabel(operation, lang) : operation.replace('*', '×').replace('/', '÷').replace('-', '−')}</button>)}</div>
             {balanceOperation && <div className="math-sim-operation-sides"><button type="button" disabled={busy || operationSides.includes(0) || Boolean(operationAnimation)} onClick={() => applyOperationToSide(0)}>{operationSides.includes(0) ? '✓ ' : ''}{c.applyLeft}</button><button type="button" disabled={busy || operationSides.includes(1) || Boolean(operationAnimation)} onClick={() => applyOperationToSide(1)}>{operationSides.includes(1) ? '✓ ' : ''}{c.applyRight}</button></div>}
           </div>
           <div className="math-sim-dock-step"><span>{c.step} {Math.min(stepIndex + 1, config.steps.length)}/{config.steps.length}</span><div className="math-sim-progress"><span style={{ width: `${progress}%` }} /></div></div>
@@ -624,7 +787,7 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
           <span className="math-sim-balance-step-label">{c.step} {Math.min(stepIndex + 1, config.steps.length)}/{config.steps.length}</span>
         </div>
       </footer>}
-      {config.mode === 'balance' && /-\s*\d/.test(equation) && <small className="math-sim-zero"><span>+1</span><span>−1</span><b>= 0</b> {c.zero}</small>}
+      {/-\s*\d/.test(equation) && <small className="math-sim-zero"><span>+1</span><span>−1</span><b>= 0</b> {c.zero}</small>}
       {message && !(ready && message === c.ready) && <p className="math-sim-message" role="status">{message}</p>}
       </section>
       {dragGhost && createPortal(<span ref={dragGhostRef} className={`math-sim-drag-ghost ${dragGhost.type === 'variable' ? 'is-variable' : dragGhost.value < 0 ? 'is-negative' : 'is-positive'} shape-${dragGhost.shape || 'square'}`} style={{ left: 0, top: 0, transform: ghostTransform(dragGhost.x, dragGhost.y) }}>{dragGhost.tile}</span>, document.body)}
@@ -646,7 +809,24 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
       {modelIndex > 0 && <small className="math-sim-model-progress">{model.slice(0, modelIndex).map((stage) => stage.correct).join(' → ')}</small>}
     </div>}
 
-    {modelReady && <>
+    {modelReady && chapter2Symbolic ? <div className="math-sim-ch2-symbolic">
+      <div className="math-sim-ch2-label"><span>{lang === 'en' ? 'CHAPTER 2 · SYMBOLIC OPERATIONS' : 'CHAPTER 2 · OPERASI SIMBOLIK'}</span><b>{lang === 'en' ? 'QUESTION' : 'SOAL'} {((questionNumber - 1) % 10) + 1}/10</b></div>
+      <div className="math-sim-ch2-current"><small>{lang === 'en' ? 'Equation' : 'Persamaan'}</small><strong>{equation}</strong></div>
+      {previousEquation ? <div className="math-sim-ch2-proof" key={`${questionNumber}-${stepIndex}`}>
+        <small>{lang === 'en' ? 'Apply the same operation to both sides' : 'Operasi yang sama diterapkan pada kedua ruas'}</small>
+        <strong>{showOperationOnBothSides(previousEquation, localizeEquation(config.steps[stepIndex - 1].operation, lang), lang)}</strong>
+        <b>{lang === 'en' ? 'Result' : 'Hasil'}: {equation}</b>
+      </div> : <p className="math-sim-ch2-instruction">{lang === 'en' ? 'Choose the operation that isolates the variable while keeping both sides equal.' : 'Pilih operasi yang mengisolasi variabel dan menjaga kedua ruas tetap setara.'}</p>}
+      {next ? <>
+        <div className="math-sim-choices">
+          {stepOptions.map((choice) => <button key={choice.key} type="button" disabled={busy} onClick={() => selectStep(choice.key)}>{choice.label}</button>)}
+        </div>
+        {hintsUsed > 0 && <p className="math-sim-hint">{c.hint}: {questionNumber === 12 && stepIndex === 0
+          ? (lang === 'en' ? 'Another valid route: divide both sides by 3 to get −y = 7, then multiply both sides by −1 to get y = −7.' : 'Jalur lain yang setara: bagi kedua ruas dengan 3 sehingga −y = 7, lalu kalikan kedua ruas dengan −1 sehingga y = −7.')
+          : operationLabel(localizeEquation(next.operation, lang), lang)}</p>}
+      </> : <p className="math-sim-ready">{c.ready}</p>}
+      {message && !(ready && message === c.ready) && <p className="math-sim-message" role="status">{message}</p>}
+    </div> : modelReady && <>
       <div className="math-sim-equation" aria-label={equation}>
         <div><small>{c.sides[0]}</small><Side text={left} mode={config.mode} /></div>
         <span className="math-sim-equals">=</span>
@@ -661,6 +841,6 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
         {hintsUsed > 0 && <p className="math-sim-hint">{c.hint}: {operationLabel(localizeEquation(next.operation, lang), lang)}</p>}
       </> : <p className="math-sim-ready">{c.ready}</p>}
     </>}
-    {message && !(ready && message === c.ready) && <p className="math-sim-message" role="status">{message}</p>}
+    {!chapter2Symbolic && message && !(ready && message === c.ready) && <p className="math-sim-message" role="status">{message}</p>}
   </section>;
 }

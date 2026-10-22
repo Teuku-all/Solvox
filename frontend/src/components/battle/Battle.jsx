@@ -412,7 +412,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
 
   const q = questions[idx];
   const maxEnemy = boss.hp;
-  const isBalanceQuestion = SIMULATIONS[Number(q?.id)]?.mode === 'balance';
+  const isBalanceQuestion = Boolean(SIMULATIONS[Number(q?.id)]);
   const hideBalancePopup = isBalanceQuestion && (
     balanceSolvedQuestionId === Number(q?.id)
     || (simulation.ready && simulation.questionId === Number(q?.id))

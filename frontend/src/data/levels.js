@@ -5,4 +5,11 @@ export const LEVELS = [
   { id:4, chapter:'CHAPTER 4', chapterEn:'CHAPTER 4', title:'Kuil Pecahan', titleEn:'Fraction Temple', difficulty:'Sulit', difficultyEn:'Advanced', theme:'fraction', accent:'#ff7bcb', art:'/assets/ui/chapters/chapter-4.png' },
   { id:5, chapter:'CHAPTER 5', chapterEn:'CHAPTER 5', title:'Benteng Bayangan — FINAL BOSS', titleEn:'Shadow Fortress — FINAL BOSS', difficulty:'Boss', difficultyEn:'Boss', theme:'mixed', accent:'#b55cff', art:'/assets/ui/chapters/chapter-5.png' }
 ];
-export function isUnlocked(progress, levelId){ const p = new Set((progress?.completedLevels||[]).map(Number)); return levelId===1 || p.has(levelId-1); }
+// Temporary review switch: set to false to restore sequential chapter unlocks.
+const REVIEW_UNLOCK_ALL_CHAPTERS = true;
+
+export function isUnlocked(progress, levelId){
+  if (REVIEW_UNLOCK_ALL_CHAPTERS) return Number.isInteger(Number(levelId)) && Number(levelId) >= 1 && Number(levelId) <= LEVELS.length;
+  const p = new Set((progress?.completedLevels||[]).map(Number));
+  return levelId===1 || p.has(levelId-1);
+}

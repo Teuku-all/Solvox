@@ -478,6 +478,10 @@
 .math-sim-operation-panel { margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(111,177,164,.2); }
 .math-sim-operation-panel > strong { display: block; color: #e3ead9; font-size: 11px; text-align: center; }
 .math-sim-operation-panel > p { margin: 4px 0 6px; color: #9fbeb2; font-size: 10px; line-height: 1.3; text-align: center; }
+.math-sim-operation-values { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin: 0 0 5px; }
+.math-sim-operation-values button { min-width: 30px; min-height: 24px; padding: 3px 7px; border: 1px solid rgba(115,176,164,.35); border-radius: 4px; background: rgba(12,35,38,.9); color: #d9eee3; font-size: 10px; font-weight: 800; }
+.math-sim-operation-values button.is-selected { border-color: rgba(241,214,127,.82); background: rgba(154,126,61,.72); color: #fff4cf; }
+.math-sim-operation-values button:disabled { opacity: .52; }
 .math-sim-operation-options { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 4px; }
 .math-sim-operation-options button { min-width: 0; min-height: 29px; border: 1px solid rgba(115,176,164,.35); border-radius: 4px; background: linear-gradient(180deg,#1a3939,#10282d); color: #d9eee3; font-size: 11px; font-weight: 900; }
 .math-sim-operation-options button.is-selected { border-color: rgba(241,214,127,.82); background: linear-gradient(180deg,#9a7e3d,#66532b); color: #fff4cf; box-shadow: 0 0 0 2px rgba(241,214,127,.12); }
@@ -488,7 +492,10 @@
 .math-sim-balance-scale.is-operation-active .math-sim-balance-pan-content { border-color: rgba(240,218,135,.95); box-shadow: 0 0 16px rgba(240,218,135,.35), inset 0 1px rgba(255,255,255,.2); }
 .math-sim-operation-visual { width: 100%; margin-top: 3px; animation: balance-groups-arrive .35s ease-out both; }
 .math-sim-operation-visual > small { display: block; margin-bottom: 3px; color: #fff0b0; font-size: 10px; font-weight: 950; text-align: center; }
+.math-sim-operation-result { display: block; margin-top: 4px; color: #eaffd0; font-size: 11px; text-align: center; }
 .math-sim-operation-groups { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 3px; }
+.math-sim-operation-groups.is-compact { grid-template-columns: minmax(0,1fr); }
+.math-sim-operation-groups.is-compact .math-sim-operation-group span { flex-direction: column; align-items: center; gap: 3px; }
 .math-sim-operation-group { min-width: 0; min-height: 28px; padding: 2px; border: 1px solid rgba(239,216,126,.48); border-radius: 4px; background: rgba(18,39,37,.8); }
 .math-sim-operation-group i { display: block; color: #f2d987; font-size: 8px; font-style: normal; font-weight: 900; text-align: center; }
 .math-sim-operation-group span { display: flex; flex-wrap: wrap; justify-content: center; gap: 1px; }
@@ -496,6 +503,82 @@
 .math-sim-operation-group b.is-variable { color: #e4c9ff; }
 .math-sim-operation-group b.is-negative { color: #ffb8bd; }
 @keyframes balance-groups-arrive { from { opacity: 0; transform: scale(.86) translateY(5px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+.math-sim-ch2-symbolic { display: grid; gap: 10px; padding: 10px; border: 1px solid rgba(110,205,188,.25); border-radius: 12px; background: linear-gradient(145deg,rgba(9,32,39,.96),rgba(5,18,26,.98)); box-shadow: inset 0 1px rgba(255,255,255,.035),0 10px 24px rgba(0,0,0,.2); }
+.math-sim-ch2-label { display: flex; justify-content: space-between; align-items: center; gap: 8px; color: #8de1d0; font-size: 9px; font-weight: 900; letter-spacing: .08em; }
+.math-sim-ch2-label b { color: #a6bdb6; font-size: 8px; }
+.math-sim-ch2-current,.math-sim-ch2-proof { display: grid; justify-items: center; gap: 6px; padding: 11px 8px; border: 1px solid rgba(124,191,177,.18); border-radius: 9px; background: rgba(8,22,27,.8); text-align: center; }
+.math-sim-ch2-current small,.math-sim-ch2-proof small { color: #9eb7ae; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+.math-sim-ch2-current strong { color: #fff2bf; font-size: clamp(20px,3.2vw,27px); line-height: 1.2; }
+.math-sim-ch2-proof { border-color: rgba(237,204,109,.3); background: linear-gradient(135deg,rgba(73,59,29,.25),rgba(12,27,31,.88)); animation: balance-groups-arrive .3s ease-out both; }
+.math-sim-ch2-proof strong { color: #fff0b3; font-size: clamp(14px,2.1vw,19px); line-height: 1.45; overflow-wrap: anywhere; }
+.math-sim-ch2-proof b { color: #c8f3d2; font-size: 15px; }
+.math-sim-ch2-instruction { margin: 0; padding: 8px 10px; border-left: 3px solid #62cbb7; border-radius: 4px; background: rgba(45,117,104,.14); color: #c7ddd5; font-size: 11px; line-height: 1.45; }
+.math-sim-ch2-symbolic .math-sim-choices { gap: 7px; }
+.math-sim-ch2-symbolic .math-sim-choices button:first-child { border-color: rgba(241,215,132,.38); }
+.math-sim-ch2-symbolic .math-sim-hint { margin: 0; }
+.math-sim-ch2-symbolic .math-sim-message { margin: 0; }
+
+.c2p-simulation { display: grid; gap: 10px; padding: 12px; border: 1px solid rgba(110,205,188,.25); border-radius: 13px; background: linear-gradient(145deg,rgba(5,20,29,.98),rgba(8,30,34,.98)); color: #edf7ef; box-shadow: inset 0 1px rgba(255,255,255,.035),0 14px 32px rgba(0,0,0,.24); }
+.c2p-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.c2p-header small { color: #8ce0d0; font-size: 8px; font-weight: 900; letter-spacing: .1em; }
+.c2p-header h2 { margin: 3px 0 0; color: #f4edce; font-size: 17px; line-height: 1.2; }
+.c2p-header > button,.c2p-reset { min-height: 32px; padding: 5px 10px; border: 1px solid rgba(127,196,178,.32); border-radius: 7px; background: rgba(10,34,37,.95); color: #d7ede4; font-size: 10px; font-weight: 800; }
+.c2p-header > button:disabled { opacity: .45; }
+.c2p-instruction { margin: 0; color: #d2e3dc; font-size: 11px; line-height: 1.45; }
+.c2p-scale { display: grid; grid-template-columns: minmax(0,1fr) 26px minmax(0,1fr); align-items: stretch; gap: 8px; }
+.c2p-side { min-width: 0; padding: 9px; border: 1px solid rgba(88,153,231,.45); border-radius: 10px; background: linear-gradient(145deg,rgba(31,67,112,.36),rgba(14,37,65,.54)); }
+.c2p-side.is-right { border-color: rgba(73,182,126,.42); background: linear-gradient(145deg,rgba(30,91,62,.34),rgba(11,46,38,.58)); }
+.c2p-side > header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; color: #bcd8ff; font-size: 10px; }
+.c2p-side.is-right > header { color: #b4f0c7; }
+.c2p-side > header strong { font-size: 12px; }
+.c2p-scale-center { display: grid; place-items: center; color: #d7d4ab; font-size: 18px; }
+.c2p-groups { display: grid; grid-template-columns: repeat(auto-fit,minmax(66px,1fr)); gap: 4px; margin-bottom: 7px; }
+.c2p-group { display: grid; align-content: start; justify-items: center; gap: 4px; min-width: 0; min-height: 58px; padding: 5px 3px; border: 1px dashed rgba(173,205,217,.35); border-radius: 6px; background: rgba(3,14,23,.3); cursor: pointer; transition: border-color .15s,background .15s,transform .15s; }
+.c2p-group:hover,.c2p-group:focus-visible { border-color: #f0d98c; outline: none; }
+.c2p-group.is-full { border-style: solid; border-color: rgba(109,207,151,.72); background: rgba(26,92,61,.22); }
+.c2p-side.is-left .c2p-group.is-full { border-color: rgba(111,176,255,.75); background: rgba(32,82,145,.22); }
+.c2p-group.is-selected { box-shadow: 0 0 0 2px rgba(240,217,140,.35); }
+.c2p-group.is-linked { border-color: #91e9ad; background: rgba(50,149,88,.36); }
+.c2p-group > i { color: #d9e3dc; font-size: 8px; font-style: normal; font-weight: 900; }
+.c2p-group > span { display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 2px; min-height: 23px; width: 100%; }
+.c2p-group > span > em { align-self: center; color: #839c94; font-size: 7px; font-style: normal; text-align: center; }
+.c2p-group > small { color: #d8eee0; font-size: 7px; }
+.c2p-tile { display: inline-grid; place-items: center; flex: 0 0 auto; min-width: 24px; height: 24px; padding: 0 4px; border: 1px solid rgba(255,255,255,.13); border-radius: 5px; background: #348c5f; color: white; font-size: 10px; font-weight: 900; cursor: grab; touch-action: manipulation; }
+.c2p-side.is-left .c2p-tile.is-variable { min-width: 29px; height: 32px; background: #285ba6; font-size: 12px; }
+.c2p-tile.is-negative { background: #a54754; }
+.c2p-tile.is-compressed { min-width: 34px; background: #a54754; font-size: 8px; }
+.c2p-tile.is-selected { outline: 2px solid #f2d887; outline-offset: 1px; }
+.c2p-tile.is-dragging { opacity: .4; }
+.c2p-pool { min-height: 38px; padding: 5px; border: 1px solid rgba(167,193,184,.17); border-radius: 6px; background: rgba(2,12,18,.35); }
+.c2p-pool > small { display: block; margin-bottom: 4px; color: #92aaa1; font-size: 7px; font-weight: 800; }
+.c2p-pool > div { display: flex; flex-wrap: wrap; gap: 3px; min-height: 24px; }
+.c2p-pool > div > em { align-self: center; color: #82968d; font-size: 8px; font-style: normal; }
+.c2p-compressed-note { color: #d8c98c !important; }
+.c2p-divider-count { margin: -2px 0 6px; color: #c4d7cd; font-size: 8px; font-weight: 800; text-align: center; }
+.c2p-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 7px; border: 1px solid rgba(119,175,157,.2); border-radius: 8px; background: rgba(4,16,22,.65); }
+.c2p-divider-tool { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 5px 9px; border: 1px solid rgba(226,206,118,.45); border-radius: 6px; background: linear-gradient(180deg,rgba(96,79,35,.85),rgba(52,47,29,.9)); color: #fff0b3; font-size: 9px; cursor: grab; }
+.c2p-divider-tool > span { font-size: 20px; line-height: 1; }
+.c2p-divider-tool:disabled { opacity: .45; cursor: not-allowed; }
+.c2p-toolbar > p { flex: 1 1 180px; margin: 0; color: #9fb6ad; font-size: 8px; line-height: 1.35; }
+.c2p-place-divider { min-height: 30px; padding: 4px 7px; border: 1px solid rgba(111,195,169,.3); border-radius: 5px; background: rgba(21,64,53,.62); color: #d5f0df; font-size: 8px; font-weight: 800; }
+.c2p-place-divider:disabled { opacity: .42; }
+.c2p-group-counter { display: grid; justify-items: center; padding: 0 5px; color: #c3d7cd; }
+.c2p-group-counter small { font-size: 7px; }
+.c2p-group-counter b { color: #f3e5a6; font-size: 11px; }
+.c2p-status { min-height: 18px; margin: 0; color: #cbded5; font-size: 9px; line-height: 1.4; text-align: center; }
+.c2p-solved { display: grid; justify-items: center; gap: 6px; padding: 20px 10px; border: 1px solid rgba(135,227,164,.42); border-radius: 10px; background: rgba(24,92,56,.24); color: #e5f4de; text-align: center; }
+.c2p-solved > span { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: #389563; font-size: 22px; font-weight: 900; }
+.c2p-solved > strong { font-size: 14px; }
+.c2p-solved > small { color: #c8e4ce; font-size: 12px; }
+
+@media (max-width: 700px) {
+  .c2p-simulation { padding: 8px; gap: 8px; }
+  .c2p-scale { grid-template-columns: minmax(0,1fr); }
+  .c2p-scale-center { display: none; }
+  .c2p-groups { grid-template-columns: repeat(auto-fit,minmax(58px,1fr)); }
+  .c2p-toolbar > p { flex-basis: 100%; }
+}
 .math-sim-balance-stage.is-awaiting-drop .math-sim-drop-hint {
   border-color: rgba(214, 198, 110, .42);
   color: #f0df9d;
@@ -913,6 +996,7 @@
 .math-sim-balance-item.shape-triangle { min-width: 36px; min-height: 35px; font-size: 10px; }
 .math-sim-balance-item.shape-crystal { min-width: 34px; }
 .math-sim-balance-item.shape-hex { min-width: 32px; }
+.math-sim-balance-item.is-expression { min-width: 0; max-width: 100%; padding: 4px 5px; font-size: 9px; line-height: 1.15; overflow-wrap: anywhere; }
 .math-sim-balance-item.shape-diamond { min-width: 37px; }
 .math-sim-balance-item.is-divided { min-width: 47px; }
 .math-sim-add-controls { gap: 7px; margin-top: 8px; }
