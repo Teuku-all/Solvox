@@ -122,7 +122,7 @@ export default function BattleQuestionPanel({
 
   const panelTheme = QUESTION_PANEL_THEME_BY_LEVEL[Number(levelId)] || {};
 
-  const isStoryChapter = Number(levelId) === 5;
+  const isStoryChapter = Number.isInteger(Number(levelId)) && Number(levelId) >= 1 && Number(levelId) <= 5;
 
 
   return (

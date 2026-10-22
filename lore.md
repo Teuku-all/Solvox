@@ -32,22 +32,22 @@ Dokumen ini **hanya berisi naskah + catatan penempatan (implementasi)**. Tidak a
 
 | Segmen naskah | Momen di alur | Pemicu | Titik integrasi yang ada di kode |
 |---|---|---|---|
-| `intro` (bg karakter + bg boss) | Sebelum battle dimulai | Kunjungan pertama ke bab (bukan rematch) | Setelah `selectChapter(id)` → sebelum `launchBattle` (`frontend/src/App.jsx`) |
+| `intro` (splash karakter + splash boss) | Setiap kali sebelum battle dimulai | Semua kunjungan, termasuk rematch dan mulai ulang kampanye | Setelah `selectChapter(id)` → sebelum `launchBattle` (`frontend/src/App.jsx`) |
 | `win` | Setelah boss kalah | `onComplete` dari `Battle` (hasil menang) | `complete(result)` di `frontend/src/App.jsx` |
 | `lose` | Setelah karakter gugur | `onComplete` dari `Battle` (HP pemain 0) | `complete(result)` di `frontend/src/App.jsx` |
 | `epilogue` | Setelah Bab 5 selesai | `win` terakhir Bab 5 | Sebelum layar `Evaluation` |
 | `Evaluation` (bukan naskah) | Setelah epilog | Tombol lanjut | `frontend/src/components/Evaluation.jsx` (`onClose` → `'chapters'`, `onNext` → bab berikutnya, `onRematch`) |
 
 ### 0.3 Aturan Alur
-1. **Intro + background (karakter & boss) hanya di kunjungan pertama.** Saat **rematch** (pemain mengulang bab yang sama), **intro di-skip**; `win`/`lose` tetap tampil.
-2. **Kontrol beat dialog:** **Next** + **Lewati (Skip)** + **Auto**. `Auto` memajukan beat otomatis dengan jeda tetap.
-3. **`win` menggantikan `lose`** pada hasil yang sesuai — hanya satu yang diputar per battle.
-4. `Battle.jsx` dan `Evaluation.jsx` **tidak diubah kontraknya**. `Battle` tetap memanggil `onComplete`; `Evaluation` tetap overlay dengan `onClose`/`onNext`/`onRematch`.
-5. **Catatan status saat ini:** `frontend/src/components/BattleQuestionPanel.jsx` baris 124 meng-hardcode `isStoryChapter = Number(levelId) === 5` (story chapter hanya berlaku untuk Bab 5). Agar naskah berlaku **semua bab**, kondisi ini perlu dilonggarkan — **tetapi itu bagian dari kode, di luar dokumen ini.**
+1. **Intro + splash karakter dan boss diputar pada setiap kunjungan**, termasuk rematch dan mulai ulang kampanye.
+2. **Skip panjang dinonaktifkan sebelum pemain memulai battle pertamanya.** Setelah battle dimulai, Skip tersedia pada cutscene berikutnya. Riwayat ini bertahan saat progress kampanye di-reset.
+3. **Kontrol beat dialog:** **Next** + **Lewati (Skip panjang)** + **Auto**. `Auto` memajukan beat otomatis dengan jeda tetap.
+4. **`win` menggantikan `lose`** pada hasil yang sesuai — hanya satu yang diputar per battle.
+5. `Battle.jsx` tetap memanggil `onComplete`; `Evaluation` tetap overlay dengan `onClose`/`onNext`/`onRematch`. Cutscene kampanye hanya dipakai single-player; roster multiplayer tetap bebas memilih karakter dan monster.
 
 ### 0.4 Tempat Background
-- **Background karakter** → masuk `intro` **Bab 1** (dipadatkan, sisanya tersebar di `intro` bab berikutnya).
-- **Background boss** → masuk `intro` **bab masing-masing** (sebelum battle bab itu).
+- **Splash karakter terpilih** → tampil di sisi karakter pemain selama cutscene.
+- **Splash boss** → tampil di sisi lawan selama `intro` bab masing-masing.
 
 ---
 
@@ -622,12 +622,13 @@ Ganti placeholder "*...masih menunggu untuk ditulis* / *...yet to be written*" d
 
 ### 7.3 Checklist Integrasi (ringkas)
 
-- [ ] `intro` diputar **hanya kunjungan pertama** setiap bab; **di-skip saat rematch**.
-- [ ] `win` / `lose` dipilih sesuai hasil battle (hanya satu yang diputar).
-- [ ] `epilogue` diputar setelah `win` Bab 5, sebelum `Evaluation`.
-- [ ] Kontrol beat: **Next · Lewati · Auto**.
-- [ ] **Tidak mengubah** `Battle.jsx` & `Evaluation.jsx`.
-- [ ] Catatan: `BattleQuestionPanel.jsx:124` (`isStoryChapter === 5`) perlu dilonggarkan agar berlaku semua bab (perubahan kode, di luar dokumen ini).
+- [x] `intro` diputar pada setiap kunjungan, termasuk rematch dan mulai ulang kampanye.
+- [x] Skip panjang nonaktif sebelum battle pertama dimulai, lalu aktif pada kunjungan berikutnya dan tetap aktif setelah reset progress.
+- [x] `win` / `lose` dipilih sesuai hasil battle (hanya satu yang diputar).
+- [x] `epilogue` diputar setelah `win` Bab 5, sebelum `Evaluation`.
+- [x] Kontrol beat: **Next · Lewati · Auto**.
+- [x] `BattleQuestionPanel.jsx` memakai tampilan cerita untuk seluruh chapter 1–5.
+- [x] Cutscene kampanye tidak mengubah pilihan roster multiplayer.
 
 ---
 

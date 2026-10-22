@@ -316,8 +316,7 @@
   padding: 14px 22px 8px;
 }
 
-/* Chapter 5 story questions use a contained reading viewport. Other chapters
-   keep the fixed, non-scrolling question layout. */
+/* Story questions across the single-player campaign use a contained reading viewport. */
 .battle-question-panel.is-story-chapter .question-content.is-scrollable {
   justify-content: flex-start;
   overflow-y: auto;
@@ -1376,4 +1375,3 @@
   border-color: color-mix(in srgb, var(--panel-accent, #7bddd1) 48%, transparent);
   background: linear-gradient(180deg, color-mix(in srgb, var(--panel-key-bg, rgba(41,78,77,.98)) 94%, #ffffff 6%), var(--panel-key-bg-strong, rgba(13,30,31,.99)));
 }
-
