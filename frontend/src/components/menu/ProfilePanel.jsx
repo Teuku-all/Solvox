@@ -5,6 +5,7 @@ import {deriveProfile} from '../../services/profile';
 import {apiJson} from '../../services/api';
 import {getPlayerAsset} from '../../data/playerAssets';
 import {LEVELS} from '../../data/levels';
+import useAnimatedDismiss from '../shared/useAnimatedDismiss';
 
 function fmtTime(seconds){
   const s=Math.max(0,Number(seconds)||0);
@@ -23,6 +24,7 @@ const achievementNames={
 };
 
 export default function ProfilePanel({progress,profile,playerId,onClose,onSave,t,lang}){
+  const {closing,dismiss}=useAnimatedDismiss(onClose);
   const stats=useMemo(()=>deriveProfile(progress),[progress]);
   const character=getPlayerAsset(playerId);
   const [name,setName]=useState(profile?.name||progress.playerName||'Player');
@@ -34,10 +36,10 @@ export default function ProfilePanel({progress,profile,playerId,onClose,onSave,t
   const rankLabel=en?stats.rank:({Novice:'Pemula',Bronze:'Perunggu',Silver:'Perak'}[stats.rank]||stats.rank);
 
   useEffect(()=>{
-    const onKey=e=>{if(e.key==='Escape')onClose()};
+    const onKey=e=>{if(e.key==='Escape')dismiss()};
     window.addEventListener('keydown',onKey);
     return()=>window.removeEventListener('keydown',onKey);
-  },[onClose]);
+  },[dismiss]);
   useEffect(()=>{
     let alive=true;
     const lookupName=String(savedName).trim();
@@ -58,14 +60,14 @@ export default function ProfilePanel({progress,profile,playerId,onClose,onSave,t
   const combinedAccuracy=totalAnswered?Math.round(totalCorrect/totalAnswered*100):stats.accuracy;
   const completed=new Set((progress.completedLevels||[]).map(Number));
   const cleanName=name.trim()||'Player';
-  const save=()=>onSave({...profile,name:cleanName});
+  const save=()=>dismiss(()=>onSave({...profile,name:cleanName}));
 
-  return <div className="profile-overlay profile-screen-overlay" role="dialog" aria-modal="true" aria-label={t('profileTitle')}>
+  return <div className={`profile-overlay profile-screen-overlay${closing?' is-closing':''}`} role="dialog" aria-modal="true" aria-label={t('profileTitle')}>
     <div className="profile-panel profile-screen">
       <header className="profile-screen-header">
-        <button className="profile-screen-nav profile-screen-back" type="button" onClick={onClose}><PixelIcon name="back" size={18}/><span>{t('back')}</span></button>
+        <button className="profile-screen-nav profile-screen-back" type="button" onClick={()=>dismiss()}><PixelIcon name="back" size={18}/><span>{t('back')}</span></button>
         <div className="profile-breadcrumb"><span>SOLVOX</span><i>/</i><b>{en?'PLAYER PROFILE':'PROFIL PEMAIN'}</b></div>
-        <button className="profile-screen-nav profile-screen-close profile-close-btn" type="button" onClick={onClose} aria-label={t('close')}><SolvoxUtilityArt name="close" size={18} className="profile-close-art"/></button>
+        <button className="profile-screen-nav profile-screen-close profile-close-btn" type="button" onClick={()=>dismiss()} aria-label={t('close')}><SolvoxUtilityArt name="close" size={18} className="profile-close-art"/></button>
       </header>
 
       <main className="profile-dashboard">

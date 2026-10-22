@@ -1018,11 +1018,35 @@
 .math-sim-balance-reference .math-sim-balance-indicator span { background: var(--balance-accent); box-shadow: 0 0 12px var(--balance-glow); transition: left .78s cubic-bezier(.19, .86, .27, 1.14), background .25s ease; }
 .math-sim-balance-reference .math-sim-scale-pan.is-drop-target .math-sim-balance-pan-content { border-color: var(--balance-accent); box-shadow: inset 0 3px rgba(255,255,255,.28), 0 8px 0 rgba(37,27,20,.8), 0 0 0 3px var(--balance-glow), 0 0 19px var(--balance-glow); }
 .math-sim-balance-item.is-lifting,
-.math-sim-tile-grid .math-sim-picker-tile.is-lifting { opacity: .35; transform: translateY(-7px) scale(.9); filter: brightness(1.22); transition: opacity .16s ease, transform .16s ease, filter .16s ease; }
-.math-sim-balance-item.is-new { animation: balance-tile-land .42s cubic-bezier(.2, .8, .25, 1.18); }
-.math-sim-drag-ghost { will-change: transform; animation: balance-ghost-lift .16s ease-out both; filter: drop-shadow(0 13px 11px rgba(0, 7, 20, .42)); }
-@keyframes balance-tile-land { from { opacity: .5; transform: translateY(-16px) scale(1.1); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.math-sim-tile-grid .math-sim-picker-tile.is-lifting {
+  opacity: .28;
+  transform: translateY(-9px) scale(.88) rotate(-3deg);
+  filter: brightness(1.24) drop-shadow(0 0 9px rgba(105, 220, 255, .9));
+  transition: opacity .2s ease, transform .2s cubic-bezier(.2, .8, .25, 1), filter .2s ease;
+}
+.math-sim-balance-item.is-lifting {
+  opacity: .2;
+  transform: translateY(-9px) scale(.84) rotate(3deg);
+  filter: brightness(1.28) drop-shadow(0 0 9px rgba(255, 231, 157, .88));
+  transition: opacity .2s ease, transform .2s cubic-bezier(.2, .8, .25, 1), filter .2s ease;
+}
+.math-sim-balance-item.is-new { animation: balance-tile-land .5s cubic-bezier(.16, .84, .25, 1.2) both; }
+.math-sim-drag-ghost {
+  will-change: transform;
+  animation: balance-ghost-lift .18s cubic-bezier(.2, .8, .2, 1) both;
+  filter: drop-shadow(0 12px 8px rgba(0, 7, 20, .5)) drop-shadow(0 0 8px rgba(109, 218, 255, .4));
+}
+@keyframes balance-tile-land {
+  0% { opacity: 0; transform: translateY(-25px) scale(1.22) rotate(-7deg); filter: brightness(1.8) drop-shadow(0 0 15px rgba(255, 235, 155, .9)); }
+  55% { opacity: 1; transform: translateY(3px) scale(.94) rotate(2deg); filter: brightness(1.28) drop-shadow(0 0 10px rgba(255, 235, 155, .72)); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0); filter: none; }
+}
 @keyframes balance-ghost-lift { from { opacity: .45; } to { opacity: 1; } }
+.math-sim-balance-reference .math-sim-scale-pan.is-drop-target .math-sim-balance-pan-content { animation: balance-target-ready .62s ease-in-out infinite alternate; }
+@keyframes balance-target-ready {
+  from { filter: brightness(1); box-shadow: inset 0 3px rgba(255,255,255,.22), 0 8px 0 rgba(37,27,20,.8), 0 0 0 2px var(--balance-glow); }
+  to { filter: brightness(1.16); box-shadow: inset 0 3px rgba(255,255,255,.3), 0 8px 0 rgba(37,27,20,.8), 0 0 0 4px var(--balance-glow), 0 0 22px var(--balance-glow); }
+}
 @media (prefers-reduced-motion: reduce) {
   .math-sim-balance-reference .math-sim-balance-scale .math-sim-scale-beam,
   .math-sim-balance-reference .math-sim-scale-pan,
@@ -1030,7 +1054,8 @@
   .math-sim-balance-item.is-lifting,
   .math-sim-tile-grid .math-sim-picker-tile.is-lifting { transition: none; }
   .math-sim-balance-item.is-new,
-  .math-sim-drag-ghost { animation: none; }
+  .math-sim-drag-ghost,
+  .math-sim-balance-reference .math-sim-scale-pan.is-drop-target .math-sim-balance-pan-content { animation: none; }
 }
 
 /* Leave the solved equation visible, then let the board depart gently. */
@@ -1083,6 +1108,8 @@
   z-index: 7;
   inset: 0;
   background: rgba(2, 10, 25, .68);
+  pointer-events: auto;
+  touch-action: none;
 }
 .battle-reference-arena.is-balance-open .math-sim-balance-reference {
   position: fixed;
@@ -1180,7 +1207,12 @@
     padding: 2px;
   }
   .is-balance-open .math-sim-tile-grid .math-sim-picker-tile { min-height: 35px; font-size: 13px; }
-  .is-balance-open .math-sim-tile-grid .math-sim-picker-tile { touch-action: pan-y; }
+  .is-balance-open .math-sim-tile-grid .math-sim-picker-tile {
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
   .is-balance-open .math-sim-add-controls { grid-area: add; margin: 0; gap: 5px; }
   .is-balance-open .math-sim-add-controls button { min-height: 30px; }
   .is-balance-open .math-sim-operation-panel {

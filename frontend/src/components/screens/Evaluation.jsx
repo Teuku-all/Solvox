@@ -4,6 +4,7 @@ import { evaluateSolvoxChapter } from '../../services/solvoxEvaluation';
 import PixelIcon from '../shared/PixelIcon';
 import {apiJson} from '../../services/api';
 import useDialogKeyboard from '../shared/useDialogKeyboard';
+import useAnimatedDismiss from '../shared/useAnimatedDismiss';
 
 function buildStrengths(summary, t) {
   const strengths = [];
@@ -25,7 +26,8 @@ function buildAdvice(summary, t) {
 }
 
 export default function Evaluation({ result, onClose, onRematch, onNext, nextLevel, t, lang }) {
-  const dialogRef = useDialogKeyboard(onClose);
+  const { closing, dismiss } = useAnimatedDismiss(onClose);
+  const dialogRef = useDialogKeyboard(dismiss);
   const summary = useMemo(() => summarizePerformance(result), [result]);
   const solvoxEvaluation = useMemo(() => result.chapterEvaluation || evaluateSolvoxChapter({ ...result, ...summary }), [result, summary]);
   const cls = classifyMastery(summary.mastery).key;
@@ -57,11 +59,11 @@ export default function Evaluation({ result, onClose, onRematch, onNext, nextLev
   }, [result, summary]);
 
   return (
-    <div className="modal-backdrop evaluation-backdrop">
+    <div className={`modal-backdrop evaluation-backdrop${closing ? ' is-closing' : ''}`}>
       <div ref={dialogRef} className={`eval-card eval-card-detailed eval-card--detailed ${result.won ? 'win' : 'loss'}`} role="dialog" aria-modal="true" aria-labelledby="evaluation-title">
         <header className="eval-summary">
           <div className="eval-summary-copy">
-            <div className="eval-heading-row"><div className="eyebrow">{t('evaluation')}</div><button className="dialog-icon-close evaluation-close" type="button" onClick={onClose} aria-label={t('backToMap')}><PixelIcon name="close" size={18}/></button></div>
+            <div className="eval-heading-row"><div className="eyebrow">{t('evaluation')}</div><button className="dialog-icon-close evaluation-close" type="button" onClick={() => dismiss()} aria-label={t('backToMap')}><PixelIcon name="close" size={18}/></button></div>
             <h2 id="evaluation-title">{statusText}</h2>
             <p>{outcomeNote}</p>
           </div>
@@ -145,9 +147,9 @@ export default function Evaluation({ result, onClose, onRematch, onNext, nextLev
 
         <p className="eval-note">{t('masteryNote')}</p>
         <div className="eval-actions">
-          <button className="secondary-btn" onClick={onClose}>{t('backToMap')}</button>
-          <button className="secondary-btn rematch-btn" onClick={onRematch}><PixelIcon name="retry" size={15} /><span>{t('rematch')}</span></button>
-          {nextLevel && <button className="primary-btn" onClick={() => onNext(nextLevel)}>{t('nextChapter')} →</button>}
+          <button className="secondary-btn" onClick={() => dismiss()}>{t('backToMap')}</button>
+          <button className="secondary-btn rematch-btn" onClick={() => dismiss(onRematch)}><PixelIcon name="retry" size={15} /><span>{t('rematch')}</span></button>
+          {nextLevel && <button className="primary-btn" onClick={() => dismiss(() => onNext(nextLevel))}>{t('nextChapter')} →</button>}
         </div>
       </div>
     </div>

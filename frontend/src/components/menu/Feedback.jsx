@@ -3,19 +3,21 @@ import {sendFeedback} from '../../services/feedback';
 import PixelIcon from '../shared/PixelIcon';
 import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 import useDialogKeyboard from '../shared/useDialogKeyboard';
+import useAnimatedDismiss from '../shared/useAnimatedDismiss';
 
 export default function Feedback({onClose,lang,t}){
-  const dialogRef=useDialogKeyboard(onClose);
+  const {closing,dismiss}=useAnimatedDismiss(onClose);
+  const dialogRef=useDialogKeyboard(dismiss);
   const [rating,setRating]=useState(5),[category,setCategory]=useState('pedagogy'),[text,setText]=useState(''),[sent,setSent]=useState(false),[loading,setLoading]=useState(false),[error,setError]=useState('');
   const categories=[['pedagogy',t('feedbackCategoryPedagogy')],['gameplay',t('feedbackCategoryGameplay')],['ui',t('feedbackCategoryUI')],['bug',t('feedbackCategoryBug')]];
   const submit=async()=>{setLoading(true);setError('');try{await sendFeedback({rating,category,comment:text,lang,ts:new Date().toISOString()});setSent(true)}catch{setSent(false);setError(lang==='en'?'Feedback could not be sent. Please try again.':'Feedback belum terkirim. Silakan coba lagi.')}finally{setLoading(false)}};
-  return <div className="modal-backdrop" onMouseDown={(event)=>{if(event.target===event.currentTarget)onClose()}}><div ref={dialogRef} className="feedback-card" role="dialog" aria-modal="true" aria-labelledby="feedback-title">
-    <div className="utility-art-modal-head feedback-head"><div><div className="eyebrow">{t('feedback')}</div><h2 id="feedback-title">{t('experience')}</h2></div><button className="dialog-icon-close" type="button" onClick={onClose} aria-label={t('close')}><PixelIcon name="close" size={18}/></button></div>
+  return <div className={`modal-backdrop${closing?' is-closing':''}`} onMouseDown={(event)=>{if(event.target===event.currentTarget)dismiss()}}><div ref={dialogRef} className="feedback-card" role="dialog" aria-modal="true" aria-labelledby="feedback-title" aria-busy={loading}>
+    <div className="utility-art-modal-head feedback-head"><div><div className="eyebrow">{t('feedback')}</div><h2 id="feedback-title">{t('experience')}</h2></div><button className="dialog-icon-close" type="button" onClick={()=>dismiss()} aria-label={t('close')}><PixelIcon name="close" size={18}/></button></div>
     <div className="feedback-category" role="group" aria-label={t('feedbackCategory')}>{categories.map(([id,label])=><button key={id} type="button" className={category===id?'active':''} aria-pressed={category===id} onClick={()=>setCategory(id)}>{label}</button>)}</div>
     <div className="stars" role="group" aria-label={t('rating')}>{[1,2,3,4,5].map(x=><button type="button" key={x} onClick={()=>setRating(x)} className={x<=rating?'on':''} aria-label={`${x} / 5`} aria-pressed={rating===x}>★</button>)}</div>
     <textarea value={text} onChange={e=>setText(e.target.value)} placeholder={t('tellImprove')} aria-label={t('tellImprove')}/>
     {error&&<p className="feedback-send-error" role="alert">{error}</p>}
-    {sent?<div className="success"><PixelIcon name="check" size={14}/><span>{t('thanks')}</span></div>:<button disabled={loading} className="primary-btn" onClick={submit}>{loading?t('saving'):t('sendFeedback')}</button>}
-    <button className="ghost-btn feedback-close-btn" type="button" onClick={onClose}><SolvoxUtilityArt name="close" size={18} className="feedback-close-art" /><span>{t('close')}</span></button>
+    {sent?<div className="success" role="status"><PixelIcon name="check" size={14}/><span>{t('thanks')}</span></div>:<button disabled={loading} className="primary-btn" onClick={submit}>{loading?t('saving'):t('sendFeedback')}</button>}
+    <button className="ghost-btn feedback-close-btn" type="button" onClick={()=>dismiss()}><SolvoxUtilityArt name="close" size={18} className="feedback-close-art" /><span>{t('close')}</span></button>
   </div></div>
 }

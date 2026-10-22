@@ -316,7 +316,7 @@ must(main.includes("import './styles/visual-cohesion.css';") && exists('frontend
   must(main.includes("import './styles/typography-modals.css';") && exists('frontend/src/styles/typography-modals.css'), 'V96 polish stylesheet is not wired');
 must(exists('frontend/src/styles/responsive.css') && !exists('frontend/src/styles/responsive-v102.css') && !exists('frontend/src/styles/responsive-v101.css') && !exists('frontend/src/styles/responsive-v94.css') && !exists('frontend/src/styles/responsive-v93.css'), 'Responsive source cleanup is incomplete');
 must(multi.includes('home-background-v83.mp4') && multi.includes('multi-home-bg'), 'Multiplayer Home background video is not wired');
-must(profile.includes('profile-screen-back" type="button" onClick={onClose}') && profile.includes('profile-screen-close profile-close-btn" type="button" onClick={onClose}') && profile.includes("if(e.key==='Escape')onClose()"), 'Profile back, close, or Escape dismissal is missing');
+must(profile.includes('profile-screen-back" type="button" onClick={()=>dismiss()}') && profile.includes('profile-screen-close profile-close-btn" type="button" onClick={()=>dismiss()}') && profile.includes("if(e.key==='Escape')dismiss()"), 'Profile back, close, or Escape dismissal is missing');
 must(settings.includes('settings-about-row') && settings.includes('settings-close-btn') && !settings.includes('success'), 'Settings V96 about/close cleanup is incomplete');
 must(battlePanel.includes('is-story-chapter'), 'Story chapter class is missing');
 must(exists('frontend/src/components/menu/AboutDevelopers.jsx') && main.includes("import './styles/typography-modals.css';"), 'About Us page/style is not wired');

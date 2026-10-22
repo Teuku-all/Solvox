@@ -755,11 +755,11 @@
     "concept": "Ethnomathematics Modeling",
     "errorTag": "Cultural geometry/fraction concept",
     "hints": [
-      "The rectangle perimeter formula is 2p+l=54.",
-      "Substitute p=2x+3 and l=x: 22x+3+x=54 → 23x+3=54.",
-      "Divide both sides by 2: 3x+3=27 → 3x=24."
+      "The perimeter of a rectangle is 2 x (length + width) = 54 cm.",
+      "Substitute length 2x+3 and width x: 2((2x+3)+x)=54, so 2(3x+3)=54.",
+      "Simplify to 6x+6=54, then 6x=48. Therefore, x=8 cm."
     ],
-    "feedback": "The rectangle perimeter is 2p+l. Substitute p and l: 22x+3+x=54 → 23x+3=54 → 3x+3=27.",
+    "feedback": "The rectangle perimeter is 2 x (length + width). Substituting length 2x+3 and width x gives 2((2x+3)+x)=54, or 6x+6=54. Thus 6x=48 and x=8 cm.",
     "source": "SOAL SOAL SOLVOX.docx / HINT SOAL SOLVOX.docx / FEEDBACK SOAL SOAL SOLVOX.docx"
   },
   {

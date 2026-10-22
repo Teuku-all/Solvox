@@ -2,7 +2,7 @@ import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 import SpriteCharacter from './SpriteCharacter';
 import BossMonster from './BossMonster';
 
-const CombatStage = forwardRef(function CombatStage({ levelId, playerId, onHit }, ref) {
+const CombatStage = forwardRef(function CombatStage({ levelId, playerId, onHit, paused = false }, ref) {
   const playerRef = useRef(null);
   const bossRef = useRef(null);
   const rootRef = useRef(null);
@@ -48,6 +48,7 @@ const CombatStage = forwardRef(function CombatStage({ levelId, playerId, onHit }
             className="player-sprite"
             playerId={playerId}
             onImpact={onHit}
+            paused={paused}
           />
         </div>
       </div>
@@ -56,7 +57,7 @@ const CombatStage = forwardRef(function CombatStage({ levelId, playerId, onHit }
       <div className="fighter-slot fighter-boss-slot">
         <div className="fighter-boss">
           <div className="fighter-shadow-anchor" aria-hidden="true" />
-          <BossMonster ref={bossRef} levelId={levelId} size={350} />
+          <BossMonster ref={bossRef} levelId={levelId} size={350} paused={paused} />
         </div>
       </div>
     </div>

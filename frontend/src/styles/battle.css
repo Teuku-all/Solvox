@@ -747,6 +747,12 @@
   animation: mistSlide 31s linear infinite reverse;
 }
 
+/* The balance lesson owns the screen while open; freeze ambient arena motion. */
+.battle-page.has-balance-overlay .arena-atmosphere,
+.battle-page.has-balance-overlay .arena-mist {
+  animation-play-state: paused !important;
+}
+
 @keyframes arenaLightDrift {
   from { transform: translate3d(-1%, 0, 0) scale(1); }
   to { transform: translate3d(1%, 1%, 0) scale(1.02); }

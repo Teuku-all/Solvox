@@ -111,12 +111,12 @@ function Side({ text, mode, groups = 0 }) {
   </div>;
 }
 
-const numberTiles = [1, 2, 3, 5, -1, -2, -3, -5, 7, -7, 10, -10, 0.5, -0.5, 0.25, -0.25].map((value) => ({
+const numberTiles = [1, -1].map((value) => ({
   key: `number-${value}`, type: 'unit', value,
   label: `${value < 0 ? '−' : '+'}${Math.abs(value) === 0.5 ? '½' : Math.abs(value) === 0.25 ? '¼' : Math.abs(value)}`,
-  shape: Math.abs(value) < 1 ? 'triangle' : Math.abs(value) >= 7 ? 'crystal' : Math.abs(value) > 1 ? 'hex' : 'square',
+  shape: value < 0 ? 'triangle' : 'square',
 }));
-const variableTiles = (symbol) => [1, -1, 2, -2, 3, -3].map((value) => ({
+const variableTiles = (symbol) => [1, -1].map((value) => ({
   key: `variable-${value}`, type: 'variable', value,
   label: `${value < 0 ? '−' : '+'}${Math.abs(value) === 1 ? '' : Math.abs(value)}${symbol}`,
   shape: 'diamond',
@@ -568,7 +568,7 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
 
       <div className="math-sim-balance-workspace">
         <div className={`math-sim-balance-stage ${overPans ? 'is-awaiting-drop' : ''} ${balanceDelta > 0 ? 'is-left-heavy' : balanceDelta < 0 ? 'is-right-heavy' : 'is-level'}`}>
-          <img className="math-sim-chapter-scene" src={chapterScenes[chapterNumber - 1] || chapterScenes[0]} alt="" aria-hidden="true" draggable="false" />
+          <img className="math-sim-chapter-scene" src={chapterScenes[chapterNumber - 1] || chapterScenes[0]} alt="" aria-hidden="true" draggable="false" decoding="async" fetchPriority="high" />
           <BalanceScale
             left={balanceRows[0]}
             right={balanceRows[1]}

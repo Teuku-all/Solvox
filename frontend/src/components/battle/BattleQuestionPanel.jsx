@@ -212,7 +212,7 @@ export default function BattleQuestionPanel({
           </div>
         </div>
 
-        <div className="hint-rail-body">
+        <div className="hint-rail-body" aria-live="polite" aria-atomic="false">
           {hintsUsed > 0 ? (
             (q?.hints || []).slice(0, hintsUsed).map((hint, index) => (
               <div className="hint-reveal" key={`${index}-${hint}`}>
