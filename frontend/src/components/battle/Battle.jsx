@@ -477,7 +477,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
           )}
 
           {/* The arena stays separate so fighter animations never affect the deck layout. */}
-          <div className="battle-reference-arena">
+          <div className={`battle-reference-arena ${isBalanceQuestion && !hideBalancePopup ? 'is-balance-open' : ''}`}>
             <CombatStage
               ref={combatRef}
               levelId={levelId}
