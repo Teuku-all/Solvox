@@ -1,28 +1,30 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { getPlayerAsset, resolvePlayerSequence } from '../../data/playerAssets';
+import { loadAssetImage } from '../../services/assetImageCache';
 
 const ONE_SHOT_MODES = new Set(['attack', 'hurt', 'die']);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
 const easeInOutSine = (x) => -(Math.cos(Math.PI * x) - 1) / 2;
 
-function load(src) {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.decoding = 'async';
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error(src));
-    image.src = src;
-  });
-}
-
 const SpriteCharacter = forwardRef(function SpriteCharacter(
-  { size = 280, className = '', onImpact, playerId, mirrored = false, attackDirection = 1 },
+  { size = 280, className = '', onImpact, playerId, mirrored = false, attackDirection = 1, paused = false },
   ref,
 ) {
   const canvasRef = useRef(null);
   const rafRef = useRef(0);
   const impactRef = useRef(onImpact);
+  const pausedRef = useRef(paused);
+  const pauseStartedAtRef = useRef(paused ? performance.now() : 0);
+
+  useEffect(() => {
+    if (paused && !pausedRef.current) pauseStartedAtRef.current = performance.now();
+    if (!paused && pausedRef.current && pauseStartedAtRef.current) {
+      stateRef.current.startedAt += performance.now() - pauseStartedAtRef.current;
+      pauseStartedAtRef.current = 0;
+    }
+    pausedRef.current = paused;
+  }, [paused]);
 
   useEffect(() => {
     impactRef.current = onImpact;
@@ -40,7 +42,18 @@ const SpriteCharacter = forwardRef(function SpriteCharacter(
     ready: false,
     impactFired: false,
     distance: 180,
+    pending: null,
   });
+
+  const startAction = (mode, options = {}) => {
+    const state = stateRef.current;
+    if (!state.images[mode]?.length) return false;
+    state.mode = mode;
+    state.startedAt = performance.now();
+    state.impactFired = false;
+    if (Number.isFinite(options.distance)) state.distance = options.distance;
+    return true;
+  };
 
   useEffect(() => {
     let alive = true;
@@ -48,34 +61,57 @@ const SpriteCharacter = forwardRef(function SpriteCharacter(
     state.images = {};
     state.ready = false;
     state.mode = 'idle';
+    state.pending = null;
+
+    const sequencePath = (mode, name) => `${activeAsset.base}/${activeAsset.sequenceFolders?.[mode] || mode}/${name}`;
+    const loadFrame = (mode, name, fetchPriority = 'auto') => loadAssetImage(sequencePath(mode, name), { fetchPriority })
+      .catch((error) => {
+        console.warn('[Player] missing sprite', `${mode}/${name}`);
+        return null;
+      });
 
     (async () => {
-      const entries = await Promise.all(
-        Object.entries(activeAsset.sequences).map(async ([mode, sequence]) => {
-          const loaded = await Promise.all(
-            sequence.frames.map(async (name) => {
-              try {
-                return await load(`${activeAsset.base}/${activeAsset.sequenceFolders?.[mode] || mode}/${name}`);
-              } catch (error) {
-                console.warn('[Player] missing sprite', `${mode}/${name}`);
-                return null;
-              }
-            }),
-          );
-          return [mode, loaded.filter(Boolean)];
-        }),
-      );
+      const idleSequence = activeAsset.sequences.idle;
+      const firstIdleFrame = idleSequence?.frames[0]
+        ? await loadFrame('idle', idleSequence.frames[0], 'high')
+        : null;
+      if (!alive) return;
+      if (firstIdleFrame) state.images.idle = [firstIdleFrame];
+      state.startedAt = performance.now();
+
+      const remainingEntries = Object.entries(activeAsset.sequences).map(async ([mode, sequence]) => {
+        const names = mode === 'idle' ? sequence.frames.slice(1) : sequence.frames;
+        const loaded = await Promise.all(names.map((name) => loadFrame(mode, name)));
+        const frames = mode === 'idle' ? [firstIdleFrame, ...loaded].filter(Boolean) : loaded.filter(Boolean);
+        if (alive) {
+          state.images[mode] = frames;
+          if (state.pending?.mode === mode) {
+            const pending = state.pending;
+            state.pending = null;
+            startAction(pending.mode, pending.options);
+          }
+        }
+        return [mode, frames];
+      });
+      const entries = await Promise.all(remainingEntries);
 
       if (!alive) return;
-      state.images = Object.fromEntries(entries);
+      state.images = { ...state.images, ...Object.fromEntries(entries) };
       state.ready = true;
-      state.mode = 'idle';
-      state.startedAt = performance.now();
+      if (state.pending) {
+        const pending = state.pending;
+        state.pending = null;
+        startAction(pending.mode, pending.options);
+      }
     })();
 
     const tick = (now) => {
       const canvas = canvasRef.current;
       const state = stateRef.current;
+      if (pausedRef.current) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
       if (!canvas) {
         rafRef.current = requestAnimationFrame(tick);
         return;
@@ -268,20 +304,14 @@ const SpriteCharacter = forwardRef(function SpriteCharacter(
 
   useImperativeHandle(ref, () => ({
     play(mode = 'attack', options = {}) {
-      const state = stateRef.current;
       const safeMode = resolvePlayerSequence(mode, playerId);
-      if (!state.images[safeMode]?.length) return false;
-      state.mode = safeMode;
-      state.startedAt = performance.now();
-      state.impactFired = false;
-      if (Number.isFinite(options.distance)) state.distance = options.distance;
+      if (!startAction(safeMode, options)) stateRef.current.pending = { mode: safeMode, options };
       return true;
     },
     idle() {
       const state = stateRef.current;
-      state.mode = 'idle';
-      state.startedAt = performance.now();
-      state.impactFired = false;
+      state.pending = null;
+      startAction('idle');
     },
     ready: () => stateRef.current.ready,
     modes: () => Object.keys(asset.sequences),

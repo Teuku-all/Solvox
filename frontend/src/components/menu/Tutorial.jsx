@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import SolvoxUtilityArt from '../shared/SolvoxUtilityArt';
 import PixelIcon from '../shared/PixelIcon';
+import useAnimatedDismiss from '../shared/useAnimatedDismiss';
 import { LEVELS } from '../../data/levels';
 
 const GUIDE = {
@@ -144,6 +145,7 @@ function GuideCards({ items }) {
 }
 
 export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
+  const { closing, dismiss } = useAnimatedDismiss(onClose);
   const c = GUIDE[lang === 'en' ? 'en' : 'id'];
   const [section, setSection] = useState('start');
   const [practiceStep, setPracticeStep] = useState(0);
@@ -151,9 +153,9 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
   const [practiceMessage, setPracticeMessage] = useState(null);
   const cardRef = useRef(null);
   const bodyRef = useRef(null);
-  const onCloseRef = useRef(onClose);
+  const onCloseRef = useRef(dismiss);
 
-  useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
+  useEffect(() => { onCloseRef.current = dismiss; }, [dismiss]);
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     const previousFocus = document.activeElement;
@@ -195,7 +197,7 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
   const resetPractice = () => { setPracticeStep(0); setPracticeAnswer(''); setPracticeMessage(null); };
 
   return createPortal(
-    <div className="tutorial-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+    <div className={`tutorial-backdrop${closing ? ' is-closing' : ''}`} role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) dismiss(); }}>
       <section className="tutorial-card" ref={cardRef} role="dialog" aria-modal="true" aria-labelledby="tutorial-title">
         <header className="tutorial-head">
           <div className="tutorial-hero-copy">
@@ -205,7 +207,7 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
             <span className="tutorial-hero-note">{c.heroNote}</span>
           </div>
           <div className="tutorial-hero-art" aria-hidden="true"><small>{c.heroBadge}</small><div><span>2x + 4</span><b>=</b><span>12</span></div><i/><em>x = 4</em></div>
-          <button className="tutorial-close" type="button" onClick={onClose} aria-label={t('close')} title={t('close')}><SolvoxUtilityArt name="close" size={18}/></button>
+          <button className="tutorial-close" type="button" onClick={() => dismiss()} aria-label={t('close')} title={t('close')}><SolvoxUtilityArt name="close" size={18}/></button>
         </header>
 
         <nav className="tutorial-tabs" aria-label={c.tabLabel}>
@@ -246,7 +248,7 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
           </section>}
         </div>
 
-        <footer className="tutorial-footer"><span><PixelIcon name="spark" size={18}/>{c.heroNote}</span><div><button type="button" className="tutorial-dismiss" onClick={onClose} aria-label={c.close}>{t('tutorialGotIt')}</button><button type="button" className="tutorial-action" onClick={onPlay}><PixelIcon name="play" size={16}/>{c.play}</button></div></footer>
+        <footer className="tutorial-footer"><span><PixelIcon name="spark" size={18}/>{c.heroNote}</span><div><button type="button" className="tutorial-dismiss" onClick={() => dismiss()} aria-label={c.close}>{t('tutorialGotIt')}</button><button type="button" className="tutorial-action" onClick={() => dismiss(onPlay)}><PixelIcon name="play" size={16}/>{c.play}</button></div></footer>
       </section>
     </div>,
     document.body,

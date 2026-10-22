@@ -139,6 +139,15 @@
   from { opacity: 0; transform: translateY(9px) scale(.985); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
+@keyframes solvox-dialog-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes solvox-dialog-card-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(7px) scale(.99); }
+}
+@keyframes solvox-screen-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 @media (prefers-reduced-motion: no-preference) {
   html:not(.reduced-motion) .modal-backdrop,
   html:not(.reduced-motion) .tutorial-backdrop,
@@ -151,10 +160,66 @@
   html:not(.reduced-motion) .mode-card,
   html:not(.reduced-motion) .about-shell { animation: solvox-dialog-card-in .25s cubic-bezier(.2,.7,.2,1) backwards; }
   html:not(.reduced-motion) .mode-card:nth-child(2) { animation-delay: .05s; }
+
+  .app-shell[data-screen="home"] > .home-menu,
+  .app-shell[data-screen="modes"] > .mode-select,
+  .app-shell[data-screen="chapters"] > .chapter-select,
+  .app-shell[data-screen="character"] > .spx,
+  .app-shell[data-screen="battle"] > .battle-page,
+  .app-shell[data-screen="battle"] > .loading-screen,
+  .app-shell[data-screen="multi"] > .multi-page,
+  .app-shell[data-screen="dashboard"] > .multi-page,
+  .app-shell[data-screen="about"] > .about-page {
+    animation: solvox-screen-in .2s ease-out both;
+  }
+
+  html:not(.reduced-motion) .modal-backdrop.is-closing,
+  html:not(.reduced-motion) .tutorial-backdrop.is-closing,
+  html:not(.reduced-motion) .profile-screen-overlay.is-closing {
+    animation: solvox-dialog-backdrop-out .17s ease-in both;
+    pointer-events: none;
+  }
+  html:not(.reduced-motion) .modal-backdrop.is-closing > .settings-card,
+  html:not(.reduced-motion) .modal-backdrop.is-closing > .feedback-card,
+  html:not(.reduced-motion) .modal-backdrop.is-closing > .eval-card,
+  html:not(.reduced-motion) .tutorial-backdrop.is-closing > .tutorial-card,
+  html:not(.reduced-motion) .profile-screen-overlay.is-closing > .profile-screen {
+    animation: solvox-dialog-card-out .17s ease-in both;
+  }
+
+  .battle-question-panel .hint-reveal {
+    animation: solvox-hint-reveal .24s cubic-bezier(.2,.75,.25,1) both;
+  }
+  .battle-question-panel .hint-empty { animation: solvox-hint-reveal .2s ease-out both; }
+  .battle-question-panel .hint-reveal-btn { transition: transform .16s ease, filter .16s ease, border-color .16s ease; }
+  .battle-question-panel .hint-reveal-btn:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.08); }
+  .battle-mistake-banner { animation: solvox-feedback-in .22s cubic-bezier(.2,.75,.25,1) both; }
+  .feedback-card .success { animation: solvox-feedback-in .22s ease-out both; }
+  .mp-hint-panel,
+  .mp-feedback-banner { animation: solvox-feedback-in .22s cubic-bezier(.2,.75,.25,1) both; }
+  .match-result { animation: solvox-dialog-card-in .26s cubic-bezier(.2,.7,.2,1) both; }
+}
+@keyframes solvox-hint-reveal {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes solvox-feedback-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::after {
   animation-duration: .01ms !important;
   animation-iteration-count: 1 !important;
   transition-duration: .01ms !important;
   scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell[data-screen] > .home-menu,
+  .app-shell[data-screen] > .mode-select,
+  .app-shell[data-screen] > .chapter-select,
+  .app-shell[data-screen] > .spx,
+  .app-shell[data-screen] > .battle-page,
+  .app-shell[data-screen] > .loading-screen,
+  .app-shell[data-screen] > .multi-page,
+  .app-shell[data-screen] > .about-page { animation: none !important; }
 }

@@ -5,22 +5,13 @@ import {
   getBossImpactMs,
   resolveBossSequence,
 } from '../../data/bossAssets';
+import { loadAssetImage } from '../../services/assetImageCache';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
 const easeInOutSine = (x) => -(Math.cos(Math.PI * x) - 1) / 2;
 
-function load(src) {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.decoding = 'async';
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error(src));
-    image.src = src;
-  });
-}
-
-const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact, mirrored = false, attackDirection = -1, centered = false }, ref) {
+const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact, mirrored = false, attackDirection = -1, centered = false, paused = false }, ref) {
   const asset = getBossAsset(boss.spriteId);
   const activeAsset = mirrored && asset?.mirror ? asset.mirror : asset;
   const direction = attackDirection < 0 ? -1 : 1;
@@ -28,6 +19,8 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
   const canvasRef = useRef(null);
   const rafRef = useRef(0);
   const impactRef = useRef(onImpact);
+  const pausedRef = useRef(paused);
+  const pauseStartedAtRef = useRef(paused ? performance.now() : 0);
   const stateRef = useRef({
     mode: 'idle',
     startedAt: 0,
@@ -42,6 +35,15 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
   useEffect(() => {
     impactRef.current = onImpact;
   }, [onImpact]);
+
+  useEffect(() => {
+    if (paused && !pausedRef.current) pauseStartedAtRef.current = performance.now();
+    if (!paused && pausedRef.current && pauseStartedAtRef.current) {
+      stateRef.current.startedAt += performance.now() - pauseStartedAtRef.current;
+      pauseStartedAtRef.current = 0;
+    }
+    pausedRef.current = paused;
+  }, [paused]);
 
   const durationFor = (mode) => activeAsset?.sequences?.[mode]?.step || 160;
 
@@ -69,29 +71,51 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
     const sequenceEntries = Object.entries(activeAsset?.sequences || {});
     const effectEntries = Object.entries(activeAsset?.effects || {});
 
+    const sequencePath = (mode, name) => `${activeAsset.base}/${activeAsset.sequenceFolders?.[mode] || mode}/${name}`;
+    const loadFrame = (mode, name, fetchPriority = 'auto') => loadAssetImage(sequencePath(mode, name), { fetchPriority })
+      .catch((error) => {
+        console.warn('[Boss] missing sprite', `${mode}/${name}`);
+        return null;
+      });
+
     (async () => {
-      const sequences = await Promise.all(
-        sequenceEntries.map(async ([mode, sequence]) => {
-          const loaded = await Promise.all(
-            sequence.frames.map(async (name) => {
-              try {
-                return await load(`${activeAsset.base}/${activeAsset.sequenceFolders?.[mode] || mode}/${name}`);
-              } catch (error) {
-                console.warn('[Boss] missing sprite', `${mode}/${name}`);
-                return null;
-              }
-            }),
-          );
-          return [mode, loaded.filter(Boolean)];
-        }),
-      );
+      const idleSequence = activeAsset?.sequences?.idle;
+      const firstIdleFrame = idleSequence?.frames[0]
+        ? await loadFrame('idle', idleSequence.frames[0], 'high')
+        : null;
+      if (!alive) return;
+      if (firstIdleFrame) state.images.idle = [firstIdleFrame];
+      state.startedAt = performance.now();
+
+      const sequences = await Promise.all(sequenceEntries.map(async ([mode, sequence]) => {
+        const names = mode === 'idle' ? sequence.frames.slice(1) : sequence.frames;
+        const loaded = await Promise.all(names.map((name) => loadFrame(mode, name)));
+        const frames = mode === 'idle' ? [firstIdleFrame, ...loaded].filter(Boolean) : loaded.filter(Boolean);
+        if (alive) {
+          state.images[mode] = frames;
+          if (state.pending && resolveBossSequence(boss.spriteId, state.pending.action) === mode) {
+            const pending = state.pending;
+            state.pending = null;
+            startAction(pending.action, pending.options);
+          }
+        }
+        return [mode, frames];
+      }));
+      if (!alive) return;
+      state.images = { ...state.images, ...Object.fromEntries(sequences) };
+      state.ready = true;
+      if (state.pending) {
+        const pending = state.pending;
+        state.pending = null;
+        startAction(pending.action, pending.options);
+      }
 
       const effects = await Promise.all(
         effectEntries.map(async ([effectName, sequence]) => {
           const loaded = await Promise.all(
             sequence.frames.map(async (name) => {
               try {
-                return await load(`${activeAsset.base}/${activeAsset.effectFolders?.[effectName] || `effects/${effectName}`}/${name}`);
+                return await loadAssetImage(`${activeAsset.base}/${activeAsset.effectFolders?.[effectName] || `effects/${effectName}`}/${name}`);
               } catch (error) {
                 console.warn('[Boss] missing effect frame', `${effectName}/${name}`);
                 return null;
@@ -103,22 +127,16 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
       );
 
       if (!alive) return;
-      state.images = Object.fromEntries(sequences);
       state.effects = Object.fromEntries(effects);
-      state.ready = true;
-      state.mode = 'idle';
-      state.startedAt = performance.now();
-
-      if (state.pending) {
-        const pending = state.pending;
-        state.pending = null;
-        startAction(pending.action, pending.options);
-      }
     })();
 
     const tick = (now) => {
       const canvas = canvasRef.current;
       const state = stateRef.current;
+      if (pausedRef.current) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
       if (!canvas) {
         rafRef.current = requestAnimationFrame(tick);
         return;
@@ -356,7 +374,7 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
   );
 });
 
-const BossMonster = forwardRef(function BossMonster({ levelId, spriteId, size = 310, onImpact, mirrored = false, attackDirection = -1, centered = false }, ref) {
+const BossMonster = forwardRef(function BossMonster({ levelId, spriteId, size = 310, onImpact, mirrored = false, attackDirection = -1, centered = false, paused = false }, ref) {
   const chapterBoss = getBoss(levelId);
   const boss = useMemo(() => spriteId && getBossAsset(spriteId)
     ? getBossBySpriteId(spriteId) || { ...chapterBoss, spriteId }
@@ -381,6 +399,7 @@ const BossMonster = forwardRef(function BossMonster({ levelId, spriteId, size = 
       mirrored={mirrored}
       attackDirection={attackDirection}
       centered={centered}
+      paused={paused}
     />
   );
 });

@@ -379,9 +379,9 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   }
 
   return (
-    <div className="battle-page battle-reference">
+    <div className={`battle-page battle-reference ${isBalanceQuestion && !hideBalancePopup ? 'has-balance-overlay' : ''}`}>
       <div className="battle-world">
-        <ArenaBackground levelId={levelId} />
+        <ArenaBackground levelId={levelId} paused={isBalanceQuestion && !hideBalancePopup} />
 
         <div className={`battle-ui${feedback?.type === 'wrong' ? ' has-feedback' : ''}`}> 
           {/* Top HUD */}
@@ -398,7 +398,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
             <div className="hp-card hp-player">
               <div className="hp-card-head">
                 <span className="hp-avatar">
-                  <img src={playerAsset.portrait} alt="" />
+                  <img src={playerAsset.portrait} alt="" loading="eager" decoding="async" fetchPriority="high" />
                 </span>
                 <span className="hp-copy">
                   <small>{t('player')}</small>
@@ -429,7 +429,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
               <div className="hp-card-head">
                 <span className="hp-avatar boss">
                   {boss.renderer === 'webp' ? (
-                    <img src={getBossPreviewSrc(boss.spriteId)} alt="" />
+                    <img src={getBossPreviewSrc(boss.spriteId)} alt="" loading="eager" decoding="async" fetchPriority="high" />
                   ) : (
                     <span className="hp-skull"><PixelIcon name="skull" size={17} /></span>
                   )}
@@ -482,6 +482,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
               ref={combatRef}
               levelId={levelId}
               playerId={playerId}
+              paused={isBalanceQuestion && !hideBalancePopup}
               onHit={() => showImpact('boss', damagePerQuestion, 'player')}
             />
             {!hideBalancePopup && <MathSimulation key={q.id} questionId={q.id} lang={lang} hintsUsed={currentHints} busy={busy} onProgress={setSimulation} onBalanceSolved={(result) => { setBalanceSolvedQuestionId(result.questionId); setSimulation(result); }} />}

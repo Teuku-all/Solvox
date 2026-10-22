@@ -1,14 +1,16 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { BACKGROUNDS } from '../../config/backgrounds';
 
-export default function ArenaBackground({ levelId = 1 }) {
+export default function ArenaBackground({ levelId = 1, paused = false }) {
   const ref = useRef(null);
   const bg = useMemo(() => BACKGROUNDS[levelId] || BACKGROUNDS[1], [levelId]);
 
   useEffect(() => {
     const media = ref.current;
-    if (media?.tagName === 'VIDEO') media.play().catch(() => {});
-  }, [bg.src]);
+    if (media?.tagName !== 'VIDEO') return;
+    if (paused) media.pause();
+    else media.play().catch(() => {});
+  }, [bg.src, paused]);
 
   const style = {
     '--bg-object-position': bg.objectPosition || 'center center',

@@ -3,19 +3,21 @@ import PixelIcon from '../shared/PixelIcon';
 import {SolvoxUtilityArt} from '../shared/SolvoxUtilityArt';
 import { isSoundEnabled, setSoundEnabled } from '../../services/sound';
 import useDialogKeyboard from '../shared/useDialogKeyboard';
+import useAnimatedDismiss from '../shared/useAnimatedDismiss';
 
 export default function Settings({lang,t,onClose,onReset,onChangeLang,onAboutUs}){
-  const dialogRef=useDialogKeyboard(onClose);
+  const {closing,dismiss}=useAnimatedDismiss(onClose);
+  const dialogRef=useDialogKeyboard(dismiss);
   const [motion,setMotion]=useState(()=>localStorage.getItem('solvox.reducedMotion')==='1' || localStorage.getItem('numericore.reducedMotion')==='1' || localStorage.getItem('aljabarmaster.reducedMotion')==='1');
   const [sound,setSound]=useState(()=>isSoundEnabled());
   useEffect(()=>{document.documentElement.classList.toggle('reduced-motion',motion);localStorage.setItem('solvox.reducedMotion',motion?'1':'0')},[motion]);
   const chooseLanguage=(next)=>{onChangeLang?.(next)};
-  return <div className="modal-backdrop" onMouseDown={(event)=>{if(event.target===event.currentTarget)onClose()}}>
+  return <div className={`modal-backdrop${closing?' is-closing':''}`} onMouseDown={(event)=>{if(event.target===event.currentTarget)dismiss()}}>
     <div ref={dialogRef} className="settings-card" role="dialog" aria-modal="true" aria-labelledby="settings-title">
       <div className="utility-art-modal-head settings-head--legacy settings-head">
         <img src="/assets/ui/utility/icons/settings-v101.webp" alt="" aria-hidden="true" className="settings-head-art" />
         <div><div className="eyebrow">{t('settings')}</div><h2 id="settings-title">{t('settingsTitle')}</h2></div>
-        <button className="dialog-icon-close" type="button" onClick={onClose} aria-label={t('close')}><PixelIcon name="close" size={18}/></button>
+        <button className="dialog-icon-close" type="button" onClick={()=>dismiss()} aria-label={t('close')}><PixelIcon name="close" size={18}/></button>
       </div>
 
       <div className="settings-row language-setting">
@@ -42,14 +44,14 @@ export default function Settings({lang,t,onClose,onReset,onChangeLang,onAboutUs}
 
       <div className="settings-row settings-about-row">
         <div><b>{t('aboutUs')}</b><p>{t('aboutUsHint')}</p></div>
-        <button className="secondary-btn settings-about-btn" type="button" onClick={onAboutUs}>{t('openAboutUs')}</button>
+        <button className="secondary-btn settings-about-btn" type="button" onClick={()=>dismiss(onAboutUs)}>{t('openAboutUs')}</button>
       </div>
 
       <div className="settings-row danger">
         <div><b>{t('resetTitle')}</b><p>{t('resetDesc')}</p></div>
         <button className="danger-btn" onClick={onReset}><PixelIcon name="reset" size={14}/><span>{t('reset')}</span></button>
       </div>
-      <button className="primary-btn settings-close settings-close-btn" onClick={onClose}><SolvoxUtilityArt name="close" size={18} className="settings-close-art" /><span>{t('close')}</span></button>
+      <button className="primary-btn settings-close settings-close-btn" onClick={()=>dismiss()}><SolvoxUtilityArt name="close" size={18} className="settings-close-art" /><span>{t('close')}</span></button>
     </div>
   </div>
 }

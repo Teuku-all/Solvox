@@ -755,11 +755,11 @@
     "concept": "Pemodelan Etnomatematika",
     "errorTag": "Konsep geometri/pecahan budaya",
     "hints": [
-      "Rumus keliling persegipanjang adalah 2p+l=54.",
-      "Masukkan nilai p=2x+3 dan l=x: 22x+3+x=54⟹23x+3=54.",
-      "Bagi kedua ruas dengan 2: 3x+3=27⟹3x=24."
+      "Rumus keliling persegi panjang adalah 2 x (panjang + lebar) = 54 cm.",
+      "Substitusikan panjang 2x+3 dan lebar x: 2((2x+3)+x)=54, sehingga 2(3x+3)=54.",
+      "Sederhanakan menjadi 6x+6=54, lalu 6x=48. Jadi, x=8 cm."
     ],
-    "feedback": "Keliling persegipanjang =2p+l. Masukkan nilai p dan l: 22x+3+x=54⟹23x+3=54⟹3x+3=27.",
+    "feedback": "Keliling persegi panjang adalah 2 x (panjang + lebar). Substitusi panjang 2x+3 dan lebar x menghasilkan 2((2x+3)+x)=54, yaitu 6x+6=54. Maka 6x=48 dan x=8 cm.",
     "source": "SOAL SOAL SOLVOX.docx / HINT SOAL SOLVOX.docx / FEEDBACK SOAL SOAL SOLVOX.docx"
   },
   {
