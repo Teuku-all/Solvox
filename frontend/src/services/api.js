@@ -1,4 +1,10 @@
-const API_BASE_URL = String(import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+// A separate static frontend needs the persistent Node service for API and
+// multiplayer. Keep environment overrides for custom deployments, while the
+// repository's Render service is the production default.
+const DEFAULT_BACKEND_URL = import.meta.env.PROD ? 'https://solvox-game-server.onrender.com' : '';
+const trimTrailingSlash = value => String(value || '').replace(/\/$/, '');
+const API_BASE_URL = trimTrailingSlash(import.meta.env.VITE_API_URL || import.meta.env.VITE_SOCKET_URL || DEFAULT_BACKEND_URL);
+export const SOCKET_URL = trimTrailingSlash(import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || DEFAULT_BACKEND_URL);
 
 function resolveApiUrl(url) {
   if (!API_BASE_URL || /^https?:\/\//i.test(url)) return url;

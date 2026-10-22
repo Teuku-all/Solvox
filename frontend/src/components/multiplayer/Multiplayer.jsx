@@ -11,10 +11,14 @@ import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 import {GAME_META} from '../../config/game';
 import {LEVELS} from '../../data/levels';
 import { playCharacterAttack, playSound } from '../../services/sound';
-import {apiJson} from '../../services/api';
+import {apiJson,SOCKET_URL} from '../../services/api';
 
 export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattleStateChange,dashboardOnly=false}){
-  const [socket]=useState(()=>io(import.meta.env.VITE_SOCKET_URL || undefined,{autoConnect:false}));
+  const [socket]=useState(()=>io(SOCKET_URL || undefined,{
+    autoConnect:false,
+    transports:['websocket','polling'],
+    tryAllTransports:true,
+  }));
   const [socketConnected,setSocketConnected]=useState(false);
   const roomRef=useRef(null);
   const pendingActionRef=useRef(null);
