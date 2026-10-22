@@ -7,6 +7,7 @@ const fs=require('fs');
 const {Server}=require('socket.io');
 const questions=require('./questions');
 const singlePlayerRoutes=require('./routes/singlePlayer');
+const {isSameAnswer}=require('./singlePlayerGame');
 
 const app=express();
 const server=http.createServer(app);
@@ -33,8 +34,7 @@ function cleanLevel(v){const n=Number(v);return questions[n]?n:1;}
 function cleanToken(v){return String(v||'').trim().slice(0,80);}
 function makeCode(){let code;do code='AJM-'+Math.random().toString(36).slice(2,6).toUpperCase();while(rooms.has(code));return code;}
 function makeToken(){return crypto.randomBytes(18).toString('hex');}
-function normalizeAnswer(v){return String(v||'').trim().toLowerCase().replace(/\s+/g,'').replace(/×/g,'*').replace(/−/g,'-').replace(/²/g,'^2').replace(/^x=/,'').replace(/^ans(?:wer)?=/,'');}
-function isCorrect(q,value){const given=normalizeAnswer(value);const accepted=(q.acceptedAnswers||[q.answer]).map(normalizeAnswer);return accepted.includes(given);}
+function isCorrect(q,value){return isSameAnswer(value,q.acceptedAnswers||[q.answer]);}
 function sanitizeQuestion(q){if(!q)return null;return {id:q.id,context:q.context,text:q.text,explanation:q.explanation,concept:q.concept,hints:q.hints||[],difficulty:q.difficulty};}
 function sanitizeReviewQuestion(q){if(!q)return null;return {id:q.id,context:q.context,text:q.text,answer:q.answer,explanation:q.explanation,concept:q.concept};}
 function publicRoom(room){

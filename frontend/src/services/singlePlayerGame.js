@@ -25,28 +25,31 @@ function normalizeAnswer(value) {
   return String(value ?? '').toLowerCase().normalize('NFKC')
     .replace(/[\u00d7\u00b7]/g, '*').replace(/[\u2212\u2013\u2014]/g, '-')
     .replace(/\u00b2/g, '^2').replace(/\u00b3/g, '^3')
-    .replace(/^\s*(?:jawaban|answer|ans)\s*[:=]\s*/i, '')
+    .replace(/^\s*(?:(?:jawaban|answer|ans)\s*[:=]\s*|[a-z]\s*=\s*)/i, '')
     .replace(/\s+/g, '').trim();
 }
 
 function parseNumber(raw) {
-  let token = String(raw ?? '').trim().toLowerCase()
-    .replace(/^\s*(?:jawaban|answer|ans)\s*[:=]\s*/i, '')
-    .replace(/rp\.?\s*/g, '').replace(/\([^)]*\)/g, '').replace(/[^\d.,/+-]/g, '');
+  let token = String(raw ?? '').trim().toLowerCase().normalize('NFKC')
+    .replace(/^\s*(?:(?:jawaban|answer|ans)\s*[:=]\s*|[a-z]\s*=\s*)/i, '')
+    .replace(/rp\.?\s*/g, '').replace(/\s+/g, '');
+  const wrapped = token.match(/^\((.*)\)$/);
+  if (wrapped) token = wrapped[1];
   if (!token) return null;
-  if (/^-?\d+(?:[.,]\d+)?\/-?\d+(?:[.,]\d+)?$/.test(token)) {
+  if (/^[+-]?\d+(?:[.,]\d+)?\/[+-]?\d+(?:[.,]\d+)?$/.test(token)) {
     const [numerator, denominator] = token.split('/').map(parseNumber);
     return Number.isFinite(numerator) && Number.isFinite(denominator) && denominator !== 0
       ? numerator / denominator : null;
   }
+  if (!/^[+-]?\d+(?:[.,]\d+)?$/.test(token) && !/^[+-]?\d{1,3}(?:[.,]\d{3})+$/.test(token)) return null;
   const dots = token.includes('.');
   const commas = token.includes(',');
   if (dots && commas) token = token.lastIndexOf('.') > token.lastIndexOf(',')
     ? token.replace(/,/g, '') : token.replace(/\./g, '').replace(',', '.');
-  else if (commas) {
-    const pieces = token.split(',');
-    token = pieces.length === 2 && pieces[1].length !== 3 ? token.replace(',', '.') : token.replace(/,/g, '');
-  } else if ((token.match(/\./g) || []).length > 1) token = token.replace(/\./g, '');
+  else if (commas && /^[+-]?\d{1,3}(?:,\d{3})+$/.test(token)) token = token.replace(/,/g, '');
+  else if (commas) token = token.replace(',', '.');
+  else if (dots && /^[+-]?\d{1,3}(?:\.\d{3})+$/.test(token)) token = token.replace(/\./g, '');
+  else if ((token.match(/\./g) || []).length > 1) return null;
   const number = Number(token);
   return Number.isFinite(number) ? number : null;
 }
