@@ -1184,21 +1184,22 @@
   .is-balance-open .math-sim-add-controls { grid-area: add; margin: 0; gap: 5px; }
   .is-balance-open .math-sim-add-controls button { min-height: 30px; }
   .is-balance-open .math-sim-operation-panel {
+    display: flex;
+    flex-direction: column;
     grid-area: operations;
     min-height: 0;
     margin: 0;
     padding: 0 0 0 7px;
-    overflow-y: auto;
+    overflow: hidden;
     border-top: 0;
     border-left: 1px solid #315c91;
-    overscroll-behavior: contain;
   }
   .is-balance-open .math-sim-operation-panel > strong { font-size: 10px; }
   .is-balance-open .math-sim-operation-panel > p { margin: 2px 0 4px; font-size: 9px; }
-  .is-balance-open .math-sim-operation-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .is-balance-open .math-sim-operation-options { flex: 1; min-height: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; overflow-y: auto; overscroll-behavior: contain; }
   .is-balance-open .math-sim-operation-options button { min-height: 26px; }
-  .is-balance-open .math-sim-operation-sides { margin-top: 4px; }
-  .is-balance-open .math-sim-operation-sides button { min-height: 28px; }
+  .is-balance-open .math-sim-operation-sides { flex: none; margin-top: 4px; }
+  .is-balance-open .math-sim-operation-sides button { min-height: 34px; padding: 3px 2px; font-size: 9px; line-height: 1.15; }
   .is-balance-open .math-sim-dock-step { grid-area: step; padding: 0; }
   .is-balance-open .math-sim-balance-footer { grid-template-columns: minmax(0, 1fr) auto; gap: 5px; padding: 4px 6px; }
   .is-balance-open .math-sim-guide-mascot { display: none; }

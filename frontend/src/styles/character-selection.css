@@ -146,6 +146,13 @@
   .spx-info-shell { width: min(440px,100%); max-width: none; margin: 0 auto 8px; flex: none; }
   .spx-back { top: max(12px,env(safe-area-inset-top)); left: 12px; }
 }
+@media (min-width: 360px) and (max-width: 800px) and (orientation: portrait) {
+  .spx-detail h3 { font-size: 10px; }
+  .spx-lore p { font-size: 12px; line-height: 1.35; }
+  .spx-panel-row p,.spx-panel-row strong { font-size: 11px; line-height: 1.15; }
+  .spx-panel-row small { font-size: 10px; line-height: 1.15; }
+  .spx-stats dt { font-size: 9px; }
+}
 @media (max-height: 650px) and (orientation: landscape) {
   .spx-choice-layer h1 { top: 7%; font-size: 14px; }
   .spx-nameplate { bottom: 3%; height: 100px; min-height: 0; padding: 12px 30px; }
