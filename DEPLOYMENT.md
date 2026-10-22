@@ -2,7 +2,7 @@
 
 ## Recommended setup for Vercel + Render
 
-The Vercel project serves the static frontend. Run the Node server (API and Socket.IO) as one persistent web service, for example on Render. Multiplayer rooms are held in server memory, so the API and Socket.IO connections must reach the same running server process.
+The Vercel project serves the static frontend. Single-player chapters and answer feedback are bundled from the local question bank, so they work on Vercel without an API service. Run the Node server (API and Socket.IO) as one persistent web service, for example on Render, for multiplayer, dashboard data, and submitted feedback. Multiplayer rooms are held in server memory, so the API and Socket.IO connections must reach the same running server process.
 
 Set the Vercel project's Root Directory to the repository root and its Framework Preset to **Vite**. The root `vercel.json` also pins `framework: "vite"`, builds the frontend workspace, and publishes `frontend/dist`. A **Services** preset without a `services` declaration produces `[MISSING_SERVICES]` before the build starts; this project uses the persistent Render backend instead of Vercel Services.
 
@@ -13,11 +13,11 @@ Set the Vercel project's Root Directory to the repository root and its Framework
    - `VITE_SOCKET_URL=https://your-game-server.onrender.com`
 4. Redeploy the Vercel frontend so the URLs are included in its build.
 
-The frontend defaults to same-origin `/api` and Socket.IO paths when these variables are unset, which keeps local development and the single-server deployment working. Do not deploy the backend as a Vercel Function or split it across serverless instances: active rooms are process-local.
+Other API calls and Socket.IO default to same-origin paths when these variables are unset, which keeps local development and the single-server deployment working. Single player does not use those API paths. Do not deploy the backend as a Vercel Function or split it across serverless instances: active rooms are process-local.
 
 The included `vercel.json` builds and serves only the frontend. The Render service runs the backend and serves the built app too, so it can also host the entire game by itself if desired.
 
-Solvox needs one long-running Node.js web service. That process serves the built frontend, the `/api` endpoints, and Socket.IO multiplayer from the same origin. Deploy the repository as a web service with WebSocket support; a static-only site or serverless function setup will not run multiplayer correctly.
+Multiplayer needs one long-running Node.js web service. That process serves the `/api` endpoints and Socket.IO multiplayer. A static-only Vercel deployment supports single player, but it cannot run multiplayer correctly.
 
 ## Deploy commands
 
@@ -54,8 +54,8 @@ The server stores multiplayer match history, evaluation records, and submitted f
 
 - Keep one running instance. Rooms and active matches are held in memory, so restarting the service ends active rooms.
 - Enable WebSocket connections. Socket.IO can fall back to HTTP polling, but a host or proxy that blocks both transports will break multiplayer.
-- Keep frontend and backend on the same origin. The client uses relative `/api` and `/socket.io` paths; the server already serves all three parts together.
-- Do not deploy `frontend/dist` as a separate static site. `npm run build` creates it, and the Node service serves it.
+- When the frontend is hosted separately on Vercel, set `VITE_API_URL` and `VITE_SOCKET_URL` to the backend origin. If the Node server serves the built frontend, the client uses relative `/api` and `/socket.io` paths.
+- `frontend/dist` can be deployed as a separate static site for single player. Multiplayer still needs the connected backend service.
 
 ## Deployment check
 
