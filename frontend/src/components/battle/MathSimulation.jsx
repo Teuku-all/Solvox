@@ -922,6 +922,9 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
       setBalanceDelta(0);
       setBalanceHistory((history) => [...history.slice(0, -1), { rows: balanceRows, delta: balanceDelta, stepIndex, operation: balanceOperation, operationSides }]);
       if (!done) setMessage(c.stepDone);
+    } else if (nextDelta === 0) {
+      setStepErrors((count) => count + 1);
+      setMessage(c.operationMismatch);
     }
   };
   const moveBalanceTile = (sourceSide, item, targetSide) => {
@@ -947,6 +950,9 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
       setStepIndex((index) => index + 1);
       setBalanceDelta(0);
       if (!done) setMessage(c.stepDone);
+    } else if (nextDelta === 0) {
+      setStepErrors((count) => count + 1);
+      setMessage(c.operationMismatch);
     }
   };
   const handleBalanceItemPointerDown = (event, side, item) => {

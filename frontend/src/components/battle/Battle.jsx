@@ -1,5 +1,5 @@
 import { getPlayerAsset } from '../../data/playerAssets';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ArenaBackground from './ArenaBackground';
 import BattleQuestionPanel from './BattleQuestionPanel';
 import MathSimulation from './MathSimulation';
@@ -20,6 +20,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   const autoResolveChapter = [1, 2, 3].includes(Number(levelId));
   const boss = getBoss(levelId);
   const bossAttackImpactMs = getBossImpactMs(boss.spriteId, 'attack', 360);
+  const bossAttackDurationMs = getBossSequenceDurationMs(boss.spriteId, 'attack');
   const bossDieDurationMs = getBossSequenceDurationMs(boss.spriteId, 'die');
   const damagePerQuestion = Math.ceil(boss.hp / 10);
   const playerAsset = getPlayerAsset(playerId);
@@ -65,6 +66,8 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   const endedRef = useRef(false);
   const autoSubmittedQuestionRef = useRef(null);
   const timersRef = useRef(new Set());
+  const simulationErrorsRef = useRef(null);
+  const simulationAttackRef = useRef(false);
   const questionAttemptRef = useRef({
     wrongAttempts: 0,
     answers: [],
@@ -113,6 +116,8 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     setFeedback(null);
     setAnswer('');
     setSimulation({ ready: false, modelCorrect: false, modelErrors: 0, stepErrors: 0, stepsCompleted: 0, stepsTotal: 0 });
+    simulationErrorsRef.current = null;
+    simulationAttackRef.current = false;
     setBalanceSolvedQuestionId(null);
     setSimulationOpen(false);
     setRound(targetIndex + 1);
@@ -124,6 +129,8 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     const now = Date.now();
 
     autoSubmittedQuestionRef.current = null;
+    simulationErrorsRef.current = null;
+    simulationAttackRef.current = false;
     endedRef.current = false;
     setIdx(0);
     setAnswer('');
@@ -204,6 +211,33 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     };
 
   }, [idx]);
+
+  const handleSimulationProgress = useCallback((progress) => {
+    if (progress.questionId !== questions[idx]?.id) return;
+    setSimulation(progress);
+    const previous = simulationErrorsRef.current;
+    simulationErrorsRef.current = progress;
+    if (!previous || previous.questionId !== progress.questionId || simulationAttackRef.current || endedRef.current) return;
+    if (progress.modelErrors <= previous.modelErrors && progress.stepErrors <= previous.stepErrors) return;
+
+    simulationAttackRef.current = true;
+    setBusy(true);
+    setSimulationOpen(false);
+    later(() => {
+      combatRef.current?.bossAttack();
+      playBossAttack(levelId);
+      later(() => {
+        setHp((value) => Math.max(1, value - boss.damage));
+        showImpact('player', boss.damage, 'boss');
+        combatRef.current?.playerHurt();
+      }, bossAttackImpactMs);
+      later(() => {
+        simulationAttackRef.current = false;
+        setBusy(false);
+        setSimulationOpen(true);
+      }, Math.max(bossAttackDurationMs, bossAttackImpactMs + 500) + 200);
+    }, 80);
+  }, [questions, idx, levelId, boss.damage, bossAttackImpactMs, bossAttackDurationMs]);
 
   useEffect(() => {
     if (!autoResolveChapter && simulation.ready && simulation.questionId === questions[idx]?.id) {
@@ -589,7 +623,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
               paused={isBalanceQuestion && !hideBalancePopup}
               onHit={() => showImpact('boss', damagePerQuestion, 'player')}
             />
-            {isBalanceQuestion && balanceSolvedQuestionId !== Number(q.id) && <MathSimulation key={q.id} questionId={q.id} lang={lang} story={q.text} hintsUsed={currentHints} busy={busy} visible={simulationOpen} onClose={() => setSimulationOpen(false)} onProgress={setSimulation} onBalanceSolved={(result) => { setBalanceSolvedQuestionId(result.questionId); setSimulationOpen(false); setSimulation(result); }} />}
+            {isBalanceQuestion && balanceSolvedQuestionId !== Number(q.id) && <MathSimulation key={q.id} questionId={q.id} lang={lang} story={q.text} hintsUsed={currentHints} busy={busy} visible={simulationOpen} onClose={() => setSimulationOpen(false)} onProgress={handleSimulationProgress} onBalanceSolved={(result) => { setBalanceSolvedQuestionId(result.questionId); setSimulationOpen(false); setSimulation(result); }} />}
           </div>
 
           <BattleQuestionPanel
@@ -605,7 +639,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
             setAnswer={setAnswer}
             busy={busy}
             simulationReady={simulation.ready && simulation.questionId === q.id}
-            onOpenSimulation={() => setSimulationOpen(true)}
+            onOpenSimulation={() => { if (!simulationAttackRef.current) setSimulationOpen(true); }}
             submit={submit}
             autoResolve={autoResolveChapter}
             hintsUsed={currentHints}
