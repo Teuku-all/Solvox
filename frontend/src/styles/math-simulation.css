@@ -2303,6 +2303,12 @@
 .math-sim-balance-reference.chapter-4 .math-sim-tile-dock { border-color:#914e83; background:radial-gradient(circle at 90% 0,rgba(255,123,203,.13),transparent 46%),linear-gradient(155deg,#392849,#211d39); }
 .math-sim-balance-reference.chapter-4 .math-sim-add-controls button,.math-sim-balance-reference.chapter-4 .math-sim-operation-options button,.math-sim-balance-reference.chapter-4 .math-sim-operation-sides button,.math-sim-balance-reference.chapter-4 .math-sim-operation-values button,.math-sim-balance-reference.chapter-4 .math-sim-balance-actions button { border-color:#985b91; background:linear-gradient(180deg,#653e76,#3f315e); color:#ffebf8; }
 .math-sim-balance-reference.chapter-4 .math-sim-operation-options button.is-selected,.math-sim-balance-reference.chapter-4 .math-sim-operation-values button.is-selected { border-color:#ff9ed7; background:linear-gradient(180deg,#a54786,#713e78); }
+.math-sim-balance-reference.chapter-4 .math-sim-tile-dock { gap: 12px; }
+.math-sim-balance-reference.chapter-4 .math-sim-operation-panel { min-height: 0; margin-top: 0; padding-top: 0; border-top: 0; overflow-y: auto; overscroll-behavior: contain; }
+.math-sim-balance-reference.chapter-4 .math-sim-operation-values { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 74px), 1fr)); gap: 7px; margin-block: 12px; }
+.math-sim-balance-reference.chapter-4 .math-sim-operation-values > span { grid-column: 1 / -1; color: #f0d9ec; font-size: 12px; line-height: 1.5; }
+.math-sim-balance-reference.chapter-4 .math-sim-operation-values > button { min-width: 0; min-height: 44px; padding: 7px; font-size: 14px; line-height: 1.4; white-space: normal; overflow-wrap: anywhere; }
+.math-sim-balance-reference.chapter-4 .math-sim-operation-sides button { min-width: 0; height: auto; min-height: 44px; white-space: normal; overflow-wrap: anywhere; line-height: 1.4; }
 
 .battle-reference-arena .math-sim-balance-reference.chapter-5 { border-color:#8155a7; background:radial-gradient(circle at 82% 0,rgba(181,92,255,.19),transparent 42%),linear-gradient(145deg,#302440,#1d1a32 55%,#121727); box-shadow:inset 0 0 0 2px rgba(15,11,25,.9),inset 0 2px rgba(236,217,255,.15),0 20px 48px rgba(1,8,22,.58),0 0 28px rgba(181,92,255,.14); }
 .math-sim-balance-reference.chapter-5 .math-sim-reference-question { border-color:#725192; background:linear-gradient(120deg,rgba(56,39,75,.98),rgba(30,28,54,.97)); }

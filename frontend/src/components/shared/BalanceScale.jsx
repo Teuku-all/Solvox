@@ -2,6 +2,13 @@ import React, { useLayoutEffect, useRef, useState } from 'react';
 
 export function formatBalanceSide(items, lang = 'id') {
   const formatNumber = (value) => Number(value.toFixed(3)).toLocaleString(lang === 'en' ? 'en-US' : 'id-ID', { maximumFractionDigits: 3, useGrouping: true });
+  // Keep expanded terms visible until the player combines like terms.
+  if (items.some((item) => item.preserveTermOrder)) {
+    return items.filter((item) => item.value !== 0).reduce((text, item) => {
+      const label = String(item.label || formatNumber(Math.abs(item.value))).replace(/^[+−-]/, '');
+      return text ? `${text} ${item.value < 0 ? '−' : '+'} ${label}` : `${item.value < 0 ? '−' : ''}${label}`;
+    }, '') || '0';
+  }
   const expressionItem = items.find((item) => item.expression);
   const regularItems = items.filter((item) => !item.expression);
   if (expressionItem && !regularItems.length) return expressionItem.label;
