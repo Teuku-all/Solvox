@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { SIMULATIONS, STORY_MODELS, STORY_MODELS_EN, operationLabel } from '../../data/algebraSimulation';
 import PixelIcon from '../shared/PixelIcon';
@@ -372,8 +372,27 @@ function BalanceOperationVisual({ items, operation, value, result, lang }) {
 }
 
 function BalanceScale({ left, right, equation, sides, selectedTile, overPans, tilt, indicator, statusText, balanceDelta, operationAnimation, onMoveTile, draggingSource, interactiveTiles = true, chapter2DropTargets = false, chapter2HoverSide = '', chapter2OperationSides = [], chapter2OperationText = '', lang }) {
+  const beamRef = useRef(null);
+  const pansRef = useRef(null);
+  const [attachment, setAttachment] = useState({ run: 0, ropeTop: -27 });
+  useLayoutEffect(() => {
+    const beam = beamRef.current;
+    const pans = pansRef.current;
+    if (!beam || !pans) return undefined;
+    const measure = () => {
+      const run = beam.offsetWidth * 0.3;
+      const ropeTop = beam.offsetTop + beam.offsetHeight / 2 - pans.offsetTop;
+      setAttachment((current) => current.run === run && current.ropeTop === ropeTop ? current : { run, ropeTop });
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(beam);
+    observer.observe(pans);
+    observer.observe(beam.parentElement);
+    return () => observer.disconnect();
+  }, []);
   const swing = balanceDelta ? Math.min(8, 4.5 + Math.abs(balanceDelta) * 1.1) : 0;
-  const drop = balanceDelta ? Math.min(18, 8 + Math.abs(balanceDelta) * 2) : 0;
+  const drop = attachment.run * Math.sin(swing * Math.PI / 180);
   const direction = Math.sign(balanceDelta);
   return <div
     className={`math-sim-balance-scale ${selectedTile ? 'has-pending-tile' : ''} ${tilt} ${operationAnimation ? 'is-operation-active' : ''}`}
@@ -382,8 +401,7 @@ function BalanceScale({ left, right, equation, sides, selectedTile, overPans, ti
       '--scale-angle': `${-direction * swing}deg`,
       '--left-drop': `${direction * drop}px`,
       '--right-drop': `${-direction * drop}px`,
-      '--left-pan-angle': `${-direction * 3}deg`,
-      '--right-pan-angle': `${direction * 3}deg`,
+      '--rope-top': `${attachment.ropeTop}px`,
     }}
   >
     <svg className="math-sim-scale-frame-art" viewBox="0 0 1000 310" preserveAspectRatio="none" aria-hidden="true">
@@ -404,10 +422,10 @@ function BalanceScale({ left, right, equation, sides, selectedTile, overPans, ti
       </g>
     </svg>
     <div className={`math-sim-balance-readout is-${indicator}`} role="status" aria-live="polite"><span aria-hidden="true" />{statusText}</div>
-    <div className="math-sim-scale-beam" aria-hidden="true"><span /></div>
+    <div ref={beamRef} className="math-sim-scale-beam" aria-hidden="true"><span /></div>
     <div className="math-sim-scale-crystal" aria-hidden="true">◆</div>
     <div className="math-sim-scale-post" aria-hidden="true" />
-    <div className={`math-sim-scale-pans ${overPans ? 'is-drop-target' : ''}`}>
+    <div ref={pansRef} className={`math-sim-scale-pans ${overPans ? 'is-drop-target' : ''}`}>
       <div className={`math-sim-scale-pan is-left ${overPans === 'left' ? 'is-drop-target' : ''} ${chapter2HoverSide === 'left' ? 'is-ch2-hovered' : ''}`} data-ch2-side={chapter2DropTargets ? 'left' : undefined}>
         <small>{sides[0]}</small>
         {chapter2OperationSides.includes(0) && <b className="math-sim-ch2-pan-operation">{chapter2OperationText}</b>}
@@ -614,7 +632,7 @@ function Chapter5ModelBuilder({ story, equation, alternative, lang, questionId, 
   </section>;
 }
 
-export default function MathSimulation({ questionId, lang, hintsUsed, busy, onProgress, onBalanceSolved, story }) {
+export default function MathSimulation({ questionId, lang, hintsUsed, busy, onProgress, onBalanceSolved, story, visible = true, onClose }) {
   const config = SIMULATIONS[Number(questionId)];
   const questionNumber = Number(questionId);
   const chapter2Symbolic = questionNumber >= 11 && questionNumber <= 20;
@@ -1063,8 +1081,9 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
     const chapterQuestion = ((Number(questionId) - 1) % 10) + 1;
     const activeTiles = tileTab === 'number' ? balanceNumberTiles : variableTiles(variableSymbol);
     return <>
-      <section className={`math-sim math-sim-balance math-sim-balance-reference chapter-${chapterNumber} ${balancePhase === 'active' ? '' : `is-${balancePhase}`}`} aria-label={c.modes[config.mode]}>
+      <section className={`math-sim math-sim-balance math-sim-balance-reference chapter-${chapterNumber} ${balancePhase === 'active' ? '' : `is-${balancePhase}`} ${visible ? '' : 'is-closed'}`} aria-label={c.modes[config.mode]}>
       <header className="math-sim-reference-question">
+        <button type="button" className="math-sim-close" onClick={onClose} aria-label={lang === 'en' ? 'Close simulation' : 'Tutup simulasi'}><PixelIcon name="close" size={18} /></button>
         <div className="math-sim-reference-heading"><span className="math-sim-chapter-gem" aria-hidden="true"><img src="/assets/ui/character-select/icons/crystal-star.webp" alt="" /></span><strong>{c.chapter} {chapterNumber}</strong><i>•</i><b>{c.question} {chapterQuestion}/10</b></div>
         <p>{distributiveModel && modelReady && !distributiveComplete ? (lang === 'en' ? 'Model the distribution first, then solve the expanded equation using the balance.' : 'Buat model distributif terlebih dahulu, lalu selesaikan persamaan yang sudah dibuka dengan timbangan.') : chapter5Question && !modelReady ? (lang === 'en' ? 'Build an equation from the story first. Then solve it using the balance.' : 'Rakit persamaan dari cerita terlebih dahulu, lalu selesaikan dengan timbangan.') : config.mode === 'groups' ? c.groupPrompt : c.balancePrompt}</p>
         {(!chapter5Question || modelReady) && <strong className="math-sim-reference-equation">{equation}</strong>}
@@ -1150,10 +1169,11 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
     </>;
   }
 
-  return <section className={`math-sim math-sim-${config.mode}${modelReady && chapter2Symbolic ? ' math-sim-ch2-host-hidden' : ''}`} aria-label={c.modes[config.mode]}>
+  return <section className={`math-sim math-sim-${config.mode}${modelReady && chapter2Symbolic ? ' math-sim-ch2-host-hidden' : ''}${visible ? '' : ' is-closed'}`} aria-label={c.modes[config.mode]}>
     <div className="math-sim-head">
       <div><small>{modelReady ? c.modes[config.mode] : c.model}</small><b>{modelReady ? `${c.step} ${Math.min(stepIndex + 1, config.steps.length)}/${config.steps.length}` : `${modelIndex + 1}/${model.length}`}</b></div>
       <button type="button" onClick={undo} disabled={busy || (!stepIndex && !modelIndex)}>{c.undo}</button>
+      <button type="button" className="math-sim-close" onClick={onClose} aria-label={lang === 'en' ? 'Close simulation' : 'Tutup simulasi'}><PixelIcon name="close" size={18} /></button>
     </div>
     <div className="math-sim-progress" aria-label={`${progress}%`}><span style={{ width: `${progress}%` }} /></div>
 
@@ -1165,8 +1185,9 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
       {modelIndex > 0 && <small className="math-sim-model-progress">{model.slice(0, modelIndex).map((stage) => stage.correct).join(' → ')}</small>}
     </div>}
 
-    {modelReady && chapter2Symbolic ? createPortal(<section className={`math-sim math-sim-balance math-sim-balance-reference chapter-2 math-sim-ch2-reference ${questionNumber === 11 ? 'is-partition' : 'is-balance'} ${balancePhase === 'active' ? '' : `is-${balancePhase}`}`} aria-label={c.modes.balance}>
+    {modelReady && chapter2Symbolic ? createPortal(<section className={`math-sim math-sim-balance math-sim-balance-reference chapter-2 math-sim-ch2-reference ${questionNumber === 11 ? 'is-partition' : 'is-balance'} ${balancePhase === 'active' ? '' : `is-${balancePhase}`} ${visible ? '' : 'is-closed'}`} aria-label={c.modes.balance}>
       <header className="math-sim-reference-question">
+        <button type="button" className="math-sim-close" onClick={onClose} aria-label={lang === 'en' ? 'Close simulation' : 'Tutup simulasi'}><PixelIcon name="close" size={18} /></button>
         <div className="math-sim-reference-heading"><span className="math-sim-chapter-gem" aria-hidden="true"><img src="/assets/ui/character-select/icons/crystal-star.webp" alt="" /></span><strong>{c.chapter} 2</strong><i>&#8226;</i><b>{c.question} {((questionNumber - 1) % 10) + 1}/10</b></div>
         <p>{lang === 'en' ? 'Choose the inverse operation. Apply it to one side, then drag the same tile to the other side.' : 'Pilih operasi kebalikan, terapkan pada satu ruas, lalu seret ubin yang sama ke ruas sebelahnya.'}</p>
         <strong className="math-sim-reference-equation">{equation}</strong>

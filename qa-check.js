@@ -166,8 +166,8 @@ must(exists('frontend/src/components/shared/SolvoxBrandLogo.jsx') && exists('fro
 must(!exists('frontend/public/assets/ui/brand/solvox-logo.png'), 'Retired image-based Solvox logo remains');
 must(!exists('frontend/public/assets/ui/utility/icons/main.png') && !exists('frontend/public/assets/ui/utility/art/main.png'), 'Retired Main utility art remains');
 must(main.includes("import './styles/chapter-select.css';") && chapters.includes('chapter-card') && chapterCss.includes('.chapter-card-art'), 'Current chapter art UI is not wired to a dedicated stylesheet');
-must(levels.includes("art:'/assets/ui/chapters/chapter-1.png'") && levels.includes("art:'/assets/ui/chapters/chapter-5.png'"), 'Chapter artwork metadata missing');
-for (let id = 1; id <= 5; id += 1) must(exists(`frontend/public/assets/ui/chapters/chapter-${id}.png`), `Chapter ${id} artwork asset missing`);
+must(levels.includes("art:'/assets/ui/chapters/chapter-1.webp'") && levels.includes("art:'/assets/ui/chapters/chapter-5.webp'"), 'Chapter artwork metadata missing');
+for (let id = 1; id <= 5; id += 1) must(exists(`frontend/public/assets/ui/chapters/chapter-${id}.webp`), `Chapter ${id} artwork asset missing`);
 must(
   backgrounds.includes("3: { type:'video'") &&
     backgrounds.includes("/assets/backgrounds/level3/chapter3-arena-4x1.mp4") &&

@@ -49,6 +49,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   const [questionLogs, setQuestionLogs] = useState([]);
   const [simulation, setSimulation] = useState({ ready: false, modelCorrect: false, modelErrors: 0, stepErrors: 0, stepsCompleted: 0, stepsTotal: 0 });
   const [balanceSolvedQuestionId, setBalanceSolvedQuestionId] = useState(null);
+  const [simulationOpen, setSimulationOpen] = useState(false);
   const [keypadVisible, setKeypadVisible] = useState(() => {
     const value = localStorage.getItem('solvox.keypad');
     const legacy = localStorage.getItem('numericore.keypad');
@@ -111,6 +112,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     setAnswer('');
     setSimulation({ ready: false, modelCorrect: false, modelErrors: 0, stepErrors: 0, stepsCompleted: 0, stepsTotal: 0 });
     setBalanceSolvedQuestionId(null);
+    setSimulationOpen(false);
     setRound(targetIndex + 1);
     setIdx(targetIndex);
   };
@@ -188,6 +190,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     setBusy(false);
     setAttempts(0);
     setCurrentHints(0);
+    setSimulationOpen(false);
     setQuestionStartedAt(now);
     questionAttemptRef.current = {
       wrongAttempts: 0,
@@ -196,10 +199,13 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
       startedAt: now,
     };
 
-    window.requestAnimationFrame(() => {
-      document.querySelector('.battle-answer-input')?.focus();
-    });
   }, [idx]);
+
+  useEffect(() => {
+    if (simulation.ready && simulation.questionId === questions[idx]?.id) {
+      window.requestAnimationFrame(() => document.querySelector('.battle-answer-input')?.focus());
+    }
+  }, [simulation.ready, simulation.questionId, questions, idx]);
 
   /* ------------------------------- Hint ----------------------------------- */
   const useHint = () => {
@@ -427,7 +433,8 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   const maxEnemy = boss.hp;
   const isBalanceQuestion = Boolean(SIMULATIONS[Number(q?.id)]);
   const hideBalancePopup = isBalanceQuestion && (
-    balanceSolvedQuestionId === Number(q?.id)
+    !simulationOpen
+    || balanceSolvedQuestionId === Number(q?.id)
     || (simulation.ready && simulation.questionId === Number(q?.id))
     || feedback?.type === 'correct'
   );
@@ -561,7 +568,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
               paused={isBalanceQuestion && !hideBalancePopup}
               onHit={() => showImpact('boss', damagePerQuestion, 'player')}
             />
-            {!hideBalancePopup && <MathSimulation key={q.id} questionId={q.id} lang={lang} story={q.context} hintsUsed={currentHints} busy={busy} onProgress={setSimulation} onBalanceSolved={(result) => { setBalanceSolvedQuestionId(result.questionId); setSimulation(result); }} />}
+            {isBalanceQuestion && balanceSolvedQuestionId !== Number(q.id) && <MathSimulation key={q.id} questionId={q.id} lang={lang} story={q.context} hintsUsed={currentHints} busy={busy} visible={simulationOpen} onClose={() => setSimulationOpen(false)} onProgress={setSimulation} onBalanceSolved={(result) => { setBalanceSolvedQuestionId(result.questionId); setSimulationOpen(false); setSimulation(result); }} />}
           </div>
 
           <BattleQuestionPanel
@@ -577,6 +584,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
             setAnswer={setAnswer}
             busy={busy}
             simulationReady={simulation.ready && simulation.questionId === q.id}
+            onOpenSimulation={() => setSimulationOpen(true)}
             submit={submit}
             hintsUsed={currentHints}
             hintsLeft={Math.max(0, 3 - currentHints)}

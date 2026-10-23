@@ -105,6 +105,7 @@ export default function BattleQuestionPanel({
   setAnswer,
   busy,
   simulationReady = true,
+  onOpenSimulation,
   submit,
   hintsUsed,
   hintsLeft,
@@ -163,7 +164,10 @@ export default function BattleQuestionPanel({
             <span className="answer-icon"><PixelIcon name="keyboard" size={16} /></span>
             <input
               className="battle-answer-input"
-              disabled={busy || !simulationReady}
+              disabled={busy}
+              readOnly={!simulationReady}
+              onFocus={() => { if (!simulationReady) onOpenSimulation?.(); }}
+              onClick={() => { if (!simulationReady) onOpenSimulation?.(); }}
               value={answer}
               onChange={(event) => setAnswer(event.target.value)}
               onKeyDown={(event) => {

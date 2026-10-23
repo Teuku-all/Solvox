@@ -1946,3 +1946,45 @@
   .math-sim-division-group button.is-filled { animation: none; }
   .math-sim-division-source button { transition: none; }
 }
+
+/* Keep the lesson mounted while closed so reopening preserves its steps. */
+.battle-reference-arena .math-sim.is-closed { display: none !important; }
+.math-sim-reference-question { padding-right: 55px; }
+.math-sim-reference-question .math-sim-close {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+}
+.math-sim .math-sim-close {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid rgba(181, 214, 246, .55);
+  border-radius: 7px;
+  background: rgba(8, 25, 48, .9);
+  color: #f2f7ff;
+  cursor: pointer;
+}
+.math-sim .math-sim-close:hover,
+.math-sim .math-sim-close:focus-visible {
+  border-color: #b9e9ff;
+  background: #244d7b;
+}
+
+/* The pans follow the beam's attachment points; both ropes meet each hook. */
+.math-sim-balance-scale .math-sim-scale-beam::before { left: 20%; }
+.math-sim-balance-scale .math-sim-scale-beam::after { right: 20%; }
+.math-sim-balance-scale .math-sim-scale-pan::before,
+.math-sim-balance-scale .math-sim-scale-pan::after {
+  top: var(--rope-top, -27px);
+  left: 50%;
+  right: auto;
+  transform-origin: top center;
+}
+.math-sim-balance-scale .math-sim-scale-pan::before { transform: translateX(-50%) rotate(20deg); }
+.math-sim-balance-scale .math-sim-scale-pan::after { transform: translateX(-50%) rotate(-20deg); }
+.math-sim-balance-scale .math-sim-scale-pan.is-left,
+.math-sim-balance-scale .math-sim-scale-pan.is-right { transform: translateY(var(--left-drop, 0px)); }
+.math-sim-balance-scale .math-sim-scale-pan.is-right { transform: translateY(var(--right-drop, 0px)); }
