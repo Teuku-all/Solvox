@@ -1,47 +1,117 @@
-// Shared, short instructions shown before a chapter and beside its questions.
+// Chapter instructions mirror the controls and learning steps used in battle.
 export const CHAPTER_GUIDE = {
   id: {
     1: {
-      brief: 'Gunakan ubin untuk menjaga kedua ruas tetap setara. Materi mencakup bilangan positif, negatif, desimal, pecahan, dan persamaan dengan variabel di kiri atau kanan.',
-      steps: ['Baca bentuk persamaan dan kenali suku variabel, bilangan, tanda, serta posisi ruasnya.', 'Untuk menghilangkan bilangan, gunakan operasi kebalikan: + menjadi − dan − menjadi +. Terapkan nilai yang sama pada kedua ruas.', 'Untuk desimal, pisahkan bilangan menjadi ubin satuan dan pecahan desimal. Contoh p − 6,5 = 3,5: ubin pada persamaan mewakili −1 enam kali dan −0,5 di kiri, serta +1 tiga kali dan +0,5 di kanan.', 'Untuk pecahan seperti 1/2, gunakan ubin pecahan yang sesuai. Periksa kembali tanda dan hasil operasi sebelum memastikan nilai variabel.', 'Jika variabel berada di ruas kanan, pertahankan kesetaraan saat memindahkan atau menambahkan ubin. Jangan mengubah tanda tanpa melakukan operasi yang sah.', 'Jika langkah tidak menjaga kesetaraan, monster menyerang dan HP berkurang. Gunakan Urungkan bila tersedia, lalu ulangi langkah dengan operasi yang sama pada kedua ruas.', 'Setelah variabel berdiri sendiri dan nilainya benar, simulasi selesai dan karakter menyerang otomatis.'],
+      brief: 'Gunakan ubin pada timbangan untuk mengisolasi variabel dengan operasi invers.',
+      steps: [
+        'Baca persamaan pada timbangan. Kenali variabel, bilangan, tanda, dan ruas tempat setiap suku berada.',
+        'Pilih ubin yang sesuai untuk menambah atau menyeimbangkan ruas. Gunakan operasi kebalikan untuk menghilangkan bilangan di samping variabel.',
+        'Seret ubin ke ruas yang diperlukan. Ubin bernilai berlawanan pada ruas yang sama saling menghapus, misalnya +1 dan −1.',
+        'Jaga tanda dan nilai ubin. Jangan mengubah tanda suku tanpa melakukan langkah yang setara pada persamaan.',
+        'Pada soal desimal p − 6,5 = 3,5, ruas kiri memuat enam ubin −1 dan satu −0,5; ruas kanan memuat tiga +1 dan satu +0,5. Pada soal pecahan, gunakan ubin pecahan yang tersedia.',
+        'Jika langkah merusak kesetaraan atau ubin yang dipilih keliru, monster dapat menyerang dan mengurangi HP. Gunakan tombol langkah sebelumnya bila tersedia. Setelah variabel terisolasi, simulasi menyelesaikan soal dan petarung menyerang otomatis.',
+      ],
     },
     2: {
-      brief: 'Gunakan kelompok setara dan operasi kebalikan untuk persamaan perkalian, pembagian, tanda negatif, desimal, dan pecahan.',
-      steps: ['Kenali koefisien atau pembagi yang melekat pada variabel.', 'Untuk ax = b, bagi kedua ruas dengan a. Untuk x/a = b, kalikan kedua ruas dengan a.', 'Pertahankan tanda: membagi atau mengalikan dengan bilangan negatif dapat mengubah tanda hasil.', 'Untuk koefisien desimal atau pecahan, gunakan nilai kebalikan yang sesuai dan sederhanakan dengan teliti.', 'Bentuk kelompok sama banyak pada kedua ruas bila simulasi memintanya. Pastikan tiap kelompok bernilai sama.', 'Jika memilih operasi atau kelompok yang keliru, periksa kembali operasi kebalikan dan nilai setiap kelompok. Setelah simulasi selesai, karakter menyerang otomatis.'],
+      brief: 'Gunakan kelompok setara, potongan pecahan, dan operasi kebalikan untuk mengisolasi variabel.',
+      steps: [
+        'Periksa apakah variabel dikalikan koefisien, dibagi suatu bilangan, atau memiliki koefisien pecahan/desimal.',
+        'Pada soal pembagian berkelompok, buat jumlah kelompok yang diminta pada kedua ruas, masukkan ubin ke kelompok, lalu cocokkan kelompok yang bersesuaian.',
+        'Pada soal koefisien pecahan, ikuti bengkel pecahan: bagi bentuk menjadi bagian sama besar, pasangkan bagian pada kedua ruas, lalu susun bagian yang mewakili satu variabel.',
+        'Pada soal lainnya, pilih operasi kebalikan dari pilihan yang tersedia. Terapkan pilihan operasi yang sama ke ruas kiri dan kanan dengan meletakkan kontrol operasi pada masing-masing ruas.',
+        'Pertahankan tanda negatif dan nilai koefisien. Untuk ax = b, gunakan pembagian kedua ruas dengan a; untuk x/a = b, kalikan kedua ruas dengan a.',
+        'Kelompok atau operasi yang keliru dicatat sebagai kesalahan dan dapat mengurangi HP. Selesaikan semua tahap hingga nilai variabel diperoleh; hasil simulasi kemudian menyerang lawan secara otomatis.',
+      ],
     },
     3: {
-      brief: 'Selesaikan persamaan bertahap dengan operasi campuran, koefisien, dan tanda kurung.',
-      steps: ['Ikuti langkah yang ditampilkan: sederhanakan atau buka kurung terlebih dahulu bila diperlukan.', 'Saat membuka kurung, kalikan faktor di luar kurung dengan setiap suku di dalamnya. Tanda negatif di depan kurung berlaku untuk semua suku.', 'Gabungkan hanya suku sejenis, lalu hilangkan bilangan di samping variabel dengan operasi kebalikan pada kedua ruas.', 'Jika variabel memiliki koefisien, bagi kedua ruas dengan koefisien tersebut. Perhatikan koefisien negatif dan pecahan.', 'Jika langkah atau operasi tidak cocok, tinjau kembali distribusi tanda dan urutan operasi. Setelah variabel sendiri, karakter menyerang otomatis.'],
+      brief: 'Sederhanakan persamaan di timbangan, lalu terapkan operasi dan nilai yang sama pada kedua ruas.',
+      steps: [
+        'Baca urutan langkah pada panel operasi. Pada soal bertanda kurung, selesaikan tahap distribusi yang diminta sebelum menyeimbangkan persamaan.',
+        'Pilih jenis operasi dan angkanya pada panel, misalnya mengurangi konstanta atau membagi koefisien.',
+        'Terapkan operasi pada ruas kiri terlebih dahulu. Tampilan ruas kiri langsung berubah; lanjutkan dengan operasi yang sama pada ruas kanan agar persamaan tetap setara.',
+        'Ikuti urutan yang ditampilkan sampai variabel berdiri sendiri. Perhatikan tanda negatif, pecahan, dan suku sejenis.',
+        'Gunakan tombol langkah sebelumnya untuk kembali jika perlu. Langkah yang tidak sesuai dicatat dan dapat membuat monster menyerang serta mengurangi HP.',
+        'Setelah semua langkah benar, simulasi menampilkan hasil akhir dan petarung menyerang otomatis.',
+      ],
     },
     4: {
-      brief: 'Kelompokkan variabel dan konstanta pada ruas berbeda, termasuk persamaan dengan kurung dan pecahan.',
-      steps: ['Buka setiap tanda kurung dengan mengalikan faktor ke semua suku. Tanda minus di depan kurung membalik tanda seluruh suku di dalamnya.', 'Gabungkan suku sejenis saja. Pindahkan suku variabel dengan operasi yang sama pada kedua ruas.', 'Pindahkan konstanta menggunakan operasi kebalikan dan pertahankan kesetaraan.', 'Jika ada pecahan, samakan penyebut atau kalikan seluruh persamaan dengan faktor yang menghilangkan penyebut; jangan hanya mengalikan satu suku.', 'Setelah semua variabel terkumpul di satu ruas dan konstanta di ruas lain, sederhanakan lalu bagi dengan koefisien variabel.', 'Gunakan langkah sebelumnya bila pengelompokan atau tanda perlu diperbaiki. Karakter menyerang setelah simulasi selesai.'],
+      brief: 'Selesaikan persamaan dengan variabel di kedua ruas memakai panel operasi pada timbangan.',
+      steps: [
+        'Perhatikan suku variabel dan konstanta yang berada pada ruas berbeda. Ubin di chapter ini tetap pada ruasnya; gunakan panel operasi untuk mengubah persamaan.',
+        'Jika langkah meminta membuka kurung atau menyederhanakan suku sejenis, pilih tindakan tersebut pada panel sebelum melanjutkan operasi berikutnya.',
+        'Pilih operasi dan nilainya. Terapkan terlebih dahulu pada satu ruas; ruas itu langsung diperbarui. Setelah itu terapkan operasi yang sama pada ruas lainnya.',
+        'Pindahkan suku variabel dengan operasi yang setara pada kedua ruas, lalu lakukan hal yang sama untuk konstanta. Jangan sekadar mengganti tanda secara manual.',
+        'Bagi kedua ruas dengan koefisien setelah variabel terkumpul di satu ruas. Contoh: dari 3x = 12, bagi kiri dan kanan dengan 3 untuk memperoleh x = 4.',
+        'Gunakan tombol langkah sebelumnya untuk mengoreksi urutan. Kesalahan operasi dicatat dan dapat mengurangi HP; menyelesaikan seluruh langkah membuat petarung menyerang otomatis.',
+      ],
     },
     5: {
-      brief: 'Ubah informasi cerita menjadi model aljabar, susun persamaan dengan kepingan, lalu selesaikan.',
-      steps: ['Tentukan besaran yang ditanyakan dan tetapkan sebagai variabel. Jangan tertukar antara nilai satu benda dan nilai total beberapa benda.', 'Terjemahkan kata hubungan dengan cermat: selisih, diskon, pemberian, atau pengurangan mengikuti konteks; beberapa kelompok membentuk koefisien.', 'Untuk kuantitas berkelompok, bedakan x + 15 dari beberapa salinan (x + 15). Gunakan tanda kurung bila operasi berlaku pada seluruh kelompok.', 'Susun kepingan dari kiri ke kanan sesuai cerita. Kepingan tambahan adalah pengecoh dan tidak harus digunakan.', 'Periksa bahwa kedua ruas menyatakan jumlah yang dibandingkan atau total yang sama dengan cerita.', 'Selesaikan persamaan dengan langkah yang sama pada kedua ruas. Tinjau pemodelan bila variabel, relasi, atau persamaan tidak cocok; karakter menyerang setelah simulasi selesai.'],
+      brief: 'Terjemahkan soal cerita menjadi persamaan dengan model ubin, lalu selesaikan di timbangan.',
+      steps: [
+        'Tentukan besaran yang ditanyakan. Pilih makna variabel yang cocok dengan pertanyaan, misalnya harga satu barang atau jumlah awal.',
+        'Pilih relasi yang sesuai dengan cerita: jumlah, selisih, pemberian, perbandingan, atau banyak kelompok.',
+        'Pilih persamaan yang mewakili cerita. Periksa tanda kurung dan pastikan setiap ruas menyatakan jumlah yang tepat.',
+        'Pada pembangun model, seret ubin dari persediaan ke ruas yang sesuai. Kepingan pengecoh boleh tetap di luar model.',
+        'Setelah model cocok, timbangan terbuka. Gunakan panel operasi untuk menerapkan operasi yang sama pada kedua ruas sampai variabel terisolasi.',
+        'Kesalahan pada makna variabel, relasi, model, atau langkah aljabar dicatat untuk evaluasi dan dapat mengurangi HP. Setelah persamaan selesai, petarung menyerang otomatis.',
+      ],
     },
   },
   en: {
     1: {
-      brief: 'Use tiles to keep both sides equivalent. Topics include positive and negative numbers, decimals, fractions, and variables on either side.',
-      steps: ['Read the equation and identify the variable, constants, signs, and which side each term is on.', 'Use inverse operations to remove constants: + becomes − and − becomes +. Apply the same value to both sides.', 'For decimals, represent the value with unit and decimal tiles. For p − 6.5 = 3.5, the left side is −1 six times and −0.5; the right side is +1 three times and +0.5.', 'For fractions such as 1/2, use the matching fraction tile. Check the sign and calculation before confirming the variable value.', 'If the variable is on the right, preserve equality while moving or adding tiles. Never change a sign without a valid operation.', 'An invalid step that breaks equality makes the monster attack and reduces HP. Undo if available, then apply the same operation to both sides.', 'Once the variable stands alone and its value is correct, the simulation completes and your fighter attacks automatically.'],
+      brief: 'Use balance-scale tiles and inverse operations to isolate the variable.',
+      steps: [
+        'Read the equation on the scale. Identify the variable, numbers, signs, and the side containing each term.',
+        'Choose the tile needed to change or balance a side. Use inverse operations to remove numbers next to the variable.',
+        'Drag tiles to the needed side. Opposite values on the same side cancel, such as +1 and −1.',
+        'Keep each tile’s sign and value correct. Do not change a term’s sign without making an equivalent change to the equation.',
+        'For p − 6.5 = 3.5, the left side contains six −1 tiles and one −0.5; the right contains three +1 tiles and one +0.5. Use the available fraction tile on fraction questions.',
+        'A move that breaks equality or uses the wrong tile can trigger a monster attack and cost HP. Use Previous Step when available. Once the variable is isolated, the simulation resolves the question and your fighter attacks automatically.',
+      ],
     },
     2: {
-      brief: 'Use equal groups and inverse operations for multiplication, division, negative values, decimals, and fractions.',
-      steps: ['Identify the coefficient or divisor attached to the variable.', 'For ax = b, divide both sides by a. For x/a = b, multiply both sides by a.', 'Track signs carefully: multiplying or dividing by a negative value can change the result sign.', 'For decimal or fraction coefficients, use the matching inverse value and simplify carefully.', 'Build equal groups on both sides when the simulation asks for them. Check that every group has the same value.', 'If an operation or group is incorrect, review the inverse operation and each group value. Your fighter attacks when the simulation is complete.'],
+      brief: 'Use equal groups, fraction pieces, and inverse operations to isolate the variable.',
+      steps: [
+        'Check whether the variable is multiplied by a coefficient, divided by a number, or has a fractional or decimal coefficient.',
+        'For equal-group questions, create the requested number of groups on both sides, place the tiles, and match corresponding groups.',
+        'For fraction-coefficient questions, follow the fraction workshop: split into equal parts, match the parts on both sides, and combine the pieces that make one variable.',
+        'For other questions, choose an inverse operation from the available options. Apply the same operation choice to the left and right sides using the controls on each side.',
+        'Preserve negative signs and coefficient values. For ax = b, divide both sides by a; for x/a = b, multiply both sides by a.',
+        'An incorrect group or operation is recorded and can cost HP. Complete every step to find the variable value; the finished simulation then attacks automatically.',
+      ],
     },
     3: {
-      brief: 'Solve equations in stages, including mixed operations, coefficients, and parentheses.',
-      steps: ['Follow the displayed sequence: simplify or expand parentheses first when needed.', 'When expanding parentheses, multiply the outside factor by every term inside. A negative factor applies to every term.', 'Combine like terms only, then remove constants with inverse operations on both sides.', 'If the variable has a coefficient, divide both sides by it. Watch negative and fractional coefficients.', 'If an operation or step is incorrect, review distribution signs and operation order. Your fighter attacks once the variable is isolated.'],
+      brief: 'Simplify the equation on the scale, then apply the same operation and value to both sides.',
+      steps: [
+        'Follow the operation panel’s step order. On questions with parentheses, complete the requested distribution step before balancing the equation.',
+        'Choose the operation and number in the panel, such as subtracting a constant or dividing by a coefficient.',
+        'Apply the operation to the left side first. The left side updates immediately; apply the same operation to the right side to keep the equation equivalent.',
+        'Continue in the displayed order until the variable stands alone. Watch negative signs, fractions, and like terms.',
+        'Use Previous Step to go back when needed. An incorrect step is recorded and can trigger a monster attack that costs HP.',
+        'When all steps are correct, the simulation shows the result and your fighter attacks automatically.',
+      ],
     },
     4: {
-      brief: 'Group variables and constants on separate sides, including equations with parentheses and fractions.',
-      steps: ['Expand every parenthesis by multiplying its outside factor by each term. A minus sign before parentheses flips every sign inside.', 'Combine like terms only. Move variable terms using the same operation on both sides.', 'Move constants with inverse operations while preserving equality.', 'For fractions, use a common denominator or multiply the entire equation by a factor that clears denominators; do not multiply only one term.', 'Once variables are on one side and constants on the other, simplify and divide by the variable coefficient.', 'Use the previous-step control to correct grouping or signs. Your fighter attacks after the simulation is complete.'],
+      brief: 'Solve equations with variables on both sides using the scale’s operation panel.',
+      steps: [
+        'Notice which variables and constants appear on each side. Tiles stay on their current sides in this chapter; use the operation panel to change the equation.',
+        'If a step asks you to expand parentheses or simplify like terms, choose that action in the panel before continuing.',
+        'Choose an operation and its value. Apply it to one side first; that side updates immediately. Then apply the same operation to the other side.',
+        'Move variable terms using equivalent operations on both sides, then do the same for constants. Do not just change a sign by hand.',
+        'Once the variables are on one side, divide both sides by the coefficient. For example, from 3x = 12, divide left and right by 3 to get x = 4.',
+        'Use Previous Step to correct the order. Operation errors are recorded and can cost HP; completing all steps makes your fighter attack automatically.',
+      ],
     },
     5: {
-      brief: 'Translate story information into an algebraic model, assemble it with tiles, and solve it.',
-      steps: ['Identify the requested quantity and define it as the variable. Distinguish the value of one item from a total for several items.', 'Translate relationships carefully: a difference or discount subtracts as described; transfers depend on who gives and receives; repeated groups create a coefficient.', 'For grouped quantities, distinguish x + 15 from several copies of (x + 15). Use parentheses when an operation applies to the whole group.', 'Place equation tiles from left to right to match the story. Extra tiles are distractors and may remain unused.', 'Check that both sides represent the quantities or total stated in the story.', 'Solve with equivalent operations on both sides. Revisit the variable, relationship, or equation if the model does not match the story; your fighter attacks when the simulation is complete.'],
+      brief: 'Translate a word problem into an equation with tiles, then solve it on the balance scale.',
+      steps: [
+        'Identify the requested quantity. Choose what the variable represents, such as the price of one item or an initial amount.',
+        'Choose the relationship that matches the story: a total, difference, transfer, comparison, or number of groups.',
+        'Choose the equation that models the story. Check its signs and parentheses, and make sure each side represents the right quantity.',
+        'In the model builder, drag tiles from the tray to the matching side. Distractor tiles may remain unused.',
+        'When the model matches, the balance scale opens. Use the operation panel to apply equivalent operations to both sides until the variable is isolated.',
+        'Errors in the variable meaning, relationship, equation model, or algebra steps are recorded for evaluation and can cost HP. When the equation is solved, your fighter attacks automatically.',
+      ],
     },
   },
 };
