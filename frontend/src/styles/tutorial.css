@@ -134,36 +134,15 @@
 .tutorial-practice-equation { display: grid; grid-template-columns: minmax(0, 1fr) 30px minmax(0, 1fr); align-items: center; gap: 8px; margin: 15px auto 10px; max-width: 560px; }
 .tutorial-practice-equation span { display: grid; min-height: 54px; place-items: center; padding: 8px; border: 1px solid rgba(131, 215, 194, .28); border-radius: 11px; background: rgba(5, 21, 29, .68); color: #f6f5e5; font: 750 clamp(1.2rem, 2.5vw, 1.55rem)/1.2 Georgia, serif; }
 .tutorial-practice-equation b { color: #f0d58f; font-size: 1.5rem; text-align: center; }
-.tutorial-balance-stage { position: relative; display: grid; align-content: center; min-height: 238px; margin: 13px 0 12px; padding: 20px 16px 10px; overflow: hidden; border: 1px solid rgba(126, 216, 194, .24); border-radius: 14px; background: radial-gradient(ellipse at 50% 0%, rgba(63, 157, 139, .22), transparent 62%), linear-gradient(155deg, #102c35, #091b25 72%); }
-.tutorial-balance-stage::before { position: absolute; inset: auto 8% 14px; height: 1px; background: linear-gradient(90deg, transparent, rgba(221, 197, 125, .3), transparent); content: ''; }
-.tutorial-balance-beam { position: absolute; z-index: 0; top: 39%; left: 22%; width: 56%; height: 5px; border-radius: 50%; background: linear-gradient(180deg, #f0dda1, #956f37 65%, #473421); box-shadow: 0 4px 8px rgba(0, 0, 0, .4); transform-origin: center; transition: transform .42s cubic-bezier(.2, .8, .2, 1); }
-.tutorial-balance-beam::before { position: absolute; top: 50%; left: 50%; width: 20px; height: 40px; border-radius: 7px 7px 3px 3px; background: linear-gradient(90deg, #604528, #e4c579 48%, #71532e); box-shadow: 0 0 14px rgba(239, 199, 111, .25); content: ''; transform: translate(-50%, -7%); }
-.tutorial-balance-beam i { position: absolute; top: -8px; left: calc(50% - 8px); width: 16px; height: 16px; border: 2px solid #f1d991; border-radius: 50%; background: #76e0ce; box-shadow: 0 0 14px rgba(118, 224, 206, .7); }
-.tutorial-balance-stage.is-left-heavy .tutorial-balance-beam { transform: rotate(-5deg); }
-.tutorial-balance-stage.is-right-heavy .tutorial-balance-beam { transform: rotate(5deg); }
-.tutorial-balance-pans { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) 30px minmax(0, 1fr); align-items: end; gap: 6px; padding-top: 60px; }
-.tutorial-balance-pan { display: grid; align-content: end; justify-items: center; gap: 6px; min-width: 0; min-height: 102px; padding: 7px 5px 8px; border: 1px solid rgba(230, 197, 121, .42); border-radius: 8px 8px 20px 20px; background: linear-gradient(180deg, rgba(152, 116, 58, .5), rgba(44, 38, 32, .9)); box-shadow: 0 8px 0 rgba(20, 19, 18, .56), inset 0 1px rgba(255, 244, 193, .25); transition: transform .42s cubic-bezier(.2, .8, .2, 1), border-color .2s ease; }
-.tutorial-balance-stage.is-left-heavy .tutorial-balance-pan:first-child { transform: translateY(5px) rotate(2deg); }
-.tutorial-balance-stage.is-left-heavy .tutorial-balance-pan:last-child { transform: translateY(-4px) rotate(-2deg); }
-.tutorial-balance-stage.is-right-heavy .tutorial-balance-pan:first-child { transform: translateY(-4px) rotate(-2deg); }
-.tutorial-balance-stage.is-right-heavy .tutorial-balance-pan:last-child { transform: translateY(5px) rotate(2deg); }
-.tutorial-balance-pan > small { color: #fff0c4; font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
-.tutorial-balance-pan > strong { color: #fff3cf; font-size: .78rem; }
-.tutorial-balance-equals { align-self: center; color: #e7d18d; font-size: 1.2rem; font-weight: 900; text-align: center; }
-.tutorial-balance-tiles { display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 4px; width: 100%; min-height: 42px; max-height: 57px; overflow-y: auto; }
+.tutorial-balance-stage { position: relative; display: grid; place-items: center; min-height: 285px; margin: 13px 0 12px; padding: 8px 10px; overflow: hidden; border: 1px solid rgba(126, 216, 194, .24); border-radius: 14px; background: radial-gradient(ellipse at 50% 0%, rgba(63, 157, 139, .22), transparent 62%), linear-gradient(155deg, #102c35, #091b25 72%); }
+.tutorial-balance-stage .math-sim-balance-scale.tutorial-practice-balance { width: 100%; max-width: 560px; height: clamp(250px, 34vh, 310px); }
 .tutorial-unit-tile, .tutorial-x-tile { display: grid; flex: 0 0 30px; width: 30px; height: 30px; place-items: center; padding: 0; border: 1px solid rgba(183, 245, 221, .78); border-radius: 7px; background: linear-gradient(145deg, #66dba9, #248973); box-shadow: 0 3px 0 #185b57, inset 0 1px rgba(255, 255, 255, .28); color: #082c33; font-size: .64rem; font-weight: 900; user-select: none; }
 .tutorial-unit-tile.is-negative { border-color: #ffd2d4; background: linear-gradient(145deg, #ffd9dc, #cf7686); box-shadow: 0 3px 0 #844755, inset 0 1px rgba(255, 255, 255, .38); color: #512638; }
 .tutorial-unit-tile:not(.is-tray) { cursor: grab; touch-action: none; }
 .tutorial-unit-tile:not(.is-tray):active { cursor: grabbing; transform: translateY(2px) scale(.96); }
-.tutorial-x-tile { border-color: rgba(205, 180, 255, .8); background: linear-gradient(145deg, #c2a0fb, #8161cf); box-shadow: 0 3px 0 #55418b, inset 0 1px rgba(255, 255, 255, .3); color: #241547; font-size: .9rem; }
 .tutorial-unit-tile.is-tray { flex-basis: 38px; width: 38px; height: 38px; font-size: .72rem; cursor: grab; touch-action: none; }
 .tutorial-unit-tile.is-tray:active { cursor: grabbing; transform: translateY(2px) scale(.96); }
 .tutorial-unit-tile.is-tray.is-selected { outline: 2px solid #f1d991; outline-offset: 2px; }
-.tutorial-balance-meter { position: relative; z-index: 1; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 18px; color: #bfe9d7; font-size: .68rem; font-weight: 750; }
-.tutorial-balance-meter::before { position: absolute; z-index: -1; left: calc(50% - 34px); width: 68px; height: 14px; border: 1px solid rgba(170, 207, 192, .4); border-radius: 4px; background: linear-gradient(90deg, rgba(238, 148, 102, .2) 0 33%, rgba(100, 217, 173, .2) 33% 66%, rgba(109, 165, 250, .2) 66%); content: ''; }
-.tutorial-balance-meter span { width: 7px; height: 7px; border-radius: 50%; background: #75e0b5; box-shadow: 0 0 9px currentColor; transition: transform .35s ease; }
-.tutorial-balance-meter span.left { background: #f2ad75; transform: translateX(-24px); }
-.tutorial-balance-meter span.right { background: #8eb5ff; transform: translateX(24px); }
 .tutorial-tile-tray { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 9px; padding: 11px 12px; border: 1px solid rgba(229, 201, 128, .2); border-radius: 11px; background: linear-gradient(110deg, rgba(75, 63, 34, .27), rgba(13, 37, 43, .72)); }
 .tutorial-tile-tray > strong { color: #e8d59c; font-size: .74rem; }
 .tutorial-tile-tray > div { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
@@ -231,14 +210,8 @@
   .tutorial-quick-start button { grid-column: 1 / -1; width: 100%; }
   .tutorial-chapters > div { grid-template-columns: minmax(0, 1fr); }
   .tutorial-practice { padding: 15px; }
-  .tutorial-balance-stage { min-height: 232px; padding: 14px 8px 8px; }
-  .tutorial-balance-beam { top: 38%; }
-  .tutorial-balance-pans { grid-template-columns: minmax(0, 1fr) 22px minmax(0, 1fr); gap: 3px; padding-top: 48px; }
-  .tutorial-balance-pan { min-height: 116px; padding: 6px 3px; }
-  .tutorial-balance-pan > small { font-size: .59rem; }
-  .tutorial-balance-tiles { min-height: 58px; max-height: 78px; gap: 3px; }
-  .tutorial-unit-tile, .tutorial-x-tile { flex-basis: 30px; width: 30px; height: 30px; border-radius: 6px; font-size: .62rem; }
-  .tutorial-x-tile { font-size: .82rem; }
+  .tutorial-balance-stage { min-height: 260px; padding: 6px; }
+  .tutorial-balance-stage .math-sim-balance-scale.tutorial-practice-balance { height: 245px; }
   .tutorial-tile-tray { align-items: flex-start; }
   .tutorial-tile-tray > div { width: 100%; }
   .tutorial-tile-tray > div > button:not(.tutorial-unit-tile) { flex: 1; padding-inline: 6px; }
@@ -264,9 +237,7 @@
   .tutorial-practice-answer { grid-template-columns: minmax(0, 1fr); }
   .tutorial-practice-answer button { width: 100%; }
   .tutorial-tile-tray > strong { font-size: .68rem; }
-  .tutorial-balance-pan > strong { font-size: .68rem; }
   .tutorial-unit-tile.is-tray { flex-basis: 42px; width: 42px; height: 42px; }
-  .tutorial-balance-meter { font-size: .6rem; }
 }
 
 @media (max-height: 620px) {

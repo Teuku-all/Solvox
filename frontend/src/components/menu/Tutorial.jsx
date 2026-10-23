@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import SolvoxUtilityArt from '../shared/SolvoxUtilityArt';
 import PixelIcon from '../shared/PixelIcon';
+import BalanceScale from '../shared/BalanceScale';
 import useAnimatedDismiss from '../shared/useAnimatedDismiss';
 import { LEVELS } from '../../data/levels';
 import { getChapterGuide } from '../../data/chapterGuide';
@@ -272,7 +273,7 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
     };
     const finish = (upEvent) => {
       if (upEvent.pointerId !== pointerId || practiceDragRef.current !== drag) return;
-      const pan = document.elementFromPoint(upEvent.clientX, upEvent.clientY)?.closest('[data-tutorial-pan]')?.dataset.tutorialPan;
+      const pan = document.elementFromPoint(upEvent.clientX, upEvent.clientY)?.closest('[data-balance-side]')?.dataset.balanceSide;
       drag.cleanup();
       practiceDragRef.current = null;
       setPracticeDrag(null);
@@ -308,6 +309,18 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
   const practiceSolved = leftUnits === 0 && rightUnits === 7;
   const pairedRemovals = Math.max(0, Math.min(3, 3 - leftUnits, 10 - rightUnits));
   const practiceLeftExpression = leftUnits > 0 ? `x + ${leftUnits}` : leftUnits < 0 ? `x − ${Math.abs(leftUnits)}` : 'x';
+  const tutorialUnitTiles = (value, prefix) => Array.from({ length: Math.abs(value) }, (_, index) => ({
+    id: `${prefix}-${index}`,
+    type: 'unit',
+    value: Math.sign(value) || 1,
+    label: value < 0 ? '−1' : '+1',
+    shape: value < 0 ? 'triangle' : 'square',
+  }));
+  const tutorialLeftTiles = [
+    { id: 'tutorial-x', type: 'variable', variable: 'x', value: 1, label: 'x', shape: 'diamond' },
+    ...tutorialUnitTiles(leftUnits, 'tutorial-left'),
+  ];
+  const tutorialRightTiles = tutorialUnitTiles(rightUnits, 'tutorial-right');
 
   return createPortal(
     <div className={`tutorial-backdrop${closing ? ' is-closing' : ''}`} role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) dismiss(); }}>
@@ -346,22 +359,24 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
               {practiceStep < 3 ? <>
                 <div className="tutorial-practice-equation" aria-label={`${practiceLeftExpression} = ${rightUnits}`}><span>{practiceLeftExpression}</span><b>=</b><span>{rightUnits}</span></div>
                 <p className="tutorial-practice-prompt">{c.practiceDragHint}</p>
-                <div className={`tutorial-balance-stage ${balanceDelta > 0 ? 'is-left-heavy' : balanceDelta < 0 ? 'is-right-heavy' : 'is-level'}`}>
-                  <div className="tutorial-balance-beam" aria-hidden="true"><i/></div>
-                  <div className="tutorial-balance-pans">
-                    <div className="tutorial-balance-pan" data-tutorial-pan="left">
-                      <small>{c.practicePanLeft}</small>
-                      <div className="tutorial-balance-tiles"><span className="tutorial-x-tile">x</span>{Array.from({ length: Math.abs(leftUnits) }, (_, index) => <button key={`left-${index}`} type="button" className={`tutorial-unit-tile ${leftUnits < 0 ? 'is-negative' : ''}`} aria-label={leftUnits < 0 ? '−1, geser ke ruas lain' : '+1, geser ke ruas lain'} onPointerDown={(event) => handlePracticePointerDown(event, leftUnits < 0 ? -1 : 1, 'pan', 'left')}>{leftUnits < 0 ? '−1' : '+1'}</button>)}</div>
-                      <strong>{practiceLeftExpression}</strong>
-                    </div>
-                    <span className="tutorial-balance-equals" aria-hidden="true">=</span>
-                    <div className="tutorial-balance-pan" data-tutorial-pan="right">
-                      <small>{c.practicePanRight}</small>
-                      <div className="tutorial-balance-tiles">{Array.from({ length: Math.abs(rightUnits) }, (_, index) => <button key={`right-${index}`} type="button" className={`tutorial-unit-tile ${rightUnits < 0 ? 'is-negative' : ''}`} aria-label={rightUnits < 0 ? '−1, geser ke ruas lain' : '+1, geser ke ruas lain'} onPointerDown={(event) => handlePracticePointerDown(event, rightUnits < 0 ? -1 : 1, 'pan', 'right')}>{rightUnits < 0 ? '−1' : '+1'}</button>)}</div>
-                      <strong>{rightUnits}</strong>
-                    </div>
-                  </div>
-                  <div className="tutorial-balance-meter" role="status" aria-live="polite"><span className={balanceDelta > 0 ? 'left' : balanceDelta < 0 ? 'right' : 'center'}/><small>{balanceDelta > 0 ? c.practiceLeftHeavy : balanceDelta < 0 ? c.practiceRightHeavy : c.practiceBalance}</small></div>
+                <div className="tutorial-balance-stage">
+                  <BalanceScale
+                    className="tutorial-practice-balance"
+                    left={tutorialLeftTiles}
+                    right={tutorialRightTiles}
+                    equation={`${practiceLeftExpression} = ${rightUnits}`}
+                    sides={[c.practicePanLeft, c.practicePanRight]}
+                    selectedTile=""
+                    overPans=""
+                    tilt={balanceDelta > 0 ? 'is-left-heavy' : balanceDelta < 0 ? 'is-right-heavy' : 'is-level'}
+                    indicator={balanceDelta > 0 ? 'left' : balanceDelta < 0 ? 'right' : 'center'}
+                    statusText={balanceDelta > 0 ? c.practiceLeftHeavy : balanceDelta < 0 ? c.practiceRightHeavy : c.practiceBalance}
+                    balanceDelta={balanceDelta}
+                    onMoveTile={(event, side, item) => handlePracticePointerDown(event, item.value, 'pan', side)}
+                    onSelectMoveTile={() => {}}
+                    draggingSource=""
+                    lang={lang}
+                  />
                 </div>
                 <div className="tutorial-tile-tray"><strong>{c.practiceTileTray}</strong><div>{[1, -1].map((value) => <button key={value} type="button" className={`tutorial-unit-tile is-tray ${value < 0 ? 'is-negative' : ''} ${practiceSelectedTile === value ? 'is-selected' : ''}`} onPointerDown={(event) => handlePracticePointerDown(event, value)} onClick={() => setPracticeSelectedTile(value)} aria-label={`${value < 0 ? '−1' : '+1'} ${c.practiceTileTray}`}>{value < 0 ? '−1' : '+1'}</button>)}<button type="button" onClick={() => addPracticeUnit('left', practiceSelectedTile)}>{c.practiceAddLeft} {practiceSelectedTile < 0 ? '−1' : '+1'}</button><button type="button" onClick={() => addPracticeUnit('right', practiceSelectedTile)}>{c.practiceAddRight} {practiceSelectedTile < 0 ? '−1' : '+1'}</button></div></div>
                 <div className="tutorial-practice-actions"><div className="tutorial-practice-tools"><button type="button" onClick={undoPractice} disabled={!practiceHistory.length}><PixelIcon name="retry" size={15}/>{c.practiceUndo}</button><button type="button" onClick={resetPractice}><PixelIcon name="reset" size={15}/>{c.practiceReset}</button></div>{practiceSolved && <form className="tutorial-practice-answer" onSubmit={submitPractice}><label><PixelIcon name="keyboard" size={17}/><input value={practiceAnswer} onChange={(event) => setPracticeAnswer(event.target.value)} inputMode="numeric" autoComplete="off" aria-label={c.practiceAnswerPlaceholder} placeholder={c.practiceAnswerPlaceholder}/></label><button type="submit" disabled={!practiceAnswer.trim()}><PixelIcon name="sword" size={17}/>{c.practiceAttack}</button></form>}</div>
