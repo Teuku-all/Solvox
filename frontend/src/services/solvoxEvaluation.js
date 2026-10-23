@@ -155,6 +155,39 @@ export function evaluateSolvoxChapter(result = {}) {
     return { category: stepErrors > 0 ? 'simulation-review' : 'simulation-progress', title: lang === 'en' ? (stepErrors > 0 ? 'Review equation steps' : 'Simulation progress') : (stepErrors > 0 ? 'Tinjau langkah persamaan' : 'Progres simulasi'), message, source: 'Solvox learning rules' };
   }
 
+  if (chapterId === 3) {
+    const stepsTotal = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepsTotal) || 0), 0);
+    const stepsCompleted = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepsCompleted) || 0), 0);
+    const stepErrors = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepErrors) || 0), 0);
+    const events = logs.flatMap((item) => Array.isArray(item.simulation?.stepErrorHistory) ? item.simulation.stepErrorHistory : []);
+    if (stepsTotal > 0 && stepsCompleted >= stepsTotal && stepErrors === 0 && answered >= total) {
+      return { category: 'master', title: CATEGORY_TITLES[lang].master, message: rules.master, source: 'Solvox learning rules' };
+    }
+    const kinds = new Set(events.map((item) => item.kind));
+    const advice = [];
+    if (kinds.has('incorrect-tile-transfer') || kinds.has('unbalanced-tile-operation')) advice.push(lang === 'en'
+      ? 'Check the tile sign and value against the inverse operation. A valid change must preserve equality on both sides.'
+      : 'Cocokkan tanda dan nilai ubin dengan operasi invers. Perubahan yang benar harus menjaga kesetaraan kedua ruas.');
+    if (kinds.has('wrong-operation-on-both-sides')) advice.push(lang === 'en'
+      ? 'Choose the inverse operation, then apply the same operation and number to both sides.'
+      : 'Pilih operasi invers, lalu terapkan operasi dan angka yang sama pada kedua ruas.');
+    if (kinds.has('parentheses-or-like-term-error')) advice.push(lang === 'en'
+      ? 'Distribute the outside factor to every term inside parentheses, including its sign.'
+      : 'Kalikan faktor di luar kurung ke setiap suku di dalamnya dan sertakan tandanya.');
+    if (!advice.length && stepErrors > 0) advice.push(lang === 'en'
+      ? 'Review the equation steps and verify the operation, sign, and result after each change.'
+      : 'Tinjau langkah persamaan dan periksa operasi, tanda, serta hasil setelah setiap perubahan.');
+    if (!advice.length && stepsCompleted < stepsTotal) advice.push(lang === 'en'
+      ? 'Complete the remaining equation steps, applying equivalent operations to both sides.'
+      : 'Selesaikan langkah persamaan yang tersisa dengan menerapkan operasi setara pada kedua ruas.');
+    return {
+      category: stepErrors > 0 ? 'chapter3-math-review' : 'chapter3-progress',
+      title: stepErrors > 0 ? (lang === 'en' ? 'Review the algebra steps' : 'Tinjau langkah aljabar') : (lang === 'en' ? 'Algebra progress' : 'Progres aljabar'),
+      message: advice.join(' '),
+      source: 'Solvox learning rules',
+    };
+  }
+
   if (wrongIds.length === 0 && accuracy === 100) {
     return { category: 'master', title: CATEGORY_TITLES[lang].master, message: rules.master, source: 'Solvox learning rules' };
   }

@@ -1,0 +1,120 @@
+﻿/* Shared game-wide visual rules. Keep gameplay state colors local; standardize the typography and control geometry. */
+:root {
+  --game-font-body: var(--font-body-solvox, ui-sans-serif, system-ui, sans-serif);
+  --game-font-heading: var(--font-display-solvox, var(--font-heading-solvox, ui-sans-serif, sans-serif));
+  --game-text-primary: #edf5ef;
+  --game-text-secondary: #b8cbc3;
+  --game-text-muted: #8ea59d;
+  --game-accent: #8be0d0;
+  --game-highlight: #e4d28b;
+  --game-control-radius: 9px;
+  --game-control-height: 44px;
+  --game-icon-size: 18px;
+}
+
+:is(.mode-select, .chapter-select, .battle-ui, .math-sim, .mp-battle--shell, .spx, .multiplayer, .tutorial-card, .eval-card, .settings-card, .feedback-card) {
+  font-family: var(--game-font-body);
+  color: var(--game-text-primary);
+}
+
+:is(.mode-select-header h1, .chapter-select-title h1, .multi-header h1, .spx-choice-layer h1, .spx-name-button strong, .leaderboard-heading h2, .profile-page-intro h1, .stage-crown b, .battle-question-panel .question-chip.is-title, .math-sim-reference-heading strong, .math-sim-ch2-reference .c2p-header h2) {
+  color: var(--game-text-primary) !important;
+  font-family: var(--game-font-heading) !important;
+  font-weight: 400 !important;
+  letter-spacing: .015em !important;
+  text-wrap: balance;
+}
+
+.mode-select-header h1,
+.chapter-select-title h1,
+.multi-header h1 {
+  font-size: clamp(1.5rem, 3vw, 2.15rem) !important;
+  line-height: 1.15 !important;
+}
+
+:is(.mode-card-copy h2, .multi-character-selection-heading h2, .spx-detail h2, .tutorial-section-heading h3, .eval-section-title h3, .eval-summary-copy h2, .result-section-heading h3, .settings-card .settings-head h2, .feedback-card .feedback-head h2, .math-sim-dock-heading h2, .c2p-header h2) {
+  color: var(--game-text-primary) !important;
+  font-family: var(--game-font-heading) !important;
+  font-size: clamp(1.05rem, 1.5vw, 1.3rem) !important;
+  font-weight: 400 !important;
+  line-height: 1.25 !important;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+:is(.tutorial-card, .eval-card, .settings-card, .feedback-card, .multiplayer, .math-sim, .profile-panel) :is(h2, h3) {
+  color: var(--game-text-primary) !important;
+  font-family: var(--game-font-heading) !important;
+  font-weight: 400 !important;
+  line-height: 1.25 !important;
+  letter-spacing: .01em !important;
+  text-wrap: balance;
+}
+:is(.tutorial-card, .eval-card, .settings-card, .feedback-card, .multiplayer, .math-sim, .profile-panel) h2 { font-size: clamp(1.05rem, 1.5vw, 1.3rem) !important; }
+:is(.tutorial-card, .eval-card, .settings-card, .feedback-card, .multiplayer, .math-sim, .profile-panel) h3 { font-size: clamp(.92rem, 1.15vw, 1.08rem) !important; }
+
+:is(.mode-select-header p, .chapter-select-title p, .multi-header p, .mode-card-copy p, .tutorial-card p, .eval-card p, .settings-card p, .feedback-card p) {
+  color: var(--game-text-secondary);
+  font-family: var(--game-font-body);
+  line-height: 1.55;
+}
+
+:is(.mode-select-header .eyebrow, .chapter-select-title .eyebrow, .multi-header .eyebrow, .tutorial-card .eyebrow, .eval-card .eyebrow, .settings-card .eyebrow, .feedback-card .eyebrow) {
+  color: var(--game-highlight);
+  font-family: var(--game-font-body);
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+:is(.battle-ui, .math-sim, .mp-battle--shell, .spx, .multiplayer, .mode-select, .chapter-select, .tutorial-card, .eval-card, .settings-card, .feedback-card) button {
+  font-family: var(--game-font-body) !important;
+  font-weight: 700 !important;
+}
+
+:is(.battle-ui, .math-sim, .mp-battle--shell, .spx, .multiplayer, .mode-select, .chapter-select, .tutorial-card, .eval-card, .settings-card, .feedback-card) button:focus-visible,
+:is(.battle-ui, .math-sim, .mp-battle--shell, .spx, .multiplayer, .mode-select, .chapter-select, .tutorial-card, .eval-card, .settings-card, .feedback-card) :is(a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--game-accent);
+  outline-offset: 3px;
+}
+
+:is(.battle-ui .attack-btn, .eval-card .eval-actions button, .math-sim .c2p-toolbar > button, .math-sim .math-sim-back-step, .math-sim .math-sim-reset, .math-sim .math-sim-add-controls button, .math-sim .math-sim-operation-options button, .math-sim .math-sim-operation-sides button, .multi-card button[type="submit"], .room-card button[type="submit"], .mp-question label button, .tutorial-card .tutorial-close) {
+  min-height: var(--game-control-height) !important;
+  border-radius: var(--game-control-radius) !important;
+  font-family: var(--game-font-body) !important;
+  font-size: .875rem !important;
+  font-weight: 750 !important;
+  line-height: 1.25 !important;
+}
+
+:is(.dialog-icon-close, .math-sim-close, .tutorial-close, .leaderboard-overview-action button) {
+  display: inline-grid;
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  place-items: center;
+  border-radius: var(--game-control-radius);
+  color: var(--game-accent);
+}
+:is(.dialog-icon-close, .math-sim-close, .tutorial-close, .leaderboard-overview-action button) .pixel-icon { width: var(--game-icon-size); height: var(--game-icon-size); }
+
+.pixel-icon {
+  display: block;
+  flex: 0 0 auto;
+  color: currentColor;
+}
+
+:is(.mode-select, .chapter-select, .battle-ui, .math-sim, .mp-battle--shell, .spx, .multiplayer, .tutorial-card, .eval-card, .settings-card, .feedback-card) :disabled {
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  :is(.mode-select-header h1, .chapter-select-title h1, .multi-header h1) {
+    font-size: clamp(1.45rem, 7vw, 1.9rem) !important;
+  }
+  :root { --game-control-height: 42px; --game-icon-size: 17px; }
+}
+

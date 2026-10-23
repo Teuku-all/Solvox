@@ -29,6 +29,7 @@ import './styles/profile-screen.css';
 import './styles/math-simulation.css';
 import './styles/leaderboard.css';
 import './styles/ui-polish.css';
+import './styles/game-design-system.css';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>

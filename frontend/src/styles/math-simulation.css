@@ -1072,6 +1072,11 @@
 .math-sim-balance-actions button { border-color: #5284bf; background: linear-gradient(180deg, #21497f, #102b58); color: #eaf3ff; }
 .math-sim-balance-step-label { color: #95dfff; font-size: 11px; font-weight: 900; }
 .math-sim-balance-reference .math-sim-message { border-color: #597fb9; background: #153158; color: #f5e4b3; }
+.math-sim-orientation-note { display: none; }
+.math-sim-balance-reference.is-sign-coded .math-sim-tile-grid .math-sim-picker-tile.is-positive.shape-square,
+.math-sim-balance-reference.is-sign-coded .math-sim-balance-item.is-positive.shape-square { border-color: #c6ffe0; background: linear-gradient(145deg, #bdffdd 0%, #62daa0 65%, #2fb77e 100%); color: #123c30; clip-path: none; }
+.math-sim-balance-reference.is-sign-coded .math-sim-tile-grid .math-sim-picker-tile.is-negative.shape-triangle,
+.math-sim-balance-reference.is-sign-coded .math-sim-balance-item.is-negative.shape-triangle { border-color: #ffe7a6; background: linear-gradient(150deg, #fff4ba, #f3ce65 70%, #d89e41); color: #593d16; }
 .math-sim-drag-ghost { border-color: #aaffd8; background: linear-gradient(145deg, #baffd9, #45bc8a); color: #113e30; }
 .math-sim-drag-ghost.is-negative { border-color: #ffd0dc; background: linear-gradient(145deg, #ffdde6, #e37e9b); color: #5b213d; }
 .math-sim-drag-ghost.is-variable { border-color: #ecd0ff; background: linear-gradient(145deg, #f0d9ff, #b57ddc); color: #44235f; }
@@ -1087,6 +1092,9 @@
   .battle-reference-arena .math-sim-balance-reference { width: 100%; }
   .math-sim-balance-workspace { grid-template-columns: 1fr; }
   .math-sim-tile-grid { max-height: 170px; }
+}
+@media (max-width: 760px) and (orientation: portrait) {
+  .math-sim-orientation-note { display: block; margin: 4px 0 0; padding: 6px 9px; border: 1px solid rgba(135, 208, 244, .3); border-radius: 7px; background: rgba(14, 42, 69, .72); color: #d4eaff; font-size: 11px; line-height: 1.35; }
 }
 @media (max-width: 420px) {
   .math-sim-tile-grid .math-sim-picker-tile { min-height: 42px; font-size: 14px; }
@@ -2069,77 +2077,6 @@
   .math-sim-balance-scale .math-sim-balance-readout { transition-duration: .01ms; animation-duration: .01ms; }
 }
 
-/* Chapter 4: students distribute pieces into equal groups before dividing the scale. */
-.math-sim-division-lab {
-  position: absolute;
-  z-index: 12;
-  inset: 8px;
-  display: grid;
-  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
-  gap: 6px;
-  min-width: 0;
-  min-height: 0;
-  padding: clamp(8px, 1vw, 14px);
-  overflow: hidden;
-  border: 1px solid rgba(245, 179, 220, .8);
-  border-radius: 14px;
-  background: radial-gradient(circle at 50% -20%, rgba(250, 130, 207, .23), transparent 60%), linear-gradient(150deg, rgba(22, 26, 61, .98), rgba(10, 16, 43, .98));
-  box-shadow: 0 15px 35px rgba(1, 4, 17, .55), inset 0 1px rgba(255, 255, 255, .13);
-  color: #f7ecff;
-  animation: division-lab-enter .32s ease-out both;
-}
-.math-sim-division-lab > header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.math-sim-division-lab > header > div { display: grid; gap: 2px; }
-.math-sim-division-lab > header small { color: #f4afd9; font-size: 9px; font-weight: 900; letter-spacing: .15em; }
-.math-sim-division-lab > header strong { font-size: clamp(12px, 1.35vw, 18px); line-height: 1.15; }
-.math-sim-division-lab > header > span { flex: none; padding: 4px 8px; border: 1px solid #e5a4cf; border-radius: 7px; background: #55295c; color: #ffe7f5; font-weight: 900; }
-.math-sim-division-lab > p { margin: 0; color: #d6c7e7; font-size: 10px; line-height: 1.25; }
-.math-sim-division-sources { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; min-height: 0; }
-.math-sim-division-source { display: flex; align-items: center; gap: 7px; min-width: 0; padding: 6px 8px; border: 1px solid rgba(188, 147, 224, .45); border-radius: 9px; background: rgba(48, 36, 82, .82); }
-.math-sim-division-source.is-right { border-color: rgba(114, 209, 236, .45); background: rgba(25, 61, 85, .75); }
-.math-sim-division-source > b { flex: 0 1 35%; min-width: 0; color: #fff3c4; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.math-sim-division-source > div { display: flex; flex: 1; flex-wrap: wrap; gap: 3px; }
-.math-sim-division-source button,
-.math-sim-division-group button { display: grid; place-items: center; min-width: 33px; min-height: 29px; padding: 2px 5px; border: 1px solid #f6c4df; border-radius: 7px; background: linear-gradient(150deg, #fbd6ec, #d989bd); box-shadow: inset 0 1px white, 0 3px 0 #63345c; color: #3c2446; font-size: 11px; font-weight: 900; cursor: grab; touch-action: none; user-select: none; transition: transform .16s ease, filter .16s ease, box-shadow .16s ease; }
-.math-sim-division-source.is-right button { border-color: #9ce8f1; background: linear-gradient(150deg, #c9faff, #75cbdc); box-shadow: inset 0 1px white, 0 3px 0 #315f77; }
-.math-sim-division-source button:hover:not(:disabled),
-.math-sim-division-source button.is-selected { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 0 0 2px #ffe9a0, 0 5px 0 #63345c; }
-.math-sim-division-source button:disabled { opacity: .24; box-shadow: none; cursor: default; }
-.math-sim-division-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(86px, 1fr)); align-content: center; gap: 5px; min-height: 0; }
-.math-sim-division-group { display: grid; gap: 5px; justify-items: center; padding: 5px; border: 1px solid rgba(221, 189, 242, .4); border-radius: 9px; background: linear-gradient(155deg, rgba(84, 58, 110, .85), rgba(35, 33, 69, .9)); }
-.math-sim-division-group > small { color: #ead9f3; font-size: 9px; font-weight: 900; letter-spacing: .08em; }
-.math-sim-division-group > div { display: flex; gap: 4px; }
-.math-sim-division-group button { min-width: 37px; border-style: dashed; background: rgba(19, 23, 54, .9); box-shadow: inset 0 1px rgba(255, 255, 255, .12); color: #c8acda; cursor: pointer; }
-.math-sim-division-group button:last-child { border-color: #9ce8f1; color: #aee6ef; }
-.math-sim-division-group button.is-filled { border-style: solid; background: linear-gradient(150deg, #fbd6ec, #d989bd); color: #3c2446; animation: division-piece-land .25s ease-out both; }
-.math-sim-division-group button.is-filled:last-child { background: linear-gradient(150deg, #c9faff, #75cbdc); color: #173b4b; }
-.math-sim-division-lab > footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #e7d8ef; font-size: 10px; }
-.math-sim-division-lab > footer button { flex: none; min-height: 28px; padding: 3px 9px; border: 1px solid #bc8ed3; border-radius: 6px; background: #4d3565; color: white; cursor: pointer; }
-.math-sim-division-lab > footer button:disabled { opacity: .4; cursor: default; }
-.math-sim-division-lab.is-complete { border-color: #8ef0cf; box-shadow: 0 0 0 2px rgba(142, 240, 207, .2), 0 15px 35px rgba(1, 4, 17, .55); }
-.math-sim-division-lab.is-complete > header > span { border-color: #8ef0cf; background: #225f57; color: #d4fff0; }
-.math-sim-division-ghost { position: fixed; z-index: 9999; padding: 6px 9px; border: 1px solid #fff3c0; border-radius: 7px; background: #e6b2d5; box-shadow: 0 8px 19px rgba(0, 0, 0, .5); color: #3b2849; font-size: 13px; font-weight: 900; pointer-events: none; transform: translate(-50%, -115%); }
-.math-sim-division-prompt { color: #f5c9e5; font-size: 10px; line-height: 1.2; }
-@keyframes division-lab-enter { from { opacity: 0; transform: translateY(9px) scale(.98); } to { opacity: 1; transform: none; } }
-@keyframes division-piece-land { from { transform: scale(.72); filter: brightness(1.7); } to { transform: scale(1); filter: brightness(1); } }
-@media (max-width: 760px) {
-  .is-balance-open .math-sim-balance-workspace.has-division-lab { grid-template-rows: minmax(245px, 52%) minmax(0, 1fr); }
-  .math-sim-division-lab { inset: 3px; gap: 3px; padding: 6px; }
-  .math-sim-division-lab > p { font-size: 9px; }
-  .math-sim-division-source { gap: 3px; padding: 3px 5px; }
-  .math-sim-division-source > b { font-size: 9px; }
-  .math-sim-division-source button { min-width: 26px; min-height: 23px; font-size: 9px; }
-  .math-sim-division-group { gap: 2px; padding: 2px; }
-  .math-sim-division-group button { min-width: 28px; min-height: 22px; font-size: 9px; }
-  .math-sim-division-group > small { font-size: 7px; }
-  .math-sim-division-lab > footer { font-size: 9px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .math-sim-division-lab,
-  .math-sim-division-group button.is-filled { animation: none; }
-  .math-sim-division-source button { transition: none; }
-}
-
 /* Keep the lesson mounted while closed so reopening preserves its steps. */
 .battle-reference-arena .math-sim.is-closed { display: none !important; }
 .math-sim-reference-question { padding-right: 55px; }
@@ -2443,4 +2380,49 @@
   .is-balance-open .math-sim-balance-reference.chapter-1 .math-sim-tile-grid {
     max-height: 105px;
   }
+}
+
+/* Keep Chapter 2's grouped tiles inside the scale workspace and scroll the tile areas. */
+.math-sim-ch2-reference.is-partition .c2p-side { min-width: 0; overflow: hidden; }
+.math-sim-ch2-reference.is-partition .c2p-groups {
+  min-height: 0;
+  max-height: min(34vh, 240px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  align-content: start;
+  scrollbar-width: thin;
+}
+.math-sim-ch2-reference.is-partition .c2p-group { min-width: 0; overflow: hidden; }
+.math-sim-ch2-reference.is-partition .c2p-group > span { min-width: 0; overflow: auto; max-height: 76px; }
+.math-sim-ch2-reference.is-partition .c2p-pool { max-height: min(22vh, 150px); overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.math-sim-ch2-reference.is-partition .c2p-pool > div { min-width: 0; max-width: 100%; }
+.math-sim-ch2-reference.is-partition .c2p-tile { touch-action: none; user-select: none; -webkit-user-select: none; }
+@media (max-width: 760px) {
+  .math-sim-ch2-reference.is-partition .c2p-groups { max-height: min(27vh, 180px); }
+  .math-sim-ch2-reference.is-partition .c2p-pool { max-height: min(20vh, 128px); }
+  .math-sim-ch2-reference.is-partition .c2p-group > span { max-height: 62px; }
+  .math-sim-ch2-reference.is-partition .c2p-scale-center { display: grid; }
+}
+
+/* Keep Chapter 3 parenthesis lesson actions and explanatory text within their cards. */
+.math-sim-distributive,
+.math-sim-distributive > *,
+.math-sim-distributive button { min-width: 0; max-width: 100%; box-sizing: border-box; }
+.math-sim-distributive > header > :is(strong, p) { overflow-wrap: anywhere; }
+.math-sim-distributive > footer { display: grid; grid-template-columns: minmax(0, 1fr); align-items: stretch; }
+.math-sim-distributive-actions { display: grid; width: 100%; min-width: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.math-sim-distributive > footer button,
+.math-sim-distributive-combine button {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  text-align: center;
+  line-height: 1.25;
+}
+.math-sim-distributive > footer button { min-height: 40px; }
+@media (max-width: 760px) {
+  .math-sim-distributive-actions { grid-template-columns: minmax(0, 1fr); }
+  .math-sim-distributive > footer { gap: 5px; }
 }

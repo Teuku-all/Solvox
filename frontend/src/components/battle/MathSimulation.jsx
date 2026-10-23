@@ -4,7 +4,6 @@ import { SIMULATIONS, STORY_MODELS, STORY_MODELS_EN, operationLabel } from '../.
 import PixelIcon from '../shared/PixelIcon';
 import Chapter2Partition from './Chapter2Partition';
 import Chapter2FractionLab, { supportsChapter2FractionLab } from './Chapter2FractionLab';
-import Chapter4DivisionLab from './Chapter4DivisionLab';
 
 const copy = {
   id: {
@@ -279,11 +278,11 @@ const numberTiles = [1, -1].map((value) => ({
 }));
 const halfNumberTiles = [0.5, -0.5].map((value) => ({
   key: `number-${value}`, type: 'unit', value, parts: 2,
-  label: `${value < 0 ? '−' : '+'}1/2`, shape: 'triangle',
+  label: `${value < 0 ? '−' : '+'}1/2`, shape: value < 0 ? 'triangle' : 'square',
 }));
 const halfDecimalTiles = [0.5, -0.5].map((value) => ({
   key: `number-${value}`, type: 'unit', value, parts: 2,
-  label: `${value < 0 ? '-' : '+'}0,5`, shape: 'triangle',
+  label: `${value < 0 ? '-' : '+'}0,5`, shape: value < 0 ? 'triangle' : 'square',
 }));
 const tenThousandTiles = (lang) => [10000, -10000].map((value) => ({
   key: `number-${value}`, type: 'unit', value,
@@ -316,7 +315,7 @@ const chapterScenes = [
 const DISTRIBUTIVE_MODELS = Object.fromEntries(Object.entries({
   24: { dragDrop: true, dragFactor: true, groups: [{ factor: '4', copies: 4, terms: [['m', '4m'], ['−2', '−8']] }], result: '4m − 8 = 16' },
   29: { groups: [{ factor: '3', copies: 3, terms: [['2n', '6n'], ['+1', '+3']] }], result: '6n + 3 = 27' },
-  30: { prefix: '10 −', groups: [{ factor: '2', negative: true, copies: 2, terms: [['x', '−2x'], ['+3', '−6']] }], result: '10 − 2x − 6 = 2', combine: { prompt: 'Hitung suku bilangan: 10 − 6 = ?', promptEn: 'Calculate the constants: 10 − 6 = ?', options: ['4', '−4', '16'], answer: '4', result: '−2x + 4 = 2' } },
+  30: { prefix: '10 −', groups: [{ factor: '2', negative: true, copies: 2, terms: [['x', '−2x'], ['+3', '−6']] }], result: '10 − 2x − 6 = 2' },
   34: { groups: [{ factor: '3', copies: 3, terms: [['m', '3m'], ['+2', '+6']] }, { factor: '2', copies: 2, terms: [['m', '2m'], ['+7', '+14']] }], result: '3m + 6 = 2m + 14' },
   38: { groups: [{ factor: '5', copies: 5, terms: [['n', '5n'], ['−1', '−5']] }, { factor: '3', copies: 3, terms: [['n', '3n'], ['+3', '+9']] }], result: '5n − 5 = 3n + 9' },
   39: { prefix: '9x −', groups: [{ factor: '1', negative: true, copies: 1, terms: [['2x', '−2x'], ['+5', '−5']] }], result: '9x − 2x − 5 = 3x + 11' },
@@ -328,14 +327,36 @@ const BALANCE_RESULT_HOLD_MS = 4000;
 const BALANCE_EXIT_MS = 650;
 const normalizeOperation = (operation) => operation.replace(/\s+/g, '').replace(/−/g, '-').replace(/×/g, '*').replace(/÷/g, '/');
 
-function parseBalanceSide(expression, lang = 'id') {
-  if (/[()]/.test(expression)) {
+const formatBalanceNumber = (value, lang = 'id') => Number(value.toFixed(3)).toLocaleString(lang === 'en' ? 'en-US' : 'id-ID', { maximumFractionDigits: 3, useGrouping: true });
+
+function parseBalanceSide(expression, lang = 'id', signCoded = false, preserveTerms = false) {
+  const parseExpression = expression.replace(/\((\d+\/\d+)\)\s*([a-z])/gi, '$1$2');
+  if (/[()]/.test(parseExpression)) {
     return [{ id: 'expression-0', type: /[a-z]/i.test(expression) ? 'variable' : 'unit', variable: expression.match(/[a-z]/i)?.[0], value: 0, label: expression, shape: 'crystal', expression: true }];
   }
   const items = [];
-  const terms = expression.match(/[+-]?\s*(?:(?:\d+\/\d+)\s*[a-z]|\d+\/\d+|\d+(?:[.,]\d+)?\s*[a-z](?:\s*\/\s*\d+(?:[.,]\d+)?)?|[a-z](?:\s*\/\s*\d+(?:[.,]\d+)?)?|\d+(?:[.,]\d+)?)/gi) || [];
+  const terms = parseExpression.match(/[+-]?\s*(?:(?:\d+\/\d+)\s*[a-z]|\d+\/\d+|\d+(?:[.,]\d+)?\s*[a-z](?:\s*\/\s*\d+(?:[.,]\d+)?)?|[a-z](?:\s*\/\s*\d+(?:[.,]\d+)?)?|\d+(?:[.,]\d+)?)/gi) || [];
   terms.forEach((term, index) => {
     const token = term.replace(/\s/g, '').replace(/−/g, '-');
+    const fractionalVariable = token.match(/^([+-]?)(\d+)\/(\d+)([a-z])$/i);
+    if (fractionalVariable) {
+      const numerator = Number(fractionalVariable[2]);
+      const denominator = Number(fractionalVariable[3]);
+      if (denominator) {
+        const sign = fractionalVariable[1] === '-' ? -1 : 1;
+        items.push({
+          id: 'v-' + index + '-fraction',
+          type: 'variable',
+          variable: fractionalVariable[4],
+          value: sign * numerator / denominator,
+          label: (sign < 0 ? String.fromCharCode(8722) : '') + numerator + '/' + denominator + fractionalVariable[4],
+          fractionNumerator: numerator,
+          fractionDenominator: denominator,
+          shape: 'diamond',
+        });
+        return;
+      }
+    }
     const variable = token.match(/^([+-]?)(\d+(?:[.,]\d+)?)?([a-z])(?:\/(\d+(?:[.,]\d+)?))?$/i);
     if (variable) {
       const numerator = Number((variable[2] || '1').replace(',', '.'));
@@ -355,7 +376,7 @@ function parseBalanceSide(expression, lang = 'id') {
       if (!denominator) return;
       const value = (fraction[1] === '-' ? -1 : 1) * numerator / denominator;
       const fractionLabel = `${fraction[1] === '-' ? '−' : ''}${numerator}/${denominator}`;
-      items.push({ id: `n-${index}-fraction`, type: 'unit', value, label: fractionLabel, parts: denominator, shape: denominator === 2 ? 'triangle' : 'crystal' });
+      items.push({ id: `n-${index}-fraction`, type: 'unit', value, label: fractionLabel, parts: denominator, shape: signCoded ? (value < 0 ? 'triangle' : 'square') : denominator === 2 ? 'triangle' : 'crystal' });
       return;
     }
     const groupedThousands = lang === 'en'
@@ -364,9 +385,21 @@ function parseBalanceSide(expression, lang = 'id') {
     const normalized = lang === 'en' ? token.replace(/,/g, '') : token.replace(/\./g, '').replace(',', '.');
     const value = Number(normalized);
     if (!Number.isFinite(value)) return;
+    if (preserveTerms) {
+      items.push({ id: 'n-' + index + '-term', type: 'unit', value, label: (value < 0 ? String.fromCharCode(8722) : '') + formatBalanceNumber(Math.abs(value), lang), shape: signCoded && value < 0 ? 'triangle' : 'square' });
+      return;
+    }
     if (/[.,]/.test(token) && !groupedThousands) {
-      const magnitude = token.replace(/^[+-]/, '');
-      items.push({ id: `n-${index}-decimal`, type: 'unit', value, label: `${value < 0 ? '−' : '+'}${magnitude}`, shape: 'crystal' });
+      if (signCoded) {
+        const sign = Math.sign(value) || 1;
+        const whole = Math.floor(Math.abs(value));
+        for (let unit = 0; unit < whole; unit += 1) items.push({ id: `n-${index}-${unit}`, type: 'unit', value: sign, shape: sign < 0 ? 'triangle' : 'square' });
+        const remainder = Math.round((Math.abs(value) - whole) * 1000) / 1000;
+        if (remainder > 0.001) items.push({ id: `n-${index}-fraction`, type: 'unit', value: sign * remainder, label: `${sign < 0 ? '\u2212' : '+'}${remainder.toLocaleString(lang === 'en' ? 'en-US' : 'id-ID')}`, shape: sign < 0 ? 'triangle' : 'square' });
+      } else {
+        const magnitude = token.replace(/^[+-]/, '');
+        items.push({ id: `n-${index}-decimal`, type: 'unit', value, label: `${value < 0 ? '\u2212' : '+'}${magnitude}`, shape: 'crystal' });
+      }
       return;
     }
     if (Math.abs(value) > 36) {
@@ -375,9 +408,9 @@ function parseBalanceSide(expression, lang = 'id') {
       return;
     }
     const count = Math.min(36, Math.floor(Math.abs(value)));
-    for (let unit = 0; unit < count; unit += 1) items.push({ id: `n-${index}-${unit}`, type: 'unit', value: Math.sign(value) || 1, shape: 'square' });
+    for (let unit = 0; unit < count; unit += 1) items.push({ id: `n-${index}-${unit}`, type: 'unit', value: Math.sign(value) || 1, shape: signCoded && value < 0 ? 'triangle' : 'square' });
     const remainder = Math.abs(value) - count;
-    if (remainder > 0.001) items.push({ id: `n-${index}-fraction`, type: 'unit', value: Math.sign(value) * remainder, label: `${value < 0 ? '−' : '+'}${remainder}`, shape: remainder < 1 ? 'triangle' : 'crystal' });
+    if (remainder > 0.001) items.push({ id: `n-${index}-fraction`, type: 'unit', value: Math.sign(value) * remainder, label: `${value < 0 ? '−' : '+'}${remainder}`, shape: signCoded ? (value < 0 ? 'triangle' : 'square') : remainder < 1 ? 'triangle' : 'crystal' });
   });
   return items;
 }
@@ -412,8 +445,8 @@ function formatBalanceSide(items, lang = 'id') {
   });
   const terms = [...coefficients].filter(([, value]) => Math.abs(value) > 0.001).map(([symbol, value]) => {
     const magnitude = Math.abs(value);
-    const fraction = items.find((item) => item.variable === symbol && item.parts && Math.abs(magnitude - 1 / item.parts) < 0.001);
-    const label = fraction ? `${symbol}/${fraction.parts}` : `${Math.abs(magnitude - 1) < 0.001 ? '' : formatNumber(magnitude)}${symbol}`;
+    const fraction = items.find((item) => item.variable === symbol && item.fractionNumerator && item.fractionDenominator && Math.abs(magnitude - item.fractionNumerator / item.fractionDenominator) < 0.001);
+    const label = fraction ? fraction.fractionNumerator + '/' + fraction.fractionDenominator + symbol : (Math.abs(magnitude - 1) < 0.001 ? '' : formatNumber(magnitude)) + symbol;
     return { value, label };
   });
   const unitItems = items.filter((item) => item.type === 'unit');
@@ -823,6 +856,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
   const [distributiveSolvedEquation, setDistributiveSolvedEquation] = useState(null);
   const [modelErrors, setModelErrors] = useState(0);
   const [stepErrors, setStepErrors] = useState(0);
+  const [stepErrorHistory, setStepErrorHistory] = useState([]);
   const [message, setMessage] = useState('');
   const [tileTab, setTileTab] = useState('number');
   const [selectedTile, setSelectedTile] = useState('number-1');
@@ -833,7 +867,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
   const [chapter2AppliedChoice, setChapter2AppliedChoice] = useState(null);
   const [overPans, setOverPans] = useState('');
   const [balancePhase, setBalancePhase] = useState('active');
-  const [balanceRows, setBalanceRows] = useState(() => config ? splitEquation(localizeEquation(config.equation, lang)).map((side) => parseBalanceSide(side, lang)) : [[], []]);
+  const [balanceRows, setBalanceRows] = useState(() => config ? splitEquation(localizeEquation(config.equation, lang)).map((side) => parseBalanceSide(side, lang, questionNumber === 6 || questionNumber === 7, questionNumber === 28)) : [[], []]);
   const [selectedMove, setSelectedMove] = useState(null);
   const [balanceDelta, setBalanceDelta] = useState(0);
   const [balanceHistory, setBalanceHistory] = useState([]);
@@ -842,7 +876,6 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
   const [balanceOperationNumber, setBalanceOperationNumber] = useState('');
   const [operationSides, setOperationSides] = useState([]);
   const [operationAnimation, setOperationAnimation] = useState(null);
-  const [divisionReady, setDivisionReady] = useState(false);
   const activeDrag = useRef(null);
   const dragGhostRef = useRef(null);
   const dragFrameRef = useRef(0);
@@ -868,8 +901,8 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
   const reportedReady = config ? ready && balancePhase === 'dismissed' : ready;
 
   useEffect(() => {
-    onProgress({ questionId: Number(questionId), ready: reportedReady, modelCorrect: learningReady, modelErrors, stepErrors, stepsCompleted: stepIndex, stepsTotal: config?.steps.length || 0 });
-  }, [onProgress, questionId, reportedReady, learningReady, modelErrors, stepErrors, stepIndex, config]);
+    onProgress({ questionId: Number(questionId), ready: reportedReady, modelCorrect: learningReady, modelErrors, stepErrors, stepErrorHistory, stepsCompleted: stepIndex, stepsTotal: config?.steps.length || 0 });
+  }, [onProgress, questionId, reportedReady, learningReady, modelErrors, stepErrors, stepErrorHistory, stepIndex, config]);
 
   useEffect(() => { onBalanceSolvedRef.current = onBalanceSolved; }, [onBalanceSolved]);
   useEffect(() => {
@@ -881,14 +914,14 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
       setBalancePhase('dismissed');
       onBalanceSolvedRef.current?.({
         questionId: Number(questionId), ready: true, modelCorrect: learningReady,
-        modelErrors, stepErrors, stepsCompleted: config.steps.length, stepsTotal: config.steps.length,
+        modelErrors, stepErrors, stepErrorHistory, stepsCompleted: config.steps.length, stepsTotal: config.steps.length,
       });
     }, resultHold + BALANCE_EXIT_MS);
     return () => {
       window.clearTimeout(exitTimer);
       window.clearTimeout(dismissTimer);
     };
-  }, [config, ready, questionId, lang, learningReady, modelErrors, stepErrors, chapter2Symbolic]);
+  }, [config, ready, questionId, lang, learningReady, modelErrors, stepErrors, stepErrorHistory, chapter2Symbolic]);
 
   useEffect(() => () => {
     activeDrag.current?.cleanup?.();
@@ -897,10 +930,12 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
   }, []);
   useEffect(() => {
     if (!config) return;
+    setStepErrors(0);
+    setStepErrorHistory([]);
     setDistributiveSolvedEquation(null);
     if (operationTimerRef.current) window.clearTimeout(operationTimerRef.current);
     operationTimerRef.current = null;
-    setBalanceRows(splitEquation(localizeEquation(config.equation, lang)).map((side) => parseBalanceSide(side, lang)));
+    setBalanceRows(splitEquation(localizeEquation(config.equation, lang)).map((side) => parseBalanceSide(side, lang, questionNumber === 6 || questionNumber === 7, questionNumber === 28)));
     setSelectedMove(null);
     setBalanceDelta(0);
     setBalanceHintVisible(false);
@@ -929,6 +964,16 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
   const balanceEquation = `${formatBalanceSide(balanceRows[0], lang)} = ${formatBalanceSide(balanceRows[1], lang)}`;
   const initialGroup = config.mode === 'groups' && !stepIndex ? Number(config.equation.match(/^(\d+)(?:[a-z]|\()/i)?.[1] || 0) : 0;
   const next = config.steps[stepIndex];
+  const recordStepError = (kind, attempted = '') => {
+    setStepErrors((count) => count + 1);
+    setStepErrorHistory((history) => [...history, {
+      step: stepIndex + 1,
+      kind,
+      operation: next?.operation || '',
+      equation,
+      attempted,
+    }]);
+  };
   useEffect(() => { setSelectedTile('number-1'); setTileTab('number'); }, [questionId]);
   const currentModel = model[modelIndex];
   const choices = currentModel ? [currentModel.correct, currentModel.wrong] : [];
@@ -948,7 +993,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
   const selectStep = (choice) => {
     if (busy) return;
     if (choice === 'oneSide') {
-      setStepErrors((count) => count + 1);
+      recordStepError('one-side-only-operation');
       setOperationSides([]);
       setBalanceOperation('');
       setBalanceDelta(0);
@@ -957,11 +1002,11 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
       return;
     }
     if (choice === 'sign') {
-      setStepErrors((count) => count + 1);
+      recordStepError('sign-changed-without-operation');
       setMessage(c.signError);
       return;
     }
-    if (chapter2Symbolic && next?.after) setBalanceRows(splitEquation(localizeEquation(next.after, lang)).map((side) => parseBalanceSide(side, lang)));
+    if (chapter2Symbolic && next?.after) setBalanceRows(splitEquation(localizeEquation(next.after, lang)).map((side) => parseBalanceSide(side, lang, questionNumber === 6 || questionNumber === 7, questionNumber === 28)));
     setOperationSides([]);
     setBalanceOperation('');
     setBalanceDelta(0);
@@ -990,18 +1035,31 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
     const visibleEquation = `${formatBalanceSide(updated[0], lang)} = ${formatBalanceSide(updated[1], lang)}`;
     if (equationsMatch(visibleEquation, next.after)) {
       const done = stepIndex + 1 === config.steps.length;
-      setBalanceRows(splitEquation(localizeEquation(next.after, lang)).map((side) => parseBalanceSide(side, lang)));
+      setBalanceRows(splitEquation(localizeEquation(next.after, lang)).map((side) => parseBalanceSide(side, lang, questionNumber === 6 || questionNumber === 7, questionNumber === 28)));
       setStepIndex((index) => index + 1);
       setBalanceDelta(0);
       setBalanceHistory((history) => [...history.slice(0, -1), { rows: balanceRows, delta: balanceDelta, stepIndex, operation: balanceOperation, operationSides }]);
       if (!done) setMessage(c.stepDone);
     } else if (nextDelta === 0) {
-      setStepErrors((count) => count + 1);
-      setMessage(c.operationMismatch);
+      const expectedAdditive = next.operation.match(/^([+-])\s*(.+)$/);
+      const additiveTileWasCorrect = (questionNumber <= 10 || questionNumber >= 21 && questionNumber <= 30)
+        && expectedAdditive && update.tile?.type === 'unit'
+        && Math.sign(update.tile.value) === (expectedAdditive[1] === '-' ? -1 : 1);
+      if (!additiveTileWasCorrect) {
+        recordStepError('unbalanced-tile-operation', visibleEquation);
+        setMessage(c.operationMismatch);
+      }
     }
   };
   const moveBalanceTile = (sourceSide, item, targetSide) => {
     if (busy || !modelReady || ready || !next || operationAnimation || sourceSide === targetSide) return;
+    const expectedAdditive = next.operation.match(/^([+-])\s*(.+)$/);
+    const punishWrongTile = questionNumber <= 10 || questionNumber >= 21 && questionNumber <= 30;
+    if (punishWrongTile && expectedAdditive && (item.type !== 'unit' || Math.sign(item.value) !== (expectedAdditive[1] === '-' ? -1 : 1))) {
+      recordStepError('incorrect-tile-transfer', item.label || String(item.value));
+      setMessage(lang === 'en' ? 'That tile has the wrong sign for this step.' : 'Tanda ubin itu tidak sesuai dengan operasi langkah ini.');
+      return;
+    }
     const sourceIndex = sourceSide === 'left' ? 0 : 1;
     const targetIndex = targetSide === 'left' ? 0 : 1;
     const sourceRows = balanceRows.map((row, index) => index === sourceIndex ? row.filter((entry) => entry.id !== item.id) : row);
@@ -1020,12 +1078,12 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
     const visibleEquation = `${formatBalanceSide(updated[0], lang)} = ${formatBalanceSide(updated[1], lang)}`;
     if (equationsMatch(visibleEquation, next.after)) {
       const done = stepIndex + 1 === config.steps.length;
-      setBalanceRows(splitEquation(localizeEquation(next.after, lang)).map((side) => parseBalanceSide(side, lang)));
+      setBalanceRows(splitEquation(localizeEquation(next.after, lang)).map((side) => parseBalanceSide(side, lang, questionNumber === 6 || questionNumber === 7, questionNumber === 28)));
       setStepIndex((index) => index + 1);
       setBalanceDelta(0);
       if (!done) setMessage(c.stepDone);
     } else if (nextDelta === 0) {
-      setStepErrors((count) => count + 1);
+      recordStepError('incorrect-tile-transfer', visibleEquation);
       setMessage(c.operationMismatch);
     }
   };
@@ -1086,12 +1144,19 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
 
   const addBalanceTile = (sideIndex, tile) => {
     if (busy || !modelReady || ready || !next || operationAnimation) return;
+    const expectedAdditive = next.operation.match(/^([+-])\s*(.+)$/);
+    const punishWrongTile = questionNumber <= 10 || questionNumber >= 21 && questionNumber <= 30;
+    if (punishWrongTile && expectedAdditive && (tile.type !== 'unit' || Math.sign(tile.value) !== (expectedAdditive[1] === '-' ? -1 : 1))) {
+      recordStepError('incorrect-tile-transfer', tile.label || String(tile.value));
+      setMessage(lang === 'en' ? 'That tile has the wrong sign for this step.' : 'Tanda ubin itu tidak sesuai dengan operasi langkah ini.');
+      return;
+    }
     setSelectedMove(null);
     const id = `added-${Date.now()}-${Math.random().toString(16).slice(2)}`;
     const additions = tile.type === 'variable'
       ? Array.from({ length: Math.abs(tile.value) }, (_, index) => ({ id: `${id}-${index}`, type: 'variable', variable: variableSymbol, value: Math.sign(tile.value), label: tile.value < 0 ? `−${variableSymbol}` : variableSymbol, shape: tile.shape }))
       : [{ id, type: 'unit', value: tile.value, label: tile.label, parts: tile.parts, shape: tile.shape }];
-    updateBalanceRows(sideIndex, Object.assign((row) => addAndCancelBalanceTiles(row, additions), { delta: tile.value }));
+    updateBalanceRows(sideIndex, Object.assign((row) => addAndCancelBalanceTiles(row, additions), { delta: tile.value, tile }));
   };
   const undoBalance = () => {
     if (busy || ready || !balanceHistory.length) return;
@@ -1110,8 +1175,6 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
   const variableCoefficients = [...equation.matchAll(/(?:^|[+\-])\s*(\d+(?:[.,]\d+)?)(?=\s*[a-z])/gi)].map((match) => match[1]);
   const variableDivisors = [...equation.matchAll(/[a-z]\s*\/\s*(\d+(?:[.,]\d+)?)/gi)].map((match) => match[1]);
   const chapter3DivisionStep = questionNumber >= 21 && questionNumber <= 30 && operationValueMatch?.[1] === '/';
-  const chapter4DivisionStep = questionNumber >= 31 && questionNumber <= 40 && operationValueMatch?.[1] === '/';
-  const divisionChoiceCorrect = chapter4DivisionStep && normalizeOperation(balanceOperation) === normalizeOperation(next.operation);
   const operationValueChoices = chapter3DivisionStep
     ? [operationValueMatch?.[2], '2', '3', '4']
     : [operationValueMatch?.[2], ...variableCoefficients, ...variableDivisors];
@@ -1125,6 +1188,9 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
   };
   const chooseBalanceOperation = (operation) => {
     if (busy || !modelReady || !next || operationAnimation) return;
+    if (operationSides.length) {
+      setBalanceRows(splitEquation(equation).map((side) => parseBalanceSide(side, lang, questionNumber === 6 || questionNumber === 7, questionNumber === 28)));
+    }
     setBalanceOperation(['expand', 'simplify'].includes(operation) ? operation : `${operation} ${operationAmount}`);
     setSelectedMove(null);
     setDivisionReady(false);
@@ -1134,7 +1200,6 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
   };
   const applyOperationToSide = (sideIndex) => {
     if (busy || !modelReady || !next || !balanceOperation || operationAnimation || operationSides.includes(sideIndex)) return;
-    if (chapter4DivisionStep && !divisionReady) return;
     if (balanceOperation === 'expand' || balanceOperation === 'simplify') {
       const done = stepIndex + 1 === config.steps.length;
       setBalanceHistory((history) => [...history, { rows: balanceRows, delta: balanceDelta, stepIndex, operation: balanceOperation, operationSides }]);
@@ -1143,7 +1208,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
       setMessage('');
       operationTimerRef.current = window.setTimeout(() => {
         operationTimerRef.current = null;
-        setBalanceRows(splitEquation(localizeEquation(next.after, lang)).map((side) => parseBalanceSide(side, lang)));
+        setBalanceRows(splitEquation(localizeEquation(next.after, lang)).map((side) => parseBalanceSide(side, lang, questionNumber === 6 || questionNumber === 7, questionNumber === 28)));
         setStepIndex((index) => index + 1);
         setOperationSides([]);
         setBalanceOperation('');
@@ -1157,6 +1222,12 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
     const sidesAfter = [...operationSides, sideIndex];
     setOperationSides(sidesAfter);
     if (sidesAfter.length < 2) {
+      if (normalizeOperation(balanceOperation) === normalizeOperation(next.operation)) {
+        const expectedSides = splitEquation(localizeEquation(next.after, lang));
+        setBalanceRows((rows) => rows.map((row, index) => index === sideIndex
+          ? parseBalanceSide(expectedSides[index], lang, questionNumber === 6 || questionNumber === 7, questionNumber === 28)
+          : row));
+      }
       setBalanceDelta(sideIndex === 0 ? 1 : -1);
       setBalanceHintVisible(false);
       setMessage(c.applyOtherSide);
@@ -1164,7 +1235,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
     }
     setBalanceDelta(0);
     if (normalizeOperation(balanceOperation) !== normalizeOperation(next.operation)) {
-      setStepErrors((count) => count + 1);
+      recordStepError('wrong-operation-on-both-sides', balanceOperation);
       setMessage(c.operationMismatch);
       setOperationSides([]);
       setBalanceOperation('');
@@ -1176,7 +1247,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
     setMessage('');
     operationTimerRef.current = window.setTimeout(() => {
       operationTimerRef.current = null;
-      setBalanceRows(splitEquation(localizeEquation(next.after, lang)).map((side) => parseBalanceSide(side, lang)));
+      setBalanceRows(splitEquation(localizeEquation(next.after, lang)).map((side) => parseBalanceSide(side, lang, questionNumber === 6 || questionNumber === 7, questionNumber === 28)));
       setStepIndex((index) => index + 1);
       setBalanceDelta(0);
       setOperationSides([]);
@@ -1236,7 +1307,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
     if (chapter5Question && modelReady) {
       setModelIndex(0);
       setStepIndex(0);
-      setBalanceRows(splitEquation(localizeEquation(config.equation, lang)).map((side) => parseBalanceSide(side, lang)));
+      setBalanceRows(splitEquation(localizeEquation(config.equation, lang)).map((side) => parseBalanceSide(side, lang, questionNumber === 6 || questionNumber === 7, questionNumber === 28)));
       setBalanceDelta(0); setBalanceHistory([]); setOperationSides([]); setBalanceOperation(''); setMessage('');
       return;
     }
@@ -1244,7 +1315,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
       setDistributiveComplete(false);
       setDistributiveSolvedEquation(null);
       setStepIndex(0);
-      setBalanceRows(splitEquation(localizeEquation(config.equation, lang)).map((side) => parseBalanceSide(side, lang)));
+      setBalanceRows(splitEquation(localizeEquation(config.equation, lang)).map((side) => parseBalanceSide(side, lang, questionNumber === 6 || questionNumber === 7, questionNumber === 28)));
       setBalanceDelta(0); setBalanceHistory([]); setOperationSides([]); setBalanceOperation(''); setMessage('');
       return;
     }
@@ -1252,7 +1323,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
       const previousIndex = stepIndex - 1;
       const previousEquation = previousIndex ? config.steps[previousIndex - 1].after : config.equation;
       setStepIndex(previousIndex);
-      setBalanceRows(splitEquation(localizeEquation(previousEquation, lang)).map((side) => parseBalanceSide(side, lang)));
+      setBalanceRows(splitEquation(localizeEquation(previousEquation, lang)).map((side) => parseBalanceSide(side, lang, questionNumber === 6 || questionNumber === 7, questionNumber === 28)));
       setBalanceDelta(0); setBalanceHistory([]); setOperationSides([]); setBalanceOperation(''); setMessage('');
       return;
     }
@@ -1283,7 +1354,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
       return;
     }
     if (chapter2AppliedChoice !== choice.key) {
-      setStepErrors((count) => count + 1);
+      recordStepError('different-operation-on-each-side', `${chapter2AppliedChoice} → ${choice.operation}`);
       setOperationSides([]);
       setBalanceOperation('');
       setBalanceDelta(0);
@@ -1300,7 +1371,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
     const modeledSteps = firstBalanceStep < 0 ? config.steps.length : firstBalanceStep;
     if (modeledSteps > 0) {
       const expandedEquation = localizeEquation(config.steps[modeledSteps - 1].after, lang);
-      setBalanceRows(splitEquation(expandedEquation).map((side) => parseBalanceSide(side, lang)));
+      setBalanceRows(splitEquation(expandedEquation).map((side) => parseBalanceSide(side, lang, questionNumber === 6 || questionNumber === 7, questionNumber === 28)));
       setStepIndex(modeledSteps);
     }
     setBalanceDelta(0);
@@ -1322,11 +1393,12 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
     const chapterQuestion = ((Number(questionId) - 1) % 10) + 1;
     const activeTiles = tileTab === 'number' ? balanceNumberTiles : variableTiles(variableSymbol);
     return <>
-      <section className={`math-sim math-sim-balance math-sim-balance-reference chapter-${chapterNumber} ${balancePhase === 'active' ? '' : `is-${balancePhase}`} ${visible ? '' : 'is-closed'}`} aria-label={c.modes[config.mode]}>
+      <section className={`math-sim math-sim-balance math-sim-balance-reference chapter-${chapterNumber} ${questionNumber === 6 || questionNumber === 7 ? 'is-sign-coded' : ''} ${balancePhase === 'active' ? '' : `is-${balancePhase}`} ${visible ? '' : 'is-closed'}`} aria-label={c.modes[config.mode]}>
       <header className="math-sim-reference-question">
         <button type="button" className="math-sim-close" onClick={onClose} aria-label={lang === 'en' ? 'Close simulation' : 'Tutup simulasi'}><PixelIcon name="close" size={18} /></button>
         <div className="math-sim-reference-heading"><span className="math-sim-chapter-gem" aria-hidden="true"><img src="/assets/ui/utility/icons/crystal-star.webp" alt="" /></span><strong>{c.chapter} {chapterNumber}</strong><i>•</i><b>{c.question} {chapterQuestion}/10</b></div>
         <p>{distributiveModel && modelReady && !distributiveComplete ? (lang === 'en' ? 'Model the distribution first, then solve the expanded equation using the balance.' : 'Buat model distributif terlebih dahulu, lalu selesaikan persamaan yang sudah dibuka dengan timbangan.') : chapter5Question && !modelReady ? (lang === 'en' ? 'Build an equation from the story first. Then solve it using the balance.' : 'Rakit persamaan dari cerita terlebih dahulu, lalu selesaikan dengan timbangan.') : config.mode === 'groups' ? c.groupPrompt : c.balancePrompt}</p>
+        <p className="math-sim-orientation-note">{lang === 'en' ? 'For more room, rotate your phone to landscape. Portrait mode remains available.' : 'Agar ruang bermain lebih lega, putar HP ke posisi landscape. Mode portrait tetap bisa digunakan.'}</p>
         {(!chapter5Question || modelReady) && <strong className="math-sim-reference-equation">{referenceEquation}</strong>}
         <div className="math-sim-reference-progress" aria-label={`${progress}%`}><span style={{ width: `${progress}%` }} /></div>
       </header>
@@ -1339,9 +1411,9 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
         {modelIndex > 0 && <small className="math-sim-model-progress">{model.slice(0, modelIndex).map((stage) => stage.correct).join(' â†’ ')}</small>}
       </div>)}
 
-      {modelReady && distributiveModel && !distributiveComplete && <DistributiveModel model={distributiveModel} equation={config.equation} lang={lang} onComplete={completeDistributiveModel} onCombineChange={setDistributiveSolvedEquation} onError={() => setStepErrors((count) => count + 1)} />}
+      {modelReady && distributiveModel && !distributiveComplete && <DistributiveModel model={distributiveModel} equation={config.equation} lang={lang} onComplete={completeDistributiveModel} onCombineChange={setDistributiveSolvedEquation} onError={() => recordStepError('parentheses-or-like-term-error')} />}
 
-      {(!chapter5Question || modelReady) && (!distributiveModel || distributiveComplete) && <div className={`math-sim-balance-workspace ${divisionChoiceCorrect && !divisionReady ? 'has-division-lab' : ''}`}>
+      {(!chapter5Question || modelReady) && (!distributiveModel || distributiveComplete) && <div className="math-sim-balance-workspace">
         <div className={`math-sim-balance-stage ${overPans ? 'is-awaiting-drop' : ''} ${balanceDelta > 0 ? 'is-left-heavy' : balanceDelta < 0 ? 'is-right-heavy' : 'is-level'}`}>
           <img className="math-sim-chapter-scene" src={chapterScenes[chapterNumber - 1] || chapterScenes[0]} alt="" aria-hidden="true" draggable="false" decoding="async" fetchPriority="high" />
           <BalanceScale
@@ -1364,7 +1436,6 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
             draggingSource={draggingSource}
             lang={lang}
           />
-          {divisionChoiceCorrect && !divisionReady && <Chapter4DivisionLab key={`${questionNumber}-${stepIndex}-${balanceOperation}`} divisor={operationValueMatch[2]} equation={balanceEquation} lang={lang} onReady={setDivisionReady} />}
           <span className={`math-sim-drop-hint ${selectedMove ? 'has-selected-tile' : ''} ${chapter4Question ? 'is-pan-transfer-locked' : ''}`} aria-live="polite">{selectedMove ? (lang === 'en' ? `Selected ${selectedMove.item.label || 'tile'}. Tap the ${selectedMove.side === 'left' ? 'right' : 'left'} side to move it.` : `Ubin ${selectedMove.item.label || ''} dipilih. Ketuk ruas ${selectedMove.side === 'left' ? 'kanan' : 'kiri'} untuk memindahkannya.`) : chapter4Question ? (lang === 'en' ? 'Keep each tile on its current side. Choose an operation to apply it to both sides.' : 'Ubin tetap di ruas masing-masing. Pilih operasi untuk menerapkannya pada kedua ruas.') : balanceHintVisible ? c.balanceHint : (lang === 'en' ? 'Drag a tile across, or tap it then tap the other side' : 'Seret ubin ke ruas lain, atau ketuk ubin lalu ruas tujuan')}</span>
         </div>
         <aside className="math-sim-tile-dock">
@@ -1388,9 +1459,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
             <p>{operationAnimation ? (lang === 'en' ? 'Applying the operation to both sides…' : 'Menerapkan operasi pada kedua ruas…') : balanceOperation ? c.applyOperation : (lang === 'en' ? 'Choose an operation' : 'Pilih operasi')}</p>
             {!['expand', 'simplify'].includes(next?.operation) && <div className={`math-sim-operation-values ${chapter3DivisionStep ? 'is-divisor-choice' : ''}`} aria-label={chapter3DivisionStep ? (lang === 'en' ? 'Choose divisor' : 'Pilih pembagi') : (lang === 'en' ? 'Choose a number' : 'Pilih angka')}>{chapter3DivisionStep && <span>{lang === 'en' ? 'Divisor' : 'Pilih pembagi'}</span>}{operationValues.map((value) => <button type="button" key={value} disabled={busy || !modelReady || ready || Boolean(operationAnimation)} className={operationAmount === value ? 'is-selected' : ''} onClick={() => selectBalanceOperationNumber(value)}>{value}</button>)}</div>}
             <div className="math-sim-operation-options">{operationOptions.map((operation) => <button type="button" key={operation} disabled={busy || !modelReady || ready || Boolean(operationAnimation)} className={balanceOperation === operation || balanceOperation === `${operation} ${operationAmount}` ? 'is-selected' : ''} aria-label={operationLabel(['expand', 'simplify'].includes(operation) ? operation : `${operation} ${operationAmount}`, lang)} onClick={() => chooseBalanceOperation(operation)}>{['expand', 'simplify'].includes(operation) ? operationLabel(operation, lang) : operation.replace('*', '×').replace('/', '÷').replace('-', '−')}</button>)}</div>
-            {chapter4DivisionStep && balanceOperation && !divisionChoiceCorrect && <p className="math-sim-division-prompt">{lang === 'en' ? 'Choose the division that creates the same number of groups on both sides.' : 'Pilih pembagian yang membentuk jumlah kelompok sama pada kedua ruas.'}</p>}
-            {divisionChoiceCorrect && <p className="math-sim-division-prompt">{divisionReady ? (lang === 'en' ? 'Groups matched. Apply the division to both pans.' : 'Kelompok sudah cocok. Terapkan pembagian pada kedua piring.') : (lang === 'en' ? 'Complete the group activity on the scale.' : 'Selesaikan aktivitas kelompok di area timbangan.')}</p>}
-            {balanceOperation && <div className="math-sim-operation-sides"><button type="button" disabled={busy || operationSides.includes(0) || Boolean(operationAnimation) || chapter4DivisionStep && !divisionReady} onClick={() => applyOperationToSide(0)}>{operationSides.includes(0) ? '✓ ' : ''}{c.applyLeft}</button><button type="button" disabled={busy || operationSides.includes(1) || Boolean(operationAnimation) || chapter4DivisionStep && !divisionReady} onClick={() => applyOperationToSide(1)}>{operationSides.includes(1) ? '✓ ' : ''}{c.applyRight}</button></div>}
+            {balanceOperation && <div className="math-sim-operation-sides"><button type="button" disabled={busy || operationSides.includes(0) || Boolean(operationAnimation)} onClick={() => applyOperationToSide(0)}>{operationSides.includes(0) ? '✓ ' : ''}{c.applyLeft}</button><button type="button" disabled={busy || operationSides.includes(1) || Boolean(operationAnimation)} onClick={() => applyOperationToSide(1)}>{operationSides.includes(1) ? '✓ ' : ''}{c.applyRight}</button></div>}
           </div>}
           <div className="math-sim-dock-step"><span>{c.step} {Math.min(stepIndex + 1, config.steps.length)}/{config.steps.length}</span><div className="math-sim-progress"><span style={{ width: `${progress}%` }} /></div></div>
         </aside>
@@ -1438,11 +1507,11 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
         <strong className="math-sim-reference-equation">{equation}</strong>
         <div className="math-sim-reference-progress" aria-label={`${progress}%`}><span style={{ width: `${progress}%` }} /></div>
       </header>
-      {balancePhase !== 'active' ? <div className="math-sim-ch2-complete" role="status"><span aria-hidden="true">✦</span><small>{lang === 'en' ? 'EQUATION BALANCED' : 'PERSAMAAN SEIMBANG'}</small><strong>{lang === 'en' ? 'Challenge complete!' : 'Tantangan selesai!'}</strong><b>{equation}</b><p>{lang === 'en' ? 'Opening the next challenge…' : 'Membuka soal berikutnya…'}</p><i aria-hidden="true"><span /></i></div> : chapter2Fraction ? <Chapter2FractionLab config={config} lang={lang} busy={busy} onSolved={() => setStepIndex(config.steps.length)} onUndo={() => setStepIndex(0)} onMistake={() => setStepErrors((count) => count + 1)} /> : chapter2Partition ? <Chapter2Partition config={config} questionId={questionNumber} lang={lang} busy={busy} onSolved={() => setStepIndex(config.steps.length)} onUndo={() => setStepIndex(0)} onMistake={() => setStepErrors((count) => count + 1)} /> : <>
+      {balancePhase !== 'active' ? <div className="math-sim-ch2-complete" role="status"><span aria-hidden="true">✦</span><small>{lang === 'en' ? 'EQUATION BALANCED' : 'PERSAMAAN SEIMBANG'}</small><strong>{lang === 'en' ? 'Challenge complete!' : 'Tantangan selesai!'}</strong><b>{equation}</b><p>{lang === 'en' ? 'Opening the next challenge…' : 'Membuka soal berikutnya…'}</p><i aria-hidden="true"><span /></i></div> : chapter2Fraction ? <Chapter2FractionLab config={config} lang={lang} busy={busy} onSolved={() => setStepIndex(config.steps.length)} onUndo={() => setStepIndex(0)} onMistake={() => recordStepError('fraction-or-grouping-error')} /> : chapter2Partition ? <Chapter2Partition config={config} questionId={questionNumber} lang={lang} busy={busy} onSolved={() => setStepIndex(config.steps.length)} onUndo={() => setStepIndex(0)} onMistake={(kind, attempted) => recordStepError(kind || 'chapter2-grouping-error', attempted)} /> : <>
       <div className="math-sim-balance-workspace math-sim-ch2-workspace">
         <div className={`math-sim-balance-stage ${operationSides.length === 1 ? (operationSides[0] === 0 ? 'is-left-heavy' : 'is-right-heavy') : 'is-level'}`}>
           <img className="math-sim-chapter-scene" src={chapterScenes[1]} alt="" aria-hidden="true" draggable="false" decoding="async" />
-          <BalanceScale left={parseBalanceSide(left, lang)} right={parseBalanceSide(right, lang)} equation={equation} sides={c.sides} selectedTile="" overPans={chapter2HoverSide} tilt={operationSides.length === 1 ? (operationSides[0] === 0 ? 'is-left-heavy' : 'is-right-heavy') : 'is-level'} indicator={operationSides.length === 1 ? (operationSides[0] === 0 ? 'left' : 'right') : 'center'} statusText={operationSides.length === 1 ? c.applyOtherSide : c.balanceStates.center} balanceDelta={operationSides.length === 1 ? (operationSides[0] === 0 ? 1 : -1) : 0} operationAnimation={operationAnimation} interactiveTiles={false} chapter2DropTargets chapter2HoverSide={chapter2HoverSide} chapter2OperationSides={operationSides} chapter2OperationText={chapter2Choices.find((choice) => choice.key === chapter2AppliedChoice)?.tileText || ''} lang={lang} />
+          <BalanceScale left={balanceRows[0]} right={balanceRows[1]} equation={equation} sides={c.sides} selectedTile="" overPans={chapter2HoverSide} tilt={operationSides.length === 1 ? (operationSides[0] === 0 ? 'is-left-heavy' : 'is-right-heavy') : 'is-level'} indicator={operationSides.length === 1 ? (operationSides[0] === 0 ? 'left' : 'right') : 'center'} statusText={operationSides.length === 1 ? c.applyOtherSide : c.balanceStates.center} balanceDelta={operationSides.length === 1 ? (operationSides[0] === 0 ? 1 : -1) : 0} operationAnimation={operationAnimation} interactiveTiles={false} chapter2DropTargets chapter2HoverSide={chapter2HoverSide} chapter2OperationSides={operationSides} chapter2OperationText={chapter2Choices.find((choice) => choice.key === chapter2AppliedChoice)?.tileText || ''} lang={lang} />
         </div>
         <aside className="math-sim-tile-dock">
           <div className="math-sim-dock-heading"><h2>{c.tilePicker}</h2><span aria-hidden="true"><PixelIcon name="hint" size={16} /></span></div>

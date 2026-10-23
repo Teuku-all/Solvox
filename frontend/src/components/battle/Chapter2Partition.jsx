@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 const localize = (value, lang) => lang === 'en'
   ? String(value).replace(/(\d),(\d)(?!\d{2,})/g, '$1.$2')
@@ -34,6 +34,8 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
   const [selectedItem, setSelectedItem] = useState(null);
   const [draggingItem, setDraggingItem] = useState('');
   const [message, setMessage] = useState('');
+  const pointerDrag = useRef(null);
+  const pointerJustDragged = useRef(false);
   if (!data) return null;
 
   const commit = (next) => {
@@ -87,7 +89,7 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
   };
   const phases = [...(needsNormalization ? [[text.phaseNormalize, normalizationReady]] : []), [text.phaseDivide, partitionComplete], [text.phaseSort, allSorted], [text.phaseMatch, allMatched], ...(needsSignFlip ? [[text.phaseSign, progress.complete]] : [])];
   const activePhase = phases.findIndex(([, complete]) => !complete);
-  const reject = (feedback) => { setMessage(feedback); onMistake?.(); };
+  const reject = (feedback, kind = 'chapter2-grouping-error', attempted = '') => { setMessage(feedback); onMistake?.(kind, attempted || feedback); };
 
   const placeDivider = (side) => {
     if (busy || progress.complete) return;
@@ -113,12 +115,12 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
     const item = data.items.left.concat(data.items.right).find((entry) => entry.id === itemId);
     if (!item) return;
     if (!partitionComplete) { reject(text.noGroup); return; }
-    if (item.side !== (groupIndex.side || item.side)) return;
+    if (item.side !== (groupIndex.side || item.side)) { reject(text.wrongSide, 'chapter2-wrong-side', item.label); return; }
     const side = item.side;
     const targetCount = expectedPerGroup(side);
     const groupItems = itemsIn(side, groupIndex.index);
     if (progress.assignments[itemId] === groupIndex.index) return;
-    if (groupItems.length >= targetCount) { reject(text.full); return; }
+    if (groupItems.length >= targetCount) { reject(text.full, 'chapter2-group-capacity', `${side} ${groupIndex.index + 1}`); return; }
     commit({ ...progress, assignments: { ...progress.assignments, [itemId]: groupIndex.index }, links: [], selectedGroup: null });
     setMessage('');
   };
@@ -127,7 +129,7 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
     if (!itemId) return;
     event.preventDefault();
     const item = data.items.left.concat(data.items.right).find((entry) => entry.id === itemId);
-    if (item?.side !== side) { reject(text.wrongSide); return; }
+    if (item?.side !== side) { reject(text.wrongSide, 'chapter2-wrong-side', item?.label || itemId); return; }
     assignItem(itemId, { side, index: groupIndex });
   };
   const returnToPool = (event, side) => {
@@ -136,11 +138,49 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
     if (!itemId) return;
     event.preventDefault();
     const item = data.items.left.concat(data.items.right).find((entry) => entry.id === itemId);
-    if (item?.side !== side) { reject(text.wrongSide); return; }
+    if (item?.side !== side) { reject(text.wrongSide, 'chapter2-wrong-side', item?.label || itemId); return; }
     const assignments = { ...progress.assignments };
     delete assignments[itemId];
     commit({ ...progress, assignments, links: [], selectedGroup: null });
     setMessage('');
+  };
+  const handlePointerDown = (event, item) => {
+    if (busy || progress.complete || !normalizationReady || event.button !== 0) return;
+    event.preventDefault();
+    pointerDrag.current = { id: item.id, pointerId: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
+    setDraggingItem(item.id);
+  };
+  const handlePointerMove = (event) => {
+    const active = pointerDrag.current;
+    if (!active || active.pointerId !== event.pointerId) return;
+    if (Math.hypot(event.clientX - active.x, event.clientY - active.y) > 7) active.moved = true;
+  };
+  const handlePointerUp = (event) => {
+    const active = pointerDrag.current;
+    if (!active || active.pointerId !== event.pointerId) return;
+    pointerDrag.current = null;
+    setDraggingItem('');
+    if (!active.moved) return;
+    pointerJustDragged.current = true;
+    window.setTimeout(() => { pointerJustDragged.current = false; }, 0);
+    const target = document.elementFromPoint(event.clientX, event.clientY);
+    const group = target?.closest?.('[data-c2p-group]');
+    const pool = target?.closest?.('[data-c2p-pool]');
+    const item = data.items.left.concat(data.items.right).find((entry) => entry.id === active.id);
+    if (group) {
+      const [side, index] = group.dataset.c2pGroup.split(':');
+      if (item?.side !== side) reject(text.wrongSide, 'chapter2-wrong-side', item?.label || active.id);
+      else assignItem(active.id, { side, index: Number(index) });
+    } else if (pool) {
+      const side = pool.dataset.c2pPool;
+      if (item?.side !== side) reject(text.wrongSide, 'chapter2-wrong-side', item?.label || active.id);
+      else {
+        const assignments = { ...progress.assignments };
+        delete assignments[active.id];
+        commit({ ...progress, assignments, links: [], selectedGroup: null });
+        setMessage('');
+      }
+    }
   };
   const onTileClick = (item) => {
     if (busy || progress.complete || allSorted) return;
@@ -152,7 +192,7 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
     if (!partitionComplete) { reject(text.noGroup); return; }
     if (!allSorted && selectedItem) {
       const selected = data.items.left.concat(data.items.right).find((item) => item.id === selectedItem);
-      if (selected?.side !== side) { reject(text.wrongSide); return; }
+      if (selected?.side !== side) { reject(text.wrongSide, 'chapter2-wrong-side', selected?.label || selectedItem); return; }
       assignItem(selectedItem, { side, index });
       return;
     }
@@ -163,7 +203,7 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
       return;
     }
     if (progress.selectedGroup === null) { setMessage(text.matching); return; }
-    if (progress.selectedGroup !== index) { reject(text.matchWrong); return; }
+    if (progress.selectedGroup !== index) { reject(text.matchWrong, 'chapter2-group-match-error', `${progress.selectedGroup + 1} \u2192 ${index + 1}`); return; }
     const links = [...new Set([...progress.links, index])];
     const complete = links.length === groupCount && !needsSignFlip;
     commit({ ...progress, links, selectedGroup: null, complete });
@@ -203,11 +243,13 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
       ? `${localize(item.value / data.normalizationFactor, lang)}${data.variable}`
       : localize(item.value / data.normalizationFactor, lang);
     return <button type="button" key={item.id}
+    data-c2p-item={item.id}
     className={`c2p-tile ${item.shape === 'variable' ? 'is-variable' : 'is-unit'} ${item.value < 0 ? 'is-negative' : ''} ${item.shape === 'compressed' ? 'is-compressed' : ''} ${selectedItem === item.id ? 'is-selected' : ''} ${draggingItem === item.id ? 'is-dragging' : ''}`}
     draggable={!busy && !progress.complete && normalizationReady}
     disabled={busy || !normalizationReady}
     onDragStart={(event) => { event.dataTransfer.setData('text/plain', item.id); event.dataTransfer.effectAllowed = 'move'; setDraggingItem(item.id); }}
     onDragEnd={() => setDraggingItem('')}
+    onPointerDown={(event) => handlePointerDown(event, item)}
     onClick={(event) => { event.stopPropagation(); onTileClick(item); }}
     aria-label={`${isEnglish ? 'Tile' : 'Ubin'} ${label}`}
   ><span>{label}</span></button>;
@@ -220,7 +262,7 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
     const loose = tiles.filter((item) => progress.assignments[item.id] === undefined);
     const lineCount = progress.separators[side];
     const slots = lineCount || normalizationReady && groupCount === 1 ? Array.from({ length: lineCount + 1 }, (_, index) => index) : [];
-    return <section className={`c2p-side ${isLeft ? 'is-left' : 'is-right'}`} onDragOver={(event) => event.preventDefault()} onDrop={(event) => onDividerDrop(event, side)}>
+    return <section className={`c2p-side ${isLeft ? 'is-left' : 'is-right'}`} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onDragOver={(event) => event.preventDefault()} onDrop={(event) => onDividerDrop(event, side)}>
       <header><b>{text[side]}</b><strong>{isLeft ? `${localize(normalizationReady ? data.coefficient : data.originalCoefficient, lang)}${data.variable}` : localize(normalizationReady ? data.total : data.originalTotal, lang)}</strong></header>
       {slots.length > 0 && <div className="c2p-groups" style={{ '--c2p-group-columns': Math.min(slots.length, 4) }}>
         {slots.map((index) => {
@@ -228,10 +270,10 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
           const full = groupItems.length === expectedPerGroup(side);
           const linked = progress.links.includes(index);
           return <div key={index} role="group" tabIndex={0} aria-label={`${text.count} ${index + 1}`}
-            className={`c2p-group ${full ? 'is-full' : ''} ${linked ? 'is-linked' : ''} ${progress.selectedGroup === index ? 'is-selected' : ''}`}
+            data-c2p-group={`${side}:${index}`} className={`c2p-group ${full ? 'is-full' : ''} ${linked ? 'is-linked' : ''} ${progress.selectedGroup === index ? 'is-selected' : ''}`}
             onDragOver={(event) => event.preventDefault()}
             onDrop={(event) => handleGroupDrop(event, side, index)}
-            onClick={() => onGroupClick(side, index)}
+            onClick={(event) => { if (pointerJustDragged.current) { event.preventDefault(); return; } onGroupClick(side, index); }}
             onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onGroupClick(side, index); } }}
           >
             <i>{text.count} {index + 1}{linked ? ` · ${text.linked}` : ''}</i>
@@ -241,7 +283,7 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
         })}
       </div>}
       {lineCount > 0 && <div className="c2p-divider-count">{text.groups}: {lineCount + 1}</div>}
-      <div className={`c2p-pool ${placed.length ? 'has-placed' : ''}`} onDragOver={(event) => event.preventDefault()} onDrop={(event) => returnToPool(event, side)}>
+      <div data-c2p-pool={side} className={`c2p-pool ${placed.length ? 'has-placed' : ''}`} onDragOver={(event) => event.preventDefault()} onDrop={(event) => returnToPool(event, side)}>
         <small>{text.loose} · {loose.length}/{tiles.length} · {text.remove}</small>
         <div>{loose.length ? loose.map(renderTile) : <em>{isEnglish ? 'All tiles placed' : 'Semua ubin sudah ditempatkan'}</em>}</div>
         {data.compressed && isLeft === false && <small className="c2p-compressed-note">{text.compressed}</small>}

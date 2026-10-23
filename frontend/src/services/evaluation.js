@@ -36,6 +36,8 @@ export function summarizePerformance(result = {}){
   const simulationStepsCompleted = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepsCompleted) || 0), 0);
   const simulationStepErrors = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepErrors) || 0), 0);
   const simulationModelErrors = logs.reduce((sum, item) => sum + (Number(item.simulation?.modelErrors) || 0), 0);
+  const simulationErrorHistory = logs.flatMap((item) => (Array.isArray(item.simulation?.stepErrorHistory) ? item.simulation.stepErrorHistory : [])
+    .map((error) => ({ ...error, questionId: Number(item.questionId ?? item.idx + 1) })));
   const simulationStepCompletionRate = simulationStepsTotal
     ? Math.round(simulationStepsCompleted / simulationStepsTotal * 100)
     : 0;
@@ -72,6 +74,7 @@ export function summarizePerformance(result = {}){
   const errorList = Object.entries(errorStats).filter(([,count]) => count > 0).sort((a,b) => b[1] - a[1]).slice(0, 3);
 
   return {
+    chapterId: Number(result.chapterId) || 0,
     totalQuestions,
     answeredQuestions,
     unansweredQuestions: Math.max(0, totalQuestions - answeredQuestions),
@@ -90,6 +93,7 @@ export function summarizePerformance(result = {}){
     simulationStepsTotal,
     simulationStepsCompleted,
     simulationStepErrors,
+    simulationErrorHistory,
     simulationModelErrors,
     simulationStepCompletionRate,
     simulationStepAccuracy,

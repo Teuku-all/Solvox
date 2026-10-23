@@ -98,44 +98,44 @@ export default function Chapter2FractionLab({ config, lang = 'id', busy, onSolve
     setMessage('');
     if (next.complete) onSolved?.();
   };
-  const reject = (feedback = t.wrong) => { setMessage(feedback); onMistake?.(); };
+  const reject = (feedback = t.wrong, kind = 'chapter2-fraction-target', attempted = '') => { setMessage(feedback); onMistake?.(kind, attempted || feedback); };
   const place = (piece, target) => {
     if (busy || progressRef.current.complete) return;
     const current = progressRef.current;
     if (phase === 'cut' && piece.kind === 'cutter') {
       if (target === 'cut-left' && fraction && !current.cutLeft) commit({ ...current, cutLeft: true });
       else if (target === 'cut-right' && !current.cutRight) commit({ ...current, cutRight: true });
-      else reject();
+      else reject(t.wrong, 'chapter2-fraction-cut', target);
       return;
     }
     if (phase === 'pair' && piece.kind === 'variable' && target.startsWith('pair-')) {
       const index = Number(target.slice(5));
-      if (index >= model.filled || current.pairs.some((pair) => pair.source === piece.index || pair.target === index)) { reject(t.full); return; }
+      if (index >= model.filled || current.pairs.some((pair) => pair.source === piece.index || pair.target === index)) { reject(t.full, 'chapter2-fraction-capacity', `${phase}:${index + 1}`); return; }
       commit({ ...current, pairs: [...current.pairs, { source: piece.index, target: index }] });
       return;
     }
     if (phase === 'build' && piece.kind === 'matched' && target.startsWith('whole-')) {
       const index = Number(target.slice(6));
-      if (index >= model.parts || current.whole.includes(index)) { reject(t.full); return; }
+      if (index >= model.parts || current.whole.includes(index)) { reject(t.full, 'chapter2-fraction-capacity', `${phase}:${index + 1}`); return; }
       const whole = [...current.whole, index];
       commit({ ...current, whole, complete: whole.length === model.parts && !model.negative });
       return;
     }
     if (phase === 'sign' && piece.kind === 'sign' && target.startsWith('sign-')) {
       const side = target.slice(5);
-      if (!['left', 'right'].includes(side) || current.signs.includes(side)) { reject(t.full); return; }
+      if (!['left', 'right'].includes(side) || current.signs.includes(side)) { reject(t.full, 'chapter2-fraction-sign', side); return; }
       const signs = [...current.signs, side];
       commit({ ...current, signs, complete: signs.length === 2 });
       return;
     }
     if (phase === 'measure' && piece.kind === 'half' && target.startsWith('measure-')) {
       const index = Number(target.slice(8));
-      if (index >= model.result || current.measure[index] >= model.parts || Object.values(current.measure).reduce((sum, count) => sum + count, 0) >= model.pieces) { reject(t.full); return; }
+      if (index >= model.result || current.measure[index] >= model.parts || Object.values(current.measure).reduce((sum, count) => sum + count, 0) >= model.pieces) { reject(t.full, 'chapter2-fraction-capacity', `${phase}:${index + 1}`); return; }
       const measure = { ...current.measure, [index]: (current.measure[index] || 0) + 1 };
       commit({ ...current, measure, complete: Object.values(measure).reduce((sum, count) => sum + count, 0) === model.pieces });
       return;
     }
-    reject();
+    reject(t.wrong, 'chapter2-fraction-target', `${phase}:${target}`);
   };
   const startDrag = (event, piece) => {
     if (busy || progress.complete || event.button !== 0) return;
