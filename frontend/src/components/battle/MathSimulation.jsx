@@ -1051,9 +1051,11 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
     setOperationSides(sidesAfter);
     if (sidesAfter.length < 2) {
       if (normalizeOperation(balanceOperation) === normalizeOperation(next.operation)) {
-        const expectedSides = splitEquation(localizeEquation(next.after, lang));
+        const expectedSides = next.sideResults
+          ? next.sideResults.map((side) => localizeEquation(side, lang))
+          : splitEquation(localizeEquation(next.after, lang));
         setBalanceRows((rows) => rows.map((row, index) => index === sideIndex
-          ? parseBalanceSide(expectedSides[index], lang, questionNumber === 6 || questionNumber === 7, questionNumber === 28)
+          ? parseBalanceSide(expectedSides[sideIndex], lang, questionNumber === 6 || questionNumber === 7, questionNumber === 28)
           : row));
       }
       setBalanceDelta(sideIndex === 0 ? 1 : -1);

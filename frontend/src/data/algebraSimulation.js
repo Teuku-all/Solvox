@@ -33,7 +33,11 @@ const raw = {
   30: ['symbolic', '10 - 2(x + 3) = 2', 'expand|10 - 2x - 6 = 2; - 10|-2x - 6 = -8; + 6|-2x = -2; / -2|x = 1'],
   31: ['symbolic', '5x - 3 = 2x + 9', '- 2x|3x - 3 = 9; + 3|3x = 12; / 3|x = 4'],
   32: ['symbolic', '7y + 4 = 3y - 12', '- 3y|4y + 4 = -12; - 4|4y = -16; / 4|y = -4'],
-  33: ['symbolic', '4a + 10 = 6a - 2', '- 4a|10 = 2a - 2; + 2|12 = 2a; / 2|6 = a'],
+  33: ['symbolic', '4a + 10 = 6a - 2', [
+    { operation: '- 4a', after: '10 = 2a - 2' },
+    { operation: '+ 2', after: '2a = 12', sideResults: ['12', '2a'] },
+    { operation: '/ 2', after: 'a = 6', sideResults: ['a', '6'] },
+  ]],
   34: ['symbolic', '3(m + 2) = 2(m + 7)', 'expand|3m + 6 = 2m + 14; - 2m|m + 6 = 14; - 6|m = 8'],
   35: ['symbolic', '8 - 2p = 4p + 20', '- 4p|8 - 6p = 20; - 8|-6p = 12; / -6|p = -2'],
   36: ['symbolic', '6k - 5 = 2k + 15', '- 2k|4k - 5 = 15; + 5|4k = 20; / 4|k = 5'],
@@ -55,7 +59,7 @@ const raw = {
 
 export const SIMULATIONS = Object.fromEntries(Object.entries(raw).map(([id, [mode, equation, route]]) => [
   Number(id),
-  { mode, equation, steps: route.split('; ').map((part) => {
+  { mode, equation, steps: Array.isArray(route) ? route : route.split('; ').map((part) => {
     const [operation, after] = part.split('|');
     return { operation, after };
   }) },
