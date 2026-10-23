@@ -22,8 +22,6 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
     transports:['websocket','polling'],
     tryAllTransports:true,
   }));
-  const langRef=useRef(lang);
-  langRef.current=lang;
   const [socketConnected,setSocketConnected]=useState(false);
   const roomRef=useRef(null);
   const pendingActionRef=useRef(null);
@@ -36,11 +34,6 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
   const [room,setRoom]=useState(null);
   const [error,setError]=useState('');
   const [answer,setAnswer]=useState('');
-  const [hintsUsed,setHintsUsed]=useState(0);
-  const [hintMessage,setHintMessage]=useState('');
-  const [hintLoading,setHintLoading]=useState(false);
-  const [answerFeedback,setAnswerFeedback]=useState(null);
-  const [keypadVisible,setKeypadVisible]=useState(false);
   const [seconds,setSeconds]=useState(45);
   const [battleImpacts,setBattleImpacts]=useState([]);
   const [attackingSide,setAttackingSide]=useState('');
@@ -48,7 +41,6 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
   const [dashboard,setDashboard]=useState(null);
   const [dashboardLoading,setDashboardLoading]=useState(false);
   const [dashboardError,setDashboardError]=useState(false);
-  const answerFeedbackTimerRef=useRef(null);
 
   const loadDashboard=()=>{
     setDashboardLoading(true);
@@ -56,7 +48,6 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
     apiJson('/api/dashboard?limit=20').then(data=>setDashboard(data)).catch(()=>{setDashboard(null);setDashboardError(true)}).finally(()=>setDashboardLoading(false));
   };
   useEffect(()=>{if(playerName)setName(playerName)},[playerName]);
-  useEffect(()=>()=>{if(answerFeedbackTimerRef.current)clearTimeout(answerFeedbackTimerRef.current)},[]);
   useEffect(()=>{
     setMultiplayerLobbyMusicActive(!dashboardOnly&&room?.status!=='battle'&&room?.status!=='finished');
   },[dashboardOnly,room?.status]);
@@ -70,8 +61,6 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
       roomRef.current=r||null;
       onBattleStateChange?.(r?.status==='battle');
       setRoom(r);
-      const localPlayer=r?.players?.find(player=>player.id===socket.id);
-      setHintsUsed(localPlayer?.hintsUsedThisQuestion||0);
       if(r?.code){
         localStorage.setItem('solvox.mpRoomCode',r.code);
       }
@@ -106,14 +95,6 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
       setAnswer('');
       if(x?.code==='NOT_YOUR_TURN')return;
       playSound(x?.correct?'correct':'wrong');
-      setAnswerFeedback({
-        type:x?.correct?'correct':'wrong',
-        title:x?.correct?(langRef.current==='en'?'Correct':'Benar'):(langRef.current==='en'?'Not quite':'Belum tepat'),
-        message:x?.correct?(langRef.current==='en'?'Good work. Your answer is correct.':'Bagus, jawabanmu benar.'):x?.feedback||(langRef.current==='en'?'Review the steps and try again on the next question.':'Cek kembali langkahnya dan coba lagi pada soal berikutnya.'),
-        errorTag:x?.correct?'':x?.errorTag||'',
-      });
-      if(answerFeedbackTimerRef.current)clearTimeout(answerFeedbackTimerRef.current);
-      answerFeedbackTimerRef.current=setTimeout(()=>setAnswerFeedback(null),5000);
     };
     const onRoomError=x=>{
       setError(x?.code||'ROOM_ERROR');
@@ -142,14 +123,8 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
     };
   },[socket,onBattleStateChange,dashboardOnly]);
   useEffect(()=>{
-    if(!room){setHintsUsed(0);setHintMessage('');setAnswerFeedback(null);setHintLoading(false);return;}
+    if(!room)return;
     setAnswer('');
-    setHintMessage('');
-    setAnswerFeedback(null);
-    setHintLoading(false);
-    if(answerFeedbackTimerRef.current){clearTimeout(answerFeedbackTimerRef.current);answerFeedbackTimerRef.current=null;}
-    const localPlayer=room.players?.find(player=>player.id===socket.id);
-    setHintsUsed(localPlayer?.hintsUsedThisQuestion||0);
   },[room?.code,room?.status,room?.questionIndex]);
   useEffect(()=>{
     if(!room||room.status!=='battle')return setSeconds(room?.mode==='turn'?turnSecondsForLevel(room.levelId):45);
@@ -314,26 +289,6 @@ useEffect(()=>{
     socket.emit('player:ready',{ready:true});
   });
   const submit=()=>{if(!answer.trim()||(room?.mode==='turn'&&!current)||(room?.mode==='score'&&playerSubmitted))return;const submittedAnswer=answer;runWhenConnected(()=>socket.emit('answer:submit',{answer:submittedAnswer}))};
-  const hintCost=[5,10,15][hintsUsed]??15;
-  const currentHp=Math.max(0,Number(battlePlayers.player?.hp??100));
-  const useHint=()=>{
-    if(hintLoading||!room?.question?.hints?.length||hintsUsed>=3)return;
-    const requestedQuestionIndex=room.questionIndex;
-    setHintLoading(true);
-    setHintMessage('');
-    runWhenConnected(()=>socket.timeout(6000).emit('hint:use',(timeoutError,result)=>{
-      setHintLoading(false);
-      if(roomRef.current?.questionIndex!==requestedQuestionIndex)return;
-      if(timeoutError||!result?.ok){
-        const code=result?.code;
-        setHintMessage(code==='NOT_YOUR_TURN'?t('notYourTurn'):code==='HINT_HP'?(lang==='en'?'Not enough HP to reveal another hint.':'HP tidak cukup untuk membuka hint berikutnya.'):code==='HINT_LIMIT'?(lang==='en'?'No more hints are available for this question.':'Hint untuk soal ini sudah habis.'):(lang==='en'?'Could not load the hint. Try again.':'Hint belum dapat dibuka. Coba lagi.'));
-        return;
-      }
-      setHintsUsed(result.hintsUsed);
-      setHintMessage('');
-      playSound('hint');
-    }));
-  };
   const changeMyCharacter=(next)=>{
     setChar(next);
     localStorage.setItem('solvox.mpCharacter',next);
@@ -519,23 +474,7 @@ useEffect(()=>{
         setAnswer={setAnswer}
         busy={room.mode==='turn'?!current:playerSubmitted}
         submit={submit}
-        hintsUsed={hintsUsed}
-        hintsLeft={Math.max(0,Math.min(3,(room.question.hints||[]).length)-hintsUsed)}
-        hintCost={hintCost}
-        currentHp={currentHp}
-        useHint={useHint}
-        hintMessage={hintMessage}
-        hintLoading={hintLoading}
-        showHintControl
-        showKeypad
-        showAttemptCounter
-        keypadVisible={keypadVisible}
-        onToggleKeypad={()=>setKeypadVisible(visible=>!visible)}
       />
-      {answerFeedback&&<aside className={`battle-mistake-banner ${answerFeedback.type==='correct'?'is-correct':''}`} role={answerFeedback.type==='wrong'?'alert':'status'} aria-live="polite">
-        <span className="battle-mistake-icon" aria-hidden="true"><PixelIcon name={answerFeedback.type==='correct'?'check':'warning'} size={17}/></span>
-        <div className="battle-mistake-copy"><div className="battle-mistake-heading"><b>{answerFeedback.title}</b>{answerFeedback.errorTag&&<span>{answerFeedback.errorTag}</span>}</div><p>{answerFeedback.message}</p></div>
-      </aside>}
       {battleImpacts.map(impact=><HitEffect key={impact.seq} side={impact.side} amount={impact.amount} theme={impact.side==='boss'?'boss':'player'}/>)}
     </div>
   </div>
