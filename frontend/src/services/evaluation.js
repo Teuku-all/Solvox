@@ -28,11 +28,10 @@ export function summarizePerformance(result = {}){
   const damageTaken = Math.max(0, maxHp - hpRemaining);
   const completionRate = totalQuestions ? Math.round(answeredQuestions / totalQuestions * 100) : 0;
   const timeEfficiency = normalizeTimeEfficiency(avgTimePerAnsweredQuestion || totalTime / Math.max(1, answeredQuestions));
-  const hintEfficiency = clamp(100 - hintsUsed * 15);
   const retryEfficiency = clamp(100 - retryQuestions * 8);
   const consistency = answeredQuestions ? Math.round(((correctQuestions + firstAttemptCorrect) / (answeredQuestions * 2)) * 100) : 0;
   const cts = Math.round((firstAttemptRate * .55) + (consistency * .45));
-  const automaticChapter = Number(result.chapterId) === 1;
+  const automaticChapter = [1, 2, 3].includes(Number(result.chapterId));
   const simulationStepsTotal = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepsTotal) || 0), 0);
   const simulationStepsCompleted = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepsCompleted) || 0), 0);
   const simulationStepErrors = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepErrors) || 0), 0);
@@ -44,11 +43,10 @@ export function summarizePerformance(result = {}){
     : 0;
   const simulationMastery = Math.round(simulationStepCompletionRate * .7 + simulationStepAccuracy * .3);
   const mastery = automaticChapter ? simulationMastery : Math.round(
-    clamp(accuracy) * .40 +
-    clamp(firstAttemptRate) * .15 +
+    clamp(accuracy) * .45 +
+    clamp(firstAttemptRate) * .20 +
     clamp(timeEfficiency) * .15 +
     clamp(retryEfficiency) * .10 +
-    clamp(hintEfficiency) * .10 +
     clamp(cts) * .10
   );
 
@@ -97,7 +95,6 @@ export function summarizePerformance(result = {}){
     hpRemaining,
     damageTaken,
     timeEfficiency: Math.round(timeEfficiency),
-    hintEfficiency: Math.round(hintEfficiency),
     retryEfficiency: Math.round(retryEfficiency),
     cts,
     mastery,
@@ -115,9 +112,8 @@ export function computeMastery(input){
   const accuracy = clamp(input?.accuracy);
   const timeEfficiency = clamp(input?.timeEfficiency);
   const retries = Math.max(0, Number(input?.retries) || 0);
-  const hints = Math.max(0, Number(input?.hints) || 0);
   const cts = clamp(input?.cts ?? 75);
-  return Math.round(accuracy * .40 + timeEfficiency * .20 + clamp(100 - retries * 10) * .15 + clamp(100 - hints * 20) * .15 + cts * .10);
+  return Math.round(accuracy * .45 + timeEfficiency * .20 + clamp(100 - retries * 10) * .20 + cts * .15);
 }
 
 export function classifyMastery(m){

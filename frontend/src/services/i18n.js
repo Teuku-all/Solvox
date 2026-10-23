@@ -78,7 +78,7 @@ Object.assign(T.en,{
 
 Object.assign(T.id,{
   sound:'Suara',
-  soundHint:'Efek suara ringan untuk serangan, jawaban, petunjuk, dan hasil pertandingan.',
+  soundHint:'Atur musik ruang multiplayer dan efek serangan, jawaban, petunjuk, serta hasil pertandingan.',
   hintCostDynamic:'−{cost} HP. Gunakan seperlunya agar tetap melatih kemandirian.',
   evalStrengthsTitle:'Kekuatan kamu',
   matchEvaluation:'Evaluasi pertandingan',
@@ -107,7 +107,7 @@ Object.assign(T.id,{
 });
 Object.assign(T.en,{
   sound:'Sound',
-  soundHint:'Light effects for attacks, answers, hints, and match results.',
+  soundHint:'Controls multiplayer lobby music and effects for attacks, answers, hints, and match results.',
   hintCostDynamic:'−{cost} HP. Use it when needed so the game still trains independent problem solving.',
   evalStrengthsTitle:'Your strengths',
   matchEvaluation:'Match evaluation',

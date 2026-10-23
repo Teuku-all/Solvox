@@ -11,6 +11,9 @@ const playbackStopTimers = new Map();
 let homeMusic = null;
 let homeMusicWanted = false;
 let unlockHandler = null;
+let multiplayerLobbyMusic = null;
+let multiplayerLobbyMusicWanted = false;
+let multiplayerUnlockHandler = null;
 
 const SOUND_FILES = Object.freeze({
   playerAttack: '/assets/audio/player-attack.mp3',
@@ -19,10 +22,11 @@ const SOUND_FILES = Object.freeze({
   dragonAttack: '/assets/audio/dragon-attack.mp3',
   titanAttack: '/assets/audio/titan-attack.mp3',
   chapter5BossAttack: '/assets/audio/chapter5-boss-attack.mp3',
+  winner: '/assets/audio/chapter-winner.mp3',
 });
 
 function playHomeMusic() {
-  if (!homeMusicWanted || !enabled()) return;
+  if (!homeMusicWanted || multiplayerLobbyMusicWanted || !enabled()) return;
   // Avoid downloading the music before the browser allows user-initiated audio.
   if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
   if (!homeMusic) {
@@ -37,6 +41,24 @@ function playHomeMusic() {
   const result = homeMusic.play();
   if (result?.catch) result.catch((error) => {
     console.warn('[Solvox audio] Could not play /assets/audio/home-theme.mp3', error);
+  });
+}
+
+function playMultiplayerLobbyMusic() {
+  if (!multiplayerLobbyMusicWanted || !enabled()) return;
+  if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
+  if (!multiplayerLobbyMusic) {
+    multiplayerLobbyMusic = new Audio('/assets/audio/multiplayer-prebattle.mp3');
+    multiplayerLobbyMusic.preload = 'auto';
+    multiplayerLobbyMusic.loop = true;
+    multiplayerLobbyMusic.volume = 0.28;
+    multiplayerLobbyMusic.addEventListener('error', () => {
+      console.warn('[Solvox audio] Could not load /assets/audio/multiplayer-prebattle.mp3', multiplayerLobbyMusic.error?.code);
+    }, { once: true });
+  }
+  const result = multiplayerLobbyMusic.play();
+  if (result?.catch) result.catch((error) => {
+    console.warn('[Solvox audio] Could not play /assets/audio/multiplayer-prebattle.mp3', error);
   });
 }
 
@@ -59,7 +81,30 @@ export function setHomeMusicActive(active) {
   }
 }
 
-function playAudioFile(kind, volume = 0.72) {
+export function setMultiplayerLobbyMusicActive(active) {
+  const next = Boolean(active);
+  if (multiplayerLobbyMusicWanted === next) return;
+  multiplayerLobbyMusicWanted = next;
+  if (next) {
+    homeMusic?.pause();
+    playMultiplayerLobbyMusic();
+    if (!multiplayerUnlockHandler) {
+      multiplayerUnlockHandler = () => playMultiplayerLobbyMusic();
+      window.addEventListener('pointerdown', multiplayerUnlockHandler);
+      window.addEventListener('keydown', multiplayerUnlockHandler);
+    }
+  } else {
+    multiplayerLobbyMusic?.pause();
+    if (multiplayerUnlockHandler) {
+      window.removeEventListener('pointerdown', multiplayerUnlockHandler);
+      window.removeEventListener('keydown', multiplayerUnlockHandler);
+      multiplayerUnlockHandler = null;
+    }
+    if (homeMusicWanted) playHomeMusic();
+  }
+}
+
+function playAudioFile(kind, volume = 0.72, stopAfterMs = MAX_BATTLE_AUDIO_MS) {
   if (!enabled()) return;
   const src = SOUND_FILES[kind];
   if (!src) return;
@@ -81,17 +126,18 @@ function playAudioFile(kind, volume = 0.72) {
     if (audio.readyState > 0) audio.currentTime = 0;
     audio.volume = Math.max(0, Math.min(1, volume));
     const result = audio.play();
-    const stopAtThreeSeconds = () => {
+    const stopAfterDuration = () => {
+      if (!Number.isFinite(stopAfterMs)) return;
       const timer = window.setTimeout(() => {
         audio.pause();
         playbackStopTimers.delete(kind);
-      }, MAX_BATTLE_AUDIO_MS);
+      }, stopAfterMs);
       playbackStopTimers.set(kind, timer);
     };
-    if (result?.then) result.then(stopAtThreeSeconds).catch((error) => {
+    if (result?.then) result.then(stopAfterDuration).catch((error) => {
       console.warn(`[Solvox audio] Could not play ${src}`, error);
     });
-    else stopAtThreeSeconds();
+    else stopAfterDuration();
   } catch (error) {
     console.warn(`[Solvox audio] Could not start ${src}`, error);
   }
@@ -126,9 +172,13 @@ function tone({ frequency = 440, duration = 0.1, volume = 0.045, type = 'sine', 
 
 export function setSoundEnabled(value) {
   localStorage.setItem(STORAGE_KEY, value ? '1' : '0');
-  if (value) playHomeMusic();
+  if (value) {
+    if (multiplayerLobbyMusicWanted) playMultiplayerLobbyMusic();
+    else playHomeMusic();
+  }
   else {
     homeMusic?.pause();
+    multiplayerLobbyMusic?.pause();
     audioCache.forEach((audio) => audio.pause());
     playbackStopTimers.forEach((timer) => window.clearTimeout(timer));
     playbackStopTimers.clear();
@@ -176,6 +226,9 @@ export function playSound(kind = 'click') {
     case 'chapter5BossAttack':
       playAudioFile(kind, 0.78);
       break;
+    case 'victory':
+      playAudioFile('winner', 0.78, Number.POSITIVE_INFINITY);
+      break;
     case 'correct':
       tone({ frequency: 523.25, glideTo: 659.25, duration: 0.14, type: 'triangle', volume: 0.055 });
       tone({ frequency: 659.25, glideTo: 783.99, duration: 0.12, type: 'triangle', volume: 0.045, delay: 0.08 });
@@ -189,11 +242,6 @@ export function playSound(kind = 'click') {
       break;
     case 'hint':
       tone({ frequency: 392, glideTo: 523.25, duration: 0.18, type: 'sine', volume: 0.035 });
-      break;
-    case 'victory':
-      tone({ frequency: 523.25, duration: 0.13, type: 'triangle', volume: 0.05 });
-      tone({ frequency: 659.25, duration: 0.13, type: 'triangle', volume: 0.045, delay: 0.10 });
-      tone({ frequency: 783.99, duration: 0.18, type: 'triangle', volume: 0.05, delay: 0.20 });
       break;
     case 'defeat':
       tone({ frequency: 329.63, glideTo: 246.94, duration: 0.18, type: 'sine', volume: 0.04 });

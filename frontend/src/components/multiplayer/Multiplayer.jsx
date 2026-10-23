@@ -10,7 +10,7 @@ import HitEffect from '../battle/HitEffect';
 import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 import {GAME_META} from '../../config/game';
 import {LEVELS} from '../../data/levels';
-import { playCharacterAttack, playSound } from '../../services/sound';
+import { playCharacterAttack, playSound, setMultiplayerLobbyMusicActive } from '../../services/sound';
 import {apiJson,SOCKET_URL} from '../../services/api';
 import { getContactLungeDistance } from '../battle/combatMotion';
 
@@ -51,6 +51,10 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
     apiJson('/api/dashboard?limit=20').then(data=>setDashboard(data)).catch(()=>{setDashboard(null);setDashboardError(true)}).finally(()=>setDashboardLoading(false));
   };
   useEffect(()=>{if(playerName)setName(playerName)},[playerName]);
+  useEffect(()=>{
+    setMultiplayerLobbyMusicActive(!dashboardOnly&&room?.status!=='battle'&&room?.status!=='finished');
+  },[dashboardOnly,room?.status]);
+  useEffect(()=>()=>setMultiplayerLobbyMusicActive(false),[]);
   useEffect(()=>{loadDashboard();},[]);
   useEffect(()=>{
     if(dashboardOnly)return;

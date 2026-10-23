@@ -55,7 +55,7 @@ export default function App(){
   useEffect(()=>{save(state);},[state]);
   useEffect(()=>{
     const inBattle=(screen==='battle'&&!evaluation)||(screen==='multi'&&multiplayerBattle);
-    setHomeMusicActive(!inBattle);
+    setHomeMusicActive(!inBattle&&screen!=='multi');
     return()=>setHomeMusicActive(false);
   },[screen,multiplayerBattle,evaluation]);
   useEffect(()=>{ document.documentElement.lang=lang==='en'?'en':'id'; },[lang]);

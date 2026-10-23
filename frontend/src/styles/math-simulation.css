@@ -1521,6 +1521,23 @@
 .math-sim-ch2-reference .math-sim-balance-expression,
 .math-sim-ch2-reference .math-sim-scale-pan > small { max-width: 100%; overflow-wrap: anywhere; }
 
+/* Keep every Chapter 2 activity inside its popup; internal panels handle overflow. */
+.math-sim-ch2-reference,
+.math-sim-ch2-reference > *,
+.math-sim-ch2-reference .math-sim-balance-workspace,
+.math-sim-ch2-reference .math-sim-balance-stage,
+.math-sim-ch2-reference .math-sim-ch2-dock,
+.math-sim-ch2-reference > .c2p-simulation,
+.math-sim-ch2-reference > .c2f-lab { min-width:0;min-height:0;box-sizing:border-box; }
+.math-sim-ch2-reference .math-sim-ch2-dock { grid-template-rows:auto auto minmax(0,1fr) auto auto; }
+.math-sim-ch2-reference.is-balance .math-sim-balance-workspace { min-height:0; }
+.math-sim-ch2-reference.is-balance .math-sim-ch2-drag-puzzle,
+.math-sim-ch2-reference.is-balance .math-sim-ch2-keys,
+.math-sim-ch2-reference.is-partition > .c2p-simulation,
+.math-sim-ch2-reference.is-fraction > .c2f-lab { min-height:0; }
+.math-sim-ch2-reference.is-partition > .c2p-simulation .c2p-scale,
+.math-sim-ch2-reference.is-fraction > .c2f-lab { overflow-y:auto;overscroll-behavior:contain; }
+
 /* Give Chapter 2 a distinct algebra-lab look and keep each action easy to read. */
 .math-sim-balance-reference.chapter-2 { --balance-accent: #83e7ee; --balance-glow: rgba(61, 214, 226, .42); --balance-pan-top: #447985; --balance-pan-bottom: #1d4655; }
 .math-sim-ch2-reference .math-sim-reference-question { border-color: rgba(104, 208, 221, .52); background: linear-gradient(110deg, rgba(14, 48, 75, .96), rgba(7, 28, 51, .96)); }
@@ -1760,6 +1777,17 @@
     max-height: none;
     transform: none;
   }
+  .math-sim-ch2-reference.is-balance { grid-template-rows:auto minmax(0,1fr) auto; }
+  .math-sim-ch2-reference.is-balance .math-sim-reference-question,
+  .math-sim-ch2-reference.is-balance .math-sim-balance-footer { min-width:0; }
+  .math-sim-ch2-reference.is-balance .math-sim-balance-workspace { min-height:0;grid-template-rows:minmax(125px,30dvh) minmax(0,1fr); }
+  .math-sim-ch2-reference.is-balance .math-sim-ch2-dock { grid-template-rows:auto minmax(0,1fr) auto auto;min-height:0;overflow-y:auto;overscroll-behavior:contain; }
+  .math-sim-ch2-reference.is-balance .math-sim-ch2-drag-puzzle { grid-template-rows:auto auto minmax(0,1fr);min-height:0;overflow-y:auto; }
+  .math-sim-ch2-reference.is-balance .math-sim-ch2-keys { grid-template-columns:repeat(2,minmax(0,1fr));min-height:0; }
+  .math-sim-ch2-reference.is-partition,
+  .math-sim-ch2-reference.is-fraction { grid-template-rows:auto minmax(0,1fr); }
+  .math-sim-ch2-reference.is-partition > .c2p-simulation,
+  .math-sim-ch2-reference.is-fraction > .c2f-lab { min-height:0;overflow-y:auto;overscroll-behavior:contain; }
   .math-sim-ch2-reference .math-sim-ch2-dock {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto auto minmax(0, 1fr) auto auto;

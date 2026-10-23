@@ -17,7 +17,7 @@ import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 import { playBossAttack, playSound } from '../../services/sound';
 
 export default function Battle({ levelId, playerId = 'traveler', lang, t, onComplete, onBack }) {
-  const autoResolveChapter = [1, 3].includes(Number(levelId));
+  const autoResolveChapter = [1, 2, 3].includes(Number(levelId));
   const boss = getBoss(levelId);
   const bossAttackImpactMs = getBossImpactMs(boss.spriteId, 'attack', 360);
   const bossDieDurationMs = getBossSequenceDurationMs(boss.spriteId, 'die');
