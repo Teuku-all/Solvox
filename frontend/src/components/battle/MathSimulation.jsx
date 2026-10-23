@@ -132,9 +132,11 @@ function DistributiveModel({ model, equation, lang, onComplete, onError }) {
   const [hoverTarget, setHoverTarget] = useState('');
   const [dropMessage, setDropMessage] = useState('');
   const [dragVisual, setDragVisual] = useState(null);
-  const [draggingFactor, setDraggingFactor] = useState(false);
+  const [draggingFactor, setDraggingFactor] = useState(null);
   const dragRef = useRef(null);
   const done = opened && model.groups.every((group, groupIndex) => group.terms.every((_, termIndex) => applied[groupIndex][termIndex]));
+  const totalSteps = model.groups.reduce((total, group) => total + group.terms.length, 0);
+  const completedSteps = applied.reduce((total, terms) => total + terms.filter(Boolean).length, 0);
   const placeTerm = (payload, targetKey) => {
     const [sourceType, sourceGroupRaw, sourceTermRaw] = payload.split(':');
     const sourceGroup = Number(sourceGroupRaw);
@@ -161,16 +163,17 @@ function DistributiveModel({ model, equation, lang, onComplete, onError }) {
     event.preventDefault();
     const pointerId = event.pointerId;
     const drag = { pointerId, termKey, cleanup: null };
-    const factor = model.groups[Number(sourceGroup)]?.factor || '';
-    setDraggingFactor(true);
-    setDragVisual({ x: event.clientX, y: event.clientY, text: `×${factor}` });
+    const group = model.groups[Number(sourceGroup)];
+    const factorText = `${group?.negative ? '−' : '×'}${group?.factor || ''}`;
+    setDraggingFactor(Number(sourceGroup));
+    setDragVisual({ x: event.clientX, y: event.clientY, text: factorText });
     dragRef.current?.cleanup?.();
     dragRef.current = drag;
     const findTarget = (x, y) => document.elementFromPoint(x, y)?.closest('[data-distributive-target]')?.dataset.distributiveTarget || '';
     const move = (moveEvent) => {
       if (moveEvent.pointerId !== pointerId || dragRef.current !== drag) return;
       setHoverTarget(findTarget(moveEvent.clientX, moveEvent.clientY));
-      setDragVisual({ x: moveEvent.clientX, y: moveEvent.clientY, text: `×${factor}` });
+      setDragVisual({ x: moveEvent.clientX, y: moveEvent.clientY, text: factorText });
     };
     const finish = (upEvent) => {
       if (upEvent.pointerId !== pointerId || dragRef.current !== drag) return;
@@ -178,7 +181,7 @@ function DistributiveModel({ model, equation, lang, onComplete, onError }) {
       drag.cleanup();
       dragRef.current = null;
       setHoverTarget('');
-      setDraggingFactor(false);
+      setDraggingFactor(null);
       setDragVisual(null);
       if (target) placeTerm(termKey, target);
       else setSelectedTerm(termKey);
@@ -187,7 +190,7 @@ function DistributiveModel({ model, equation, lang, onComplete, onError }) {
       drag.cleanup();
       dragRef.current = null;
       setHoverTarget('');
-      setDraggingFactor(false);
+      setDraggingFactor(null);
       setDragVisual(null);
     };
     drag.cleanup = () => {
@@ -205,7 +208,7 @@ function DistributiveModel({ model, equation, lang, onComplete, onError }) {
     setApplied((current) => current.map((terms, index) => index === groupIndex ? terms.map((value, term) => term === termIndex ? true : value) : terms));
   };
   return <section className={`math-sim-distributive ${model.dragDrop ? 'is-drag-drop chapter-3-distributive' : ''}`} aria-label={lang === 'en' ? 'Expand the parentheses' : 'Buka tanda kurung'}>
-    <header><span>{lang === 'en' ? 'VISUAL STEP' : 'LANGKAH VISUAL'}</span><strong>{lang === 'en' ? 'Distribute the outside factor' : 'Sebarkan angka di luar kurung'}</strong><p>{lang === 'en' ? 'Multiply the factor by every term inside its parentheses.' : 'Kalikan faktor di luar kurung dengan setiap suku di dalamnya.'}</p></header>
+    <header><span>{lang === 'en' ? 'VISUAL STEP' : 'LANGKAH VISUAL'}</span><strong>{lang === 'en' ? 'Distribute the outside factor' : 'Sebarkan angka di luar kurung'}</strong><p>{lang === 'en' ? 'Multiply the factor by every term inside its parentheses.' : 'Kalikan faktor di luar kurung dengan setiap suku di dalamnya.'}</p>{model.dragFactor && <><div className="math-sim-distributive-equation" aria-label={lang === 'en' ? 'Current equation' : 'Persamaan saat ini'}>{localizeEquation(model.prelude && opened ? model.preludeEquation : equation, lang)}</div><div className="math-sim-distributive-progress" aria-label={`${completedSteps} / ${totalSteps}`}><div className="math-sim-distributive-progress-track"><span style={{ width: `${totalSteps ? completedSteps / totalSteps * 100 : 0}%` }} /></div><small>{completedSteps}/{totalSteps} {lang === 'en' ? 'terms' : 'suku'}</small></div></>}</header>
     {model.prelude && <button type="button" className={`math-sim-distributive-prelude ${opened ? 'is-done' : ''}`} disabled={opened} onClick={() => setOpened(true)}>{opened ? '✓ ' : ''}{lang === 'en' ? 'Combine the matching terms inside: (2x + 3) + x → 3x + 3' : 'Gabungkan suku sejenis di dalam: (2x + 3) + x → 3x + 3'}</button>}
     {model.dragDrop && !model.dragFactor && <div className="math-sim-distributive-bank" aria-label={lang === 'en' ? 'Terms to distribute' : 'Suku yang akan didistribusikan'}>
       <strong>{lang === 'en' ? 'Drag each term into its factor column' : 'Seret setiap suku ke kolom faktornya'}</strong>
@@ -218,7 +221,7 @@ function DistributiveModel({ model, equation, lang, onComplete, onError }) {
     </div>}
     <div className={`math-sim-distributive-board ${model.dragDrop ? 'is-drop-board' : ''}`}>
       {model.groups.map((group, groupIndex) => <div className="math-sim-distributive-group" key={`${group.factor}-${groupIndex}`}>
-        {model.dragFactor ? <button type="button" draggable={opened} className={`math-sim-distributive-factor ${selectedTerm === `factor:${groupIndex}:` ? 'is-selected' : ''} ${draggingFactor ? 'is-dragging' : ''}`} onPointerDown={(event) => startTermDrag(event, `factor:${groupIndex}:`)} onDragStart={(event) => { event.dataTransfer.effectAllowed = 'copy'; event.dataTransfer.setData('text/plain', `factor:${groupIndex}:`); setDraggingFactor(true); }} onDragEnd={() => { setHoverTarget(''); setDraggingFactor(false); }} onClick={() => setSelectedTerm(`factor:${groupIndex}:`)} aria-label={`${lang === 'en' ? 'Drag factor' : 'Seret faktor'} ${group.factor} ${lang === 'en' ? 'to each term slot' : 'ke setiap kotak suku'}`}>{group.negative ? '−' : '×'}{group.factor}</button> : <div className="math-sim-distributive-factor">{group.negative ? '−' : '×'}{group.factor}</div>}
+        {model.dragFactor ? <button type="button" draggable={opened} disabled={!opened} className={`math-sim-distributive-factor ${selectedTerm === `factor:${groupIndex}:` ? 'is-selected' : ''} ${draggingFactor === groupIndex ? 'is-dragging' : ''}`} onPointerDown={(event) => startTermDrag(event, `factor:${groupIndex}:`)} onDragStart={(event) => { event.dataTransfer.effectAllowed = 'copy'; event.dataTransfer.setData('text/plain', `factor:${groupIndex}:`); setDraggingFactor(groupIndex); }} onDragEnd={() => { setHoverTarget(''); setDraggingFactor(null); }} onClick={() => setSelectedTerm(`factor:${groupIndex}:`)} aria-label={`${lang === 'en' ? 'Drag factor' : 'Seret faktor'} ${group.negative ? '−' : ''}${group.factor} ${lang === 'en' ? 'to each term slot' : 'ke setiap kotak suku'}`}>{group.negative ? '−' : '×'}{group.factor}</button> : <div className="math-sim-distributive-factor">{group.negative ? '−' : '×'}{group.factor}</div>}
         <div className="math-sim-distributive-copies" aria-label={`${group.copies} ${lang === 'en' ? 'equal groups' : 'kelompok sama'}`}>
           {model.dragDrop ? <div className={`math-sim-distributive-drop-column ${model.dragFactor ? 'is-factor-drop-column' : ''}`} aria-label={`${lang === 'en' ? 'Factor column' : 'Kolom faktor'} ${group.factor}`}>
             {group.terms.map(([term, product], termIndex) => {
@@ -239,7 +242,7 @@ function DistributiveModel({ model, equation, lang, onComplete, onError }) {
       {model.prefix && <strong className="math-sim-distributive-prefix">{model.prefix}</strong>}
     </div>
     <div className={`math-sim-distributive-result ${done ? 'is-ready' : ''}`}><small>{lang === 'en' ? 'Expanded equation' : 'Persamaan setelah kurung dibuka'}</small><strong>{done ? localizeEquation(model.result, lang) : (lang === 'en' ? 'Apply the factor to every term' : 'Kalikan setiap suku dengan faktornya')}</strong></div>
-    <footer><span>{done ? (lang === 'en' ? 'Great! Continue to the balance.' : 'Bagus! Lanjutkan ke timbangan.') : model.dragFactor ? (lang === 'en' ? 'Drag the factor into each term slot.' : 'Seret faktor ke setiap kotak suku.') : model.dragDrop ? (lang === 'en' ? 'Drop each term into its matching factor column.' : 'Letakkan setiap suku pada kolom faktor yang sesuai.') : (lang === 'en' ? 'Tap each term to reveal its product.' : 'Tekan setiap suku untuk melihat hasil perkaliannya.')}</span><button type="button" disabled={!done} onClick={onComplete}>{lang === 'en' ? 'Continue to balance' : 'Lanjut ke timbangan'} <b>→</b></button></footer>
+    <footer><span role="status">{dropMessage || (done ? (lang === 'en' ? 'Great! Continue to the balance.' : 'Bagus! Lanjutkan ke timbangan.') : model.dragFactor ? (lang === 'en' ? 'Drag each factor into every matching term slot.' : 'Seret setiap faktor ke semua kotak suku pada kurungnya.') : model.dragDrop ? (lang === 'en' ? 'Drop each term into its matching factor column.' : 'Letakkan setiap suku pada kolom faktor yang sesuai.') : (lang === 'en' ? 'Tap each term to reveal its product.' : 'Tekan setiap suku untuk melihat hasil perkaliannya.'))}</span><button type="button" disabled={!done} onClick={onComplete}>{lang === 'en' ? 'Continue to balance' : 'Lanjut ke timbangan'} <b>→</b></button></footer>
     {dragVisual && createPortal(<span className="math-sim-distributive-drag-ghost" style={{ left: dragVisual.x, top: dragVisual.y }}>{dragVisual.text}</span>, document.body)}
     <span className="math-sim-distributive-original">{localizeEquation(equation, lang)}</span>
   </section>;
@@ -281,7 +284,7 @@ const chapterScenes = [
   '/assets/backgrounds/level4/chapter4-video-poster.jpg',
   '/assets/backgrounds/level5/chapter5-video-poster.jpg',
 ];
-const DISTRIBUTIVE_MODELS = {
+const DISTRIBUTIVE_MODELS = Object.fromEntries(Object.entries({
   24: { dragDrop: true, dragFactor: true, groups: [{ factor: '4', copies: 4, terms: [['m', '4m'], ['−2', '−8']] }], result: '4m − 8 = 16' },
   29: { groups: [{ factor: '3', copies: 3, terms: [['2n', '6n'], ['+1', '+3']] }], result: '6n + 3 = 27' },
   30: { prefix: '10 −', groups: [{ factor: '2', negative: true, copies: 2, terms: [['x', '−2x'], ['+3', '−6']] }], result: '10 − 2x − 6 = 2' },
@@ -289,8 +292,8 @@ const DISTRIBUTIVE_MODELS = {
   38: { groups: [{ factor: '5', copies: 5, terms: [['n', '5n'], ['−1', '−5']] }, { factor: '3', copies: 3, terms: [['n', '3n'], ['+3', '+9']] }], result: '5n − 5 = 3n + 9' },
   39: { prefix: '9x −', groups: [{ factor: '1', negative: true, copies: 1, terms: [['2x', '−2x'], ['+5', '−5']] }], result: '9x − 2x − 5 = 3x + 11' },
   40: { groups: [{ factor: '4', copies: 4, terms: [['2z', '8z'], ['−1', '−4']] }, { factor: '2', copies: 2, terms: [['3z', '6z'], ['+5', '+10']] }], result: '8z − 4 = 6z + 10' },
-  44: { prelude: true, groups: [{ factor: '2', copies: 2, terms: [['3x', '6x'], ['+3', '+6']] }], result: '6x + 6 = 54' },
-};
+  44: { prelude: true, preludeEquation: '2(3x + 3) = 54', groups: [{ factor: '2', copies: 2, terms: [['3x', '6x'], ['+3', '+6']] }], result: '6x + 6 = 54' },
+}).map(([questionId, model]) => [questionId, { ...model, dragDrop: true, dragFactor: true }]));
 const ghostTransform = (x, y) => `translate3d(${x}px, ${y - 18}px, 0) translate(-50%, -50%)`;
 const BALANCE_RESULT_HOLD_MS = 4000;
 const BALANCE_EXIT_MS = 650;
