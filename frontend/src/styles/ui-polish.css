@@ -733,3 +733,12 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
     font-size: 8px;
   }
 }
+
+/* Multiplayer keeps a shared answer panel for both clients; hide legacy side tools. */
+.multiplayer-battle-ui .battle-question-panel .hint-rail,
+.multiplayer-battle-ui .battle-question-panel .battle-keypad-side,
+.multiplayer-battle-ui .battle-question-panel .hint-inline,
+.multiplayer-battle-ui .battle-question-panel .question-tools,
+.multiplayer-battle-ui .battle-mistake-banner {
+  display: none !important;
+}
