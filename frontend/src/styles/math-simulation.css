@@ -2213,3 +2213,49 @@
     min-height: 0;
   }
 }
+
+/* Give each chapter popup its own color identity, including the shared shell. */
+.math-sim-balance-reference.chapter-1 { --balance-accent:#4de7ff; --balance-glow:rgba(77,231,255,.38); --balance-metal-top:#d8f7ff; --balance-metal-mid:#6ebacb; --balance-metal-deep:#234c6a; --balance-pan-top:#347c9c; --balance-pan-bottom:#173452; }
+.math-sim-balance-reference.chapter-2 { --balance-accent:#72eee0; --balance-glow:rgba(67,223,207,.4); --balance-metal-top:#d5fff3; --balance-metal-mid:#62b9ad; --balance-metal-deep:#1b555b; --balance-pan-top:#367e7d; --balance-pan-bottom:#153a4c; }
+.math-sim-balance-reference.chapter-3 { --balance-accent:#ffb86b; --balance-glow:rgba(255,153,65,.4); --balance-metal-top:#ffe0a7; --balance-metal-mid:#c98149; --balance-metal-deep:#613627; --balance-pan-top:#885336; --balance-pan-bottom:#3d2b2a; }
+.math-sim-balance-reference.chapter-4 { --balance-accent:#ff7bcb; --balance-glow:rgba(255,91,194,.4); --balance-metal-top:#ffd8f0; --balance-metal-mid:#bd68a3; --balance-metal-deep:#57345f; --balance-pan-top:#794a80; --balance-pan-bottom:#362747; }
+.math-sim-balance-reference.chapter-5 { --balance-accent:#c68cff; --balance-glow:rgba(181,92,255,.42); --balance-metal-top:#ecd7ff; --balance-metal-mid:#a56bd0; --balance-metal-deep:#47305f; --balance-pan-top:#68477e; --balance-pan-bottom:#302342; }
+
+.battle-reference-arena .math-sim-balance-reference.chapter-1 { border-color:#3689aa; background:radial-gradient(circle at 20% 0,rgba(77,231,255,.16),transparent 40%),linear-gradient(145deg,#153c5d,#0a203b 52%,#07172d); box-shadow:inset 0 0 0 2px rgba(5,17,39,.86),inset 0 2px rgba(180,244,255,.17),0 20px 48px rgba(1,8,22,.58),0 0 24px rgba(77,231,255,.12); }
+.math-sim-balance-reference.chapter-1 .math-sim-reference-question { border-color:#287795; background:linear-gradient(120deg,rgba(13,52,77,.97),rgba(7,30,53,.97)); }
+.math-sim-balance-reference.chapter-1 .math-sim-reference-equation { border-color:#4de7ff; background:linear-gradient(145deg,#145173,#0b2e50); color:#a8f5ff; }
+.math-sim-balance-reference.chapter-1 .math-sim-tile-dock { border-color:#3689aa; background:radial-gradient(circle at 90% 0,rgba(77,231,255,.12),transparent 48%),linear-gradient(155deg,#123653,#0a203b); }
+.math-sim-balance-reference.chapter-1 .math-sim-add-controls button,.math-sim-balance-reference.chapter-1 .math-sim-operation-options button,.math-sim-balance-reference.chapter-1 .math-sim-operation-sides button,.math-sim-balance-reference.chapter-1 .math-sim-balance-actions button { border-color:#3689aa; background:linear-gradient(180deg,#1c6688,#123d63); color:#e4fbff; }
+.math-sim-balance-reference.chapter-1 .math-sim-operation-options button.is-selected,.math-sim-balance-reference.chapter-1 .math-sim-tile-tabs button[aria-selected="true"] { border-color:#4de7ff; background:linear-gradient(180deg,#1788aa,#125477); }
+
+.math-sim-balance-reference.chapter-2 .math-sim-reference-question { border-color:rgba(104,208,221,.58); background:linear-gradient(110deg,rgba(14,48,75,.97),rgba(7,28,51,.97)); }
+.math-sim-balance-reference.chapter-2 .math-sim-reference-equation { border-color:#72eee0; background:linear-gradient(145deg,#155269,#10364f); color:#bdfff4; }
+.math-sim-balance-reference.chapter-2 .math-sim-tile-dock { border-color:#3b9b9d; background:radial-gradient(circle at 90% 0,rgba(67,223,207,.16),transparent 48%),linear-gradient(150deg,#103e52,#091f38); }
+.math-sim-balance-reference.chapter-2 .math-sim-add-controls button,.math-sim-balance-reference.chapter-2 .math-sim-operation-options button,.math-sim-balance-reference.chapter-2 .math-sim-operation-sides button { border-color:#3b9b9d; background:linear-gradient(180deg,#176b77,#124457); color:#e1fffa; }
+.math-sim-balance-reference.chapter-2 .math-sim-operation-options button.is-selected { border-color:#72eee0; background:linear-gradient(180deg,#168b8d,#12666f); }
+
+.battle-reference-arena .math-sim-balance-reference.chapter-3 { border-color:#b77842; background:radial-gradient(circle at 82% 0,rgba(255,184,107,.17),transparent 42%),linear-gradient(145deg,#49352f,#281f25 54%,#171923); box-shadow:inset 0 0 0 2px rgba(23,17,21,.88),inset 0 2px rgba(255,225,177,.15),0 20px 48px rgba(1,8,22,.58),0 0 26px rgba(255,153,65,.13); }
+.math-sim-balance-reference.chapter-3 .math-sim-reference-question { border-color:#91613d; background:linear-gradient(120deg,rgba(77,49,39,.98),rgba(42,33,38,.97)); }
+.math-sim-balance-reference.chapter-3 .math-sim-chapter-gem { border-color:#e5a25d; background:radial-gradient(circle,#c77b3e,#603c32 72%); box-shadow:inset 0 1px rgba(255,245,212,.45),0 0 13px rgba(255,164,76,.34); }
+.math-sim-balance-reference.chapter-3 .math-sim-reference-equation { border-color:#ca8953; background:linear-gradient(145deg,#62402f,#352b2d); color:#ffd096; text-shadow:0 0 9px rgba(255,167,82,.3); }
+.math-sim-balance-reference.chapter-3 .math-sim-tile-dock { border-color:#91613d; background:radial-gradient(circle at 90% 0,rgba(255,184,107,.14),transparent 46%),linear-gradient(155deg,#44332f,#25212a); }
+.math-sim-balance-reference.chapter-3 .math-sim-add-controls button,.math-sim-balance-reference.chapter-3 .math-sim-operation-options button,.math-sim-balance-reference.chapter-3 .math-sim-operation-sides button,.math-sim-balance-reference.chapter-3 .math-sim-operation-values button,.math-sim-balance-reference.chapter-3 .math-sim-balance-actions button { border-color:#9c7048; background:linear-gradient(180deg,#67452f,#3d302d); color:#fff0d1; }
+.math-sim-balance-reference.chapter-3 .math-sim-operation-options button.is-selected,.math-sim-balance-reference.chapter-3 .math-sim-operation-values button.is-selected { border-color:#ffc681; background:linear-gradient(180deg,#a96838,#73442f); color:#fff9ed; }
+.math-sim-balance-reference.chapter-3 .math-sim-operation-panel { border-top-color:#80583d; }
+.math-sim-balance-reference.chapter-3 .math-sim-drop-hint { border-color:rgba(212,145,84,.5); background:rgba(44,30,29,.9); color:#ffe0b0; }
+
+.battle-reference-arena .math-sim-balance-reference.chapter-4 { border-color:#a85891; background:radial-gradient(circle at 82% 0,rgba(255,123,203,.17),transparent 42%),linear-gradient(145deg,#392849,#211b37 55%,#15172d); box-shadow:inset 0 0 0 2px rgba(18,13,30,.88),inset 0 2px rgba(255,222,244,.15),0 20px 48px rgba(1,8,22,.58),0 0 26px rgba(255,91,194,.13); }
+.math-sim-balance-reference.chapter-4 .math-sim-reference-question { border-color:#914e83; background:linear-gradient(120deg,rgba(66,39,76,.98),rgba(35,29,59,.97)); }
+.math-sim-balance-reference.chapter-4 .math-sim-chapter-gem { border-color:#ef8bc9; background:radial-gradient(circle,#bd5c9d,#54336d 72%); box-shadow:inset 0 1px rgba(255,245,255,.45),0 0 13px rgba(255,103,196,.36); }
+.math-sim-balance-reference.chapter-4 .math-sim-reference-equation { border-color:#ce77b2; background:linear-gradient(145deg,#633d70,#392c57); color:#ffd1ee; text-shadow:0 0 9px rgba(255,123,203,.3); }
+.math-sim-balance-reference.chapter-4 .math-sim-tile-dock { border-color:#914e83; background:radial-gradient(circle at 90% 0,rgba(255,123,203,.13),transparent 46%),linear-gradient(155deg,#392849,#211d39); }
+.math-sim-balance-reference.chapter-4 .math-sim-add-controls button,.math-sim-balance-reference.chapter-4 .math-sim-operation-options button,.math-sim-balance-reference.chapter-4 .math-sim-operation-sides button,.math-sim-balance-reference.chapter-4 .math-sim-operation-values button,.math-sim-balance-reference.chapter-4 .math-sim-balance-actions button { border-color:#985b91; background:linear-gradient(180deg,#653e76,#3f315e); color:#ffebf8; }
+.math-sim-balance-reference.chapter-4 .math-sim-operation-options button.is-selected,.math-sim-balance-reference.chapter-4 .math-sim-operation-values button.is-selected { border-color:#ff9ed7; background:linear-gradient(180deg,#a54786,#713e78); }
+
+.battle-reference-arena .math-sim-balance-reference.chapter-5 { border-color:#8155a7; background:radial-gradient(circle at 82% 0,rgba(181,92,255,.19),transparent 42%),linear-gradient(145deg,#302440,#1d1a32 55%,#121727); box-shadow:inset 0 0 0 2px rgba(15,11,25,.9),inset 0 2px rgba(236,217,255,.15),0 20px 48px rgba(1,8,22,.58),0 0 28px rgba(181,92,255,.14); }
+.math-sim-balance-reference.chapter-5 .math-sim-reference-question { border-color:#725192; background:linear-gradient(120deg,rgba(56,39,75,.98),rgba(30,28,54,.97)); }
+.math-sim-balance-reference.chapter-5 .math-sim-chapter-gem { border-color:#c18ce8; background:radial-gradient(circle,#965fbc,#422f69 72%); box-shadow:inset 0 1px rgba(255,245,255,.45),0 0 13px rgba(181,92,255,.38); }
+.math-sim-balance-reference.chapter-5 .math-sim-reference-equation { border-color:#a879cf; background:linear-gradient(145deg,#533d71,#342c55); color:#ecd1ff; text-shadow:0 0 9px rgba(181,92,255,.32); }
+.math-sim-balance-reference.chapter-5 .math-sim-tile-dock { border-color:#725192; background:radial-gradient(circle at 90% 0,rgba(181,92,255,.14),transparent 46%),linear-gradient(155deg,#332743,#211c38); }
+.math-sim-balance-reference.chapter-5 .math-sim-add-controls button,.math-sim-balance-reference.chapter-5 .math-sim-operation-options button,.math-sim-balance-reference.chapter-5 .math-sim-operation-sides button,.math-sim-balance-reference.chapter-5 .math-sim-balance-actions button { border-color:#78529d; background:linear-gradient(180deg,#573c78,#342b59); color:#f2e5ff; }
+.math-sim-balance-reference.chapter-5 .math-sim-operation-options button.is-selected { border-color:#c68cff; background:linear-gradient(180deg,#8051aa,#513b7a); }
