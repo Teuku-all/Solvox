@@ -41,7 +41,8 @@ function sanitizeQuestion(q){if(!q)return null;return {id:q.id,context:q.context
 function sanitizeReviewQuestion(q){if(!q)return null;return {id:q.id,context:q.context,text:q.text,answer:q.answer,explanation:q.explanation,concept:q.concept};}
 function publicRoom(room){
   const currentTurn=room.turnToken?room.players.find(p=>p.token===room.turnToken):null;
-  const playerIdByToken=new Map(room.players.map((player)=>[player.token,player.id]));
+  const displayPlayers=room.status==='finished'&&Array.isArray(room.resultPlayers)?room.resultPlayers:room.players;
+  const playerIdByToken=new Map(displayPlayers.map((player)=>[player.token,player.id]));
   const combatEvent=room.combatEvent?{
     seq:room.combatEvent.seq,
     kind:room.combatEvent.kind,
@@ -49,12 +50,13 @@ function publicRoom(room){
     playerId:playerIdByToken.get(room.combatEvent.token)||null,
     targetPlayerId:playerIdByToken.get(room.combatEvent.target)||null,
   }:null;
-  const finishSummary=room.finishSummary?Object.fromEntries(room.players.map((player)=>[player.id,room.finishSummary[player.token]])):null;
+  const finishSummary=room.finishSummary?Object.fromEntries(displayPlayers.map((player)=>[player.id,room.finishSummary[player.token]])):null;
   const winner=room.winner==='draw'?'draw':playerIdByToken.get(room.winner)||null;
   return {
     code:room.code,
     isBot:!!room.isBot,
     status:room.status,
+    activePlayerCount:room.players.filter((player)=>player.connected).length,
     mode:room.mode,
     levelId:room.levelId,
     questionIndex:room.questionIndex,
@@ -66,7 +68,7 @@ function publicRoom(room){
     currentTurnPlayerId:playerIdByToken.get(room.turnToken)||null,
     currentTurnName:currentTurn?.name||null,
     winnerName:room.winner==='draw'?null:room.players.find((player)=>player.token===room.winner)?.name||room.winnerName||null,
-    players:room.players.map((player)=>({
+    players:displayPlayers.map((player)=>({
       id:player.id,
       name:player.name,
       character:player.character,
@@ -251,6 +253,7 @@ function finishRoom(room,winnerOverride=null){
       room.finishSummary[p.token]=q?(en?`Match finished! You lost by ${room.mode==='score'?`${diff} point${diff===1?'':'s'}`:`${diff} HP`} because of a mistake on Question ${q.id} (${q.concept}). Click View Solution to review the key and steps.`:`Pertandingan Selesai! Kamu kalah ${room.mode==='score'?`${diff} poin`:`${diff} HP`} dari lawan karena keliru di Soal No. ${q.id} (${q.concept}). Klik Lihat Pembahasan untuk melihat kunci dan langkahnya.`):(en?`Match finished! Your opponent had the stronger final result. Review the explanation to reinforce the concepts you need most.`:`Pertandingan Selesai! Lawan memiliki hasil akhir lebih tinggi. Lihat pembahasan untuk memperkuat konsep yang perlu kamu latih.`);
     }
   });
+  room.resultPlayers=room.players.map(player=>({...player}));
   room.statusKey=room.winner==='draw'?'DRAW':'MATCH_FINISHED'; room.combatEvent=null; recordFinishedMatch(room); broadcast(room,'game:finished');
 }
 

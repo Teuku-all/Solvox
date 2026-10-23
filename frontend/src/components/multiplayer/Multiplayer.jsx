@@ -503,7 +503,7 @@ useEffect(()=>{
   </section>
   <div className="match-result-actions">
     <button className="secondary-btn result-review-btn" onClick={()=>setShowMatchReview(v=>!v)}><PixelIcon name="book" size={15}/><span>{showMatchReview?t('close'):t('viewSolution')}</span></button>
-    {room.players?.length===2?<button className="primary-btn result-rematch-btn" onClick={()=>runWhenConnected(()=>socket.emit('rematch'))}><PixelIcon name="retry" size={16}/><span>{t('rematch')}</span></button>:<SolvoxBackButton className="primary-btn result-rematch-btn" onClick={leaveMultiplayer} label={t('back')} />}
+    {(room.activePlayerCount??room.players?.length)===2?<button className="primary-btn result-rematch-btn" onClick={()=>runWhenConnected(()=>socket.emit('rematch'))}><PixelIcon name="retry" size={16}/><span>{t('rematch')}</span></button>:<SolvoxBackButton className="primary-btn result-rematch-btn" onClick={leaveMultiplayer} label={t('back')} />}
   </div>
   {showMatchReview&&room.decisiveQuestion&&<div className="match-review"><span>{t('questionReview')}</span><h3>{room.decisiveQuestion.text}</h3><b>{t('expected')}: {room.decisiveQuestion.answer}</b><p>{room.decisiveQuestion.explanation}</p><small>{room.decisiveQuestion.concept}</small></div>}
 </div>}
