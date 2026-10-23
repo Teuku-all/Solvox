@@ -540,7 +540,7 @@ function groupModelEquation(equation) {
   return [...splitTerms(tokens.slice(0, equalsAt)), ['='], ...splitTerms(tokens.slice(equalsAt + 1))];
 }
 
-function Chapter5ModelBuilder({ story, equation, alternative, lang, questionId, onComplete, onError }) {
+function Chapter5ModelBuilder({ story, equation, alternative, variableMeaning, lang, questionId, onComplete, onError }) {
   const targetGroups = groupModelEquation(equation);
   const targetTokens = targetGroups.flat();
   const alternativeTokens = tokenizeModelEquation(alternative);
@@ -587,7 +587,7 @@ function Chapter5ModelBuilder({ story, equation, alternative, lang, questionId, 
   };
 
   const startTileDrag = (event, tileIndex) => {
-    if (event.button !== 0 || slots.includes(tileIndex)) return;
+    if (event.button !== 0 || slots.flat().includes(tileIndex)) return;
     const pointerId = event.pointerId;
     const finish = (upEvent) => {
       if (upEvent.pointerId !== pointerId) return;
@@ -613,22 +613,35 @@ function Chapter5ModelBuilder({ story, equation, alternative, lang, questionId, 
 
   useEffect(() => () => pointerRef.current?.(), []);
 
+  const placedCount = slots.flat().length;
+  const equalsGroup = targetGroups.findIndex((group) => group.length === 1 && group[0] === '=');
+  const slotLabel = (index) => index === equalsGroup
+    ? (lang === 'en' ? 'Equals sign' : 'Tanda sama dengan')
+    : `${lang === 'en' ? 'Term' : 'Suku'} ${index < equalsGroup ? index + 1 : index - equalsGroup}`;
+
   return <section className="math-sim-ch5-model-builder" aria-label={lang === 'en' ? 'Build the equation' : 'Rakit persamaan'}>
-    <div className="math-sim-ch5-story"><small>{lang === 'en' ? 'STORY PROBLEM' : 'SOAL CERITA'}</small><p>{story}</p></div>
+    <div className="math-sim-ch5-journey" aria-label={lang === 'en' ? 'Learning steps' : 'Tahap belajar'}>
+      <span className="is-done"><b>1</b>{lang === 'en' ? 'Read the story' : 'Baca cerita'}</span>
+      <span className="is-current"><b>2</b>{lang === 'en' ? 'Build equation' : 'Rakit persamaan'}</span>
+      <span><b>3</b>{lang === 'en' ? 'Use the balance' : 'Pakai timbangan'}</span>
+    </div>
+    <div className="math-sim-ch5-story"><small><PixelIcon name="book" size={15} />{lang === 'en' ? 'STORY PROBLEM' : 'SOAL CERITA'}</small><p>{story}</p>{variableMeaning && <div className="math-sim-ch5-variable"><b>x</b><span>{lang === 'en' ? 'represents' : 'mewakili'} <strong>{variableMeaning}</strong></span></div>}</div>
     <div className="math-sim-ch5-model-area">
-      <strong>{lang === 'en' ? 'Modeling phase: build the equation' : 'Fase pemodelan: rakit persamaan'}</strong>
+      <div className="math-sim-ch5-model-head"><strong>{lang === 'en' ? 'Assemble the equation' : 'Susun persamaan'}</strong><span>{placedCount}/{targetTokens.length}</span></div>
+      <p className="math-sim-ch5-instruction">{lang === 'en' ? 'Find the quantities in the story. Drag the matching tiles into each slot from left to right.' : 'Cari jumlah dalam cerita. Seret kepingan yang sesuai ke tiap slot dari kiri ke kanan.'}</p>
       <div className="math-sim-ch5-slots" aria-label={lang === 'en' ? 'Equation slots' : 'Slot persamaan'}>
-        {slots.map((group, slotIndex) => <div key={slotIndex} data-ch5-slot={slotIndex} className={`math-sim-ch5-slot ${group.length ? 'is-filled' : ''} ${activeSlot === slotIndex ? 'is-active' : ''} ${draggingIndex !== null ? 'is-drop-target' : ''}`} role="group" aria-label={`${lang === 'en' ? 'Equation part' : 'Bagian persamaan'} ${slotIndex + 1}`} onClick={() => setActiveSlot(slotIndex)}>
-          {group.length ? group.map((tileIndex) => <button key={tileIndex} type="button" className="math-sim-ch5-slot-token" onClick={(event) => { event.stopPropagation(); if (completedRef.current) return; setSlots((current) => current.map((items, index) => index === slotIndex ? items.filter((value) => value !== tileIndex) : items)); setActiveSlot(slotIndex); setFeedback(''); }}>{tiles.find((tile) => tile.index === tileIndex)?.token}</button>) : <span>{lang === 'en' ? '[ Slot ]' : '[ Slot ]'}</span>}
+        {slots.map((group, slotIndex) => <div key={slotIndex} data-ch5-slot={slotIndex} className={`math-sim-ch5-slot ${group.length ? 'is-filled' : ''} ${activeSlot === slotIndex ? 'is-active' : ''} ${draggingIndex !== null ? 'is-drop-target' : ''}`} role="group" tabIndex={0} aria-label={`${slotLabel(slotIndex)}. ${lang === 'en' ? 'Press Enter to select' : 'Tekan Enter untuk memilih'}`} onClick={() => setActiveSlot(slotIndex)} onKeyDown={(event) => { if (event.target !== event.currentTarget) return; if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setActiveSlot(slotIndex); } }}>
+          <small>{slotLabel(slotIndex)}</small>
+          <div className="math-sim-ch5-slot-content">{group.length ? group.map((tileIndex) => <button key={tileIndex} type="button" className="math-sim-ch5-slot-token" aria-label={`${tiles.find((tile) => tile.index === tileIndex)?.token} · ${lang === 'en' ? 'remove tile' : 'ambil kembali kepingan'}`} onClick={(event) => { event.stopPropagation(); if (completedRef.current) return; setSlots((current) => current.map((items, index) => index === slotIndex ? items.filter((value) => value !== tileIndex) : items)); setActiveSlot(slotIndex); setFeedback(''); }}>{tiles.find((tile) => tile.index === tileIndex)?.token}</button>) : <span>{lang === 'en' ? 'Drop here' : 'Taruh di sini'}</span>}</div>
         </div>)}
       </div>
       <div className="math-sim-ch5-token-bank">
-        <strong>{lang === 'en' ? 'Token bank' : 'Bank kepingan / ubin'}</strong>
+        <strong><PixelIcon name="spark" size={14} />{lang === 'en' ? 'Equation tiles' : 'Kepingan persamaan'} <small>{lang === 'en' ? 'Extra tiles may remain' : 'Ada kepingan yang tidak dipakai'}</small></strong>
         <div className="math-sim-ch5-tokens">
           {tiles.map((tile) => <button key={tile.index} type="button" disabled={slots.flat().includes(tile.index)} className={`math-sim-ch5-token ${slots.flat().includes(tile.index) ? 'is-used' : ''} ${draggingIndex === tile.index ? 'is-dragging' : ''}`} onPointerDown={(event) => startTileDrag(event, tile.index)} onClick={() => fillSlot(tile.index)}>{tile.token}</button>)}
         </div>
       </div>
-      <p className="math-sim-ch5-model-hint" role="status">{feedback || (lang === 'en' ? `Drag several tokens into each term slot, or tap a slot then choose its tokens. ${slots.flat().length}/${targetTokens.length} tokens placed.` : `Seret beberapa kepingan ke tiap slot suku, atau ketuk slot lalu pilih kepingannya. ${slots.flat().length}/${targetTokens.length} kepingan terpasang.`)}</p>
+      <p className="math-sim-ch5-model-hint" role="status"><PixelIcon name={feedback ? 'hint' : 'spark'} size={14} /><span>{feedback || (lang === 'en' ? 'On a phone: tap a slot, then tap a tile. Tap a placed tile to take it back.' : 'Di HP: ketuk slot, lalu ketuk kepingan. Ketuk kepingan terpasang untuk mengambilnya kembali.')}</span></p>
     </div>
   </section>;
 }
@@ -1093,7 +1106,7 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
         <div className="math-sim-reference-progress" aria-label={`${progress}%`}><span style={{ width: `${progress}%` }} /></div>
       </header>
 
-      {!modelReady && currentModel && (chapter5Question ? <Chapter5ModelBuilder story={story} equation={model[2]?.correct || config.equation} alternative={model[2]?.wrong || config.equation} lang={lang} questionId={questionNumber} onComplete={() => { setModelIndex(model.length); setMessage(c.modelDone); }} onError={() => setModelErrors((count) => count + 1)} /> : <div className="math-sim-model math-sim-balance-model">
+      {!modelReady && currentModel && (chapter5Question ? <Chapter5ModelBuilder story={story} equation={model[2]?.correct || config.equation} alternative={model[2]?.wrong || config.equation} variableMeaning={model[0]?.correct} lang={lang} questionId={questionNumber} onComplete={() => { setModelIndex(model.length); setMessage(c.modelDone); }} onError={() => setModelErrors((count) => count + 1)} /> : <div className="math-sim-model math-sim-balance-model">
         <p>{c.prompts[currentModel.kind]}</p>
         <div className="math-sim-choices">
           {choices.map((choice) => <button key={choice} type="button" disabled={busy} onClick={() => selectModel(choice)}>{choice}</button>)}
@@ -1158,14 +1171,14 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
         <span className="math-sim-complete-icon" aria-hidden="true"><PixelIcon name="check" size={20} /></span>
         <div><strong>{c.solvedLabel}</strong><small>{balanceEquation}</small></div>
         <span className="math-sim-complete-timer" aria-hidden="true"><span /></span>
-      </div> : <footer className="math-sim-balance-footer">
+      </div> : chapter5Question && !modelReady ? <footer className="math-sim-ch5-next"><PixelIcon name="right" size={16} /><span>{lang === 'en' ? 'Once the equation matches the story, the balance opens for the next step.' : 'Setelah persamaan sesuai cerita, timbangan terbuka untuk langkah berikutnya.'}</span></footer> : <footer className="math-sim-balance-footer">
         <div className="math-sim-balance-guide"><span className="math-sim-guide-mascot" aria-hidden="true"><PixelIcon name="spark" size={23} /></span><p>{c.balanceGuide}</p></div>
         <div className="math-sim-balance-actions">
           <button type="button" className="math-sim-reset" onClick={undoBalance} disabled={busy || !balanceHistory.length || Boolean(operationAnimation)}><PixelIcon name="reset" size={17} /><span>{c.undo}</span></button>
           <span className="math-sim-balance-step-label">{c.step} {Math.min(stepIndex + 1, config.steps.length)}/{config.steps.length}</span>
         </div>
       </footer>}
-      {/-\s*\d/.test(equation) && <small className="math-sim-zero"><span>+1</span><span>−1</span><b>= 0</b> {c.zero}</small>}
+      {(!chapter5Question || modelReady) && /-\s*\d/.test(equation) && <small className="math-sim-zero"><span>+1</span><span>−1</span><b>= 0</b> {c.zero}</small>}
       {message && !(ready && message === c.ready) && <p className="math-sim-message" role="status">{message}</p>}
       </section>
       {dragGhost && createPortal(<span ref={dragGhostRef} className={`math-sim-drag-ghost ${dragGhost.type === 'variable' ? 'is-variable' : dragGhost.value < 0 ? 'is-negative' : 'is-positive'} shape-${dragGhost.shape || 'square'}`} style={{ left: 0, top: 0, transform: ghostTransform(dragGhost.x, dragGhost.y) }}>{dragGhost.tile}</span>, document.body)}

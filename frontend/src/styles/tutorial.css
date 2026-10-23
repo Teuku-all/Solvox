@@ -86,9 +86,12 @@
 .tutorial-guide-card p { margin: 0; color: #b4cbc4; font-size: .81rem; line-height: 1.5; }
 .tutorial-chapters { margin-top: 18px; padding: 15px; border: 1px solid rgba(226, 200, 119, .19); border-radius: 13px; background: rgba(83, 77, 39, .13); }
 .tutorial-chapters > b { color: #eedaa1; font-size: .85rem; }
-.tutorial-chapters > div { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; margin-top: 11px; }
-.tutorial-chapters span { display: grid; align-content: start; gap: 5px; min-width: 0; min-height: 56px; padding: 10px; border: 1px solid rgba(226, 200, 119, .16); border-radius: 9px; background: rgba(8, 26, 31, .5); color: #ddeadd; font-size: .7rem; line-height: 1.25; overflow-wrap: anywhere; }
-.tutorial-chapters small { color: #e3cb86; font-size: .65rem; font-weight: 850; }
+.tutorial-chapters > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-top: 11px; }
+.tutorial-chapters article { min-width:0;padding:13px;border:1px solid rgba(226, 200, 119, .16);border-radius:10px;background:rgba(8,26,31,.6);color:#ddeadd;overflow-wrap:anywhere; }
+.tutorial-chapters small { color: #e3cb86; font-size: .72rem; font-weight: 850; }
+.tutorial-chapters p { margin:7px 0 9px;color:#d8e9df;font-size:.79rem;line-height:1.4; }
+.tutorial-chapters ol { margin:0;padding-left:19px;color:#adc8bd;font-size:.75rem;line-height:1.45; }
+.tutorial-chapters li + li { margin-top:4px; }
 
 .tutorial-practice { width: min(720px, 100%); margin: 0 auto; padding: 20px; border: 1px solid rgba(145, 215, 202, .27); border-radius: 16px; background: radial-gradient(circle at 50% 0%, rgba(57, 133, 114, .2), transparent 65%), #102831; box-shadow: 0 18px 40px rgba(0, 0, 0, .18); }
 .tutorial-practice-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: #d3e5d6; font-size: .77rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
@@ -187,7 +190,7 @@
   .tutorial-section-heading p { font-size: .8rem; }
   .tutorial-guide-grid { grid-template-columns: minmax(0, 1fr); gap: 9px; }
   .tutorial-guide-card { min-height: 0; padding: 13px; }
-  .tutorial-chapters > div { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tutorial-chapters > div { grid-template-columns: minmax(0, 1fr); }
   .tutorial-practice { padding: 15px; }
   .tutorial-balance-stage { min-height: 232px; padding: 14px 8px 8px; }
   .tutorial-balance-beam { top: 38%; }

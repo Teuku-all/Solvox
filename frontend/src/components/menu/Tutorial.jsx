@@ -4,6 +4,7 @@ import SolvoxUtilityArt from '../shared/SolvoxUtilityArt';
 import PixelIcon from '../shared/PixelIcon';
 import useAnimatedDismiss from '../shared/useAnimatedDismiss';
 import { LEVELS } from '../../data/levels';
+import { getChapterGuide } from '../../data/chapterGuide';
 
 const GUIDE = {
   id: {
@@ -17,7 +18,7 @@ const GUIDE = {
     startSteps: [
       { icon: 'map', title: 'Pilih chapter yang terbuka', body: 'Mulai dari Chapter 1. Selesaikan satu chapter untuk membuka chapter berikutnya.' },
       { icon: 'profile', title: 'Pilih karaktermu', body: 'Pilih Kazura atau Asuna di Chapter 1, lalu tekan Mulai Stage. Pilihan ini menemanimu sepanjang campaign.' },
-      { icon: 'sword', title: 'Jawab soal untuk menyerang', body: 'Baca soal dan selesaikan langkah simulasinya. Masukkan nilai x, lalu tekan Jawab & Serang. Jawaban benar mengurangi HP boss.' },
+      { icon: 'sword', title: 'Selesaikan soal untuk menyerang', body: 'Buka simulasi dan selesaikan langkahnya. Chapter 1 dan 3 menyerang otomatis; chapter lain meminta nilai variabel sebelum Jawab & Serang.' },
       { icon: 'chart', title: 'Lihat hasil dan lanjutkan', body: 'Evaluasi menunjukkan jawaban, petunjuk yang dipakai, dan materi untuk diulang. Kalahkan boss untuk membuka chapter berikutnya.' },
     ],
     chapterTitle: 'Perjalanan chapter',
@@ -57,17 +58,17 @@ const GUIDE = {
     practiceDoneBody: 'Kamu menjaga persamaan tetap setara dan menemukan x = 7. Di arena, jawaban benar mengurangi HP boss.',
     practiceReset: 'Ulangi latihan',
     battleTitle: 'Kenali bagian arena',
-    battleIntro: 'Selesaikan langkah simulasi sampai kolom jawaban terbuka. Masukkan nilai variabel, pilih Jawab & Serang, lalu gunakan umpan balik untuk memperbaiki jawaban.',
+    battleIntro: 'Baca soal, buka simulasi, lalu ikuti petunjuk chapter. Pada Chapter 1 dan 3, serangan terjadi otomatis setelah persamaan selesai.',
     battleCards: [
-      { icon: 'book', title: 'Baca misi dan konsep', body: 'Perhatikan cerita, pertanyaan, dan konsep pada panel soal. Pada Chapter 5, pilih model cerita yang benar sebelum menyelesaikan persamaan.' },
+      { icon: 'book', title: 'Baca misi dan konsep', body: 'Perhatikan cerita, pertanyaan, dan petunjuk singkat pada panel soal. Pada Chapter 5, rakit persamaan dengan kepingan sebelum memakai timbangan.' },
       { icon: 'shield', title: 'Jaga kedua ruas setara', body: 'Terapkan operasi yang sama pada kedua ruas. Tombol Urungkan memulihkan langkah sebelumnya. Jawaban aktif setelah simulasi selesai.' },
       { icon: 'spark', title: 'Seret dan jatuhkan ubin', body: 'Pada mode timbangan, seret ubin dari kotak opsi ke piring. Pasangkan ubin bernilai lawan pada piring yang sama agar keduanya hilang; lakukan operasi setara pada ruas lain.' },
-      { icon: 'keyboard', title: 'Isi nilai variabel', body: 'Ketik nilainya saja, misalnya 4. Kamu bisa memakai keyboard perangkat atau tombol Tampilkan keypad, lalu tekan Jawab & Serang.' },
-      { icon: 'hint', title: 'Gunakan petunjuk saat buntu', body: 'Ada maksimal 3 petunjuk per soal. Biayanya berturut-turut 5, 10, dan 15 HP. Lihat sisa HP sebelum memakainya.' },
+      { icon: 'keyboard', title: 'Isi jawaban jika diminta', body: 'Di Chapter 2, 4, dan 5, ketik nilai variabel saja, misalnya 4, lalu tekan Jawab & Serang. Chapter 1 dan 3 tidak memakai kolom jawaban.' },
+      { icon: 'hint', title: 'Gunakan petunjuk saat buntu', body: 'Di chapter yang menyediakan petunjuk, tersedia maksimal 3 per soal dengan biaya 5, 10, lalu 15 HP.' },
       { icon: 'retry', title: 'Salah? Baca umpan balik', body: 'Pilihan langkah atau jawaban yang keliru menampilkan penjelasan. Kesalahan itu tidak langsung mengurangi HP; perbaiki langkah lalu coba lagi.' },
       { icon: 'trophy', title: 'Baca evaluasi', body: 'Setelah pertarungan, tinjau soal yang keliru dan saran belajar sebelum mencoba chapter berikutnya.' },
     ],
-    battleCallout: 'Tombol jawaban masih terkunci? Selesaikan semua langkah simulasi di atas arena terlebih dahulu.',
+    battleCallout: 'Kolom jawaban terkunci? Ketuk kolom itu untuk membuka kembali simulasi, lalu selesaikan semua langkahnya.',
     multiTitle: 'Bermain bersama atau melawan bot',
     multiIntro: 'Pilih Multiplayer dari menu Main. Kamu bisa membuat room, membagikan kodenya, bergabung ke room teman, atau bermain melawan bot.',
     multiCards: [
@@ -91,7 +92,7 @@ const GUIDE = {
     startSteps: [
       { icon: 'map', title: 'Choose an unlocked chapter', body: 'Start with Chapter 1. Clear a chapter to unlock the next one.' },
       { icon: 'profile', title: 'Choose your fighter', body: 'Choose Kazura or Asuna in Chapter 1, then press Start Stage. Your choice stays with you throughout the campaign.' },
-      { icon: 'sword', title: 'Solve questions to attack', body: 'Read the question and finish its simulation. Enter the value of x, then press Answer & Attack. Correct answers reduce the boss HP.' },
+      { icon: 'sword', title: 'Solve questions to attack', body: 'Open and finish the simulation. Chapters 1 and 3 attack automatically; other chapters ask for the variable value before Answer & Attack.' },
       { icon: 'chart', title: 'Review and continue', body: 'The evaluation shows your answers, hints used, and topics to revisit. Defeat the boss to unlock the next chapter.' },
     ],
     chapterTitle: 'Chapter journey',
@@ -131,17 +132,17 @@ const GUIDE = {
     practiceDoneBody: 'You kept the equation balanced and found x = 7. In the arena, a correct answer reduces the boss HP.',
     practiceReset: 'Repeat practice',
     battleTitle: 'Know your arena',
-    battleIntro: 'Complete the simulation steps to unlock the answer field. Enter the variable value, choose Answer & Attack, then use the feedback to improve your answer.',
+    battleIntro: 'Read the question, open the simulation, and follow the chapter guide. In Chapters 1 and 3, attacks happen automatically after solving the equation.',
     battleCards: [
-      { icon: 'book', title: 'Read the mission and concept', body: 'Check the story, question, and concept in the question panel. In Chapter 5, choose the correct story model before solving the equation.' },
+      { icon: 'book', title: 'Read the mission and concept', body: 'Check the story, question, and short tip in the question panel. In Chapter 5, assemble the equation with tiles before using the balance.' },
       { icon: 'shield', title: 'Keep both sides equal', body: 'Apply the same operation to both sides. Undo restores the previous step. The answer field unlocks after the simulation is complete.' },
       { icon: 'spark', title: 'Drag and drop tiles', body: 'In balance mode, drag a tile from the tray onto a pan. Opposite values on the same pan cancel each other; apply an equal operation to the other side.' },
-      { icon: 'keyboard', title: 'Enter the variable value', body: 'Type only the value, such as 4. Use your device keyboard or Show keypad, then press Answer & Attack.' },
-      { icon: 'hint', title: 'Use hints when stuck', body: 'You can reveal up to 3 hints per question. They cost 5, 10, and 15 HP in order. Check your remaining HP first.' },
+      { icon: 'keyboard', title: 'Enter an answer when asked', body: 'In Chapters 2, 4, and 5, type only the variable value, such as 4, then press Answer & Attack. Chapters 1 and 3 have no answer field.' },
+      { icon: 'hint', title: 'Use hints when stuck', body: 'Chapters with hints offer up to 3 per question at a cost of 5, 10, then 15 HP.' },
       { icon: 'retry', title: 'Wrong? Read the feedback', body: 'An incorrect step or answer gives an explanation. It does not immediately cost HP; correct your work and try again.' },
       { icon: 'trophy', title: 'Read the evaluation', body: 'After battle, review missed questions and learning suggestions before trying the next chapter.' },
     ],
-    battleCallout: 'Answer field still locked? Complete every simulation step above the arena first.',
+    battleCallout: 'Answer field locked? Tap it to reopen the simulation, then finish every step.',
     multiTitle: 'Play with a friend or a bot',
     multiIntro: 'Choose Multiplayer from Play. Create a room and share its code, join a friend’s room, or play against a bot.',
     multiCards: [
@@ -318,7 +319,7 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
             <div className="tutorial-section-heading"><span className="tutorial-section-symbol"><PixelIcon name="map" size={23}/></span><div><h3>{c.overviewTitle}</h3><p>{c.overviewIntro}</p></div></div>
             <div className="tutorial-route" aria-label={c.route.join(' → ')}>{c.route.map((label, index) => <React.Fragment key={label}><span>{label}</span>{index < c.route.length - 1 && <PixelIcon name="right" size={14}/>}</React.Fragment>)}</div>
             <GuideCards items={c.startSteps}/>
-            <div className="tutorial-chapters"><b>{c.chapterTitle}</b><div>{LEVELS.map((level) => <span key={level.id}><small>{String(level.id).padStart(2, '0')}</small>{lang === 'en' ? level.titleEn : level.title}</span>)}</div></div>
+            <div className="tutorial-chapters"><b>{c.chapterTitle}</b><div>{LEVELS.map((level) => <article key={level.id}><small>{String(level.id).padStart(2, '0')} · {lang === 'en' ? level.titleEn : level.title}</small><p>{getChapterGuide(level.id, lang).brief}</p><ol>{getChapterGuide(level.id, lang).steps.map((step) => <li key={step}>{step}</li>)}</ol></article>)}</div></div>
           </section>}
 
           {section === 'practice' && <section className="tutorial-section" aria-label={c.practiceTitle}>

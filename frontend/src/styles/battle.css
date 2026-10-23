@@ -415,6 +415,8 @@
 }
 .battle-question-panel .question-concept span { color: #718b86; }
 .battle-question-panel .question-concept b { color: #bfe0d9; font-weight: 800; }
+.battle-question-panel .question-play-tip { display:flex;align-items:flex-start;gap:7px;margin:10px 0 0 11px;padding:8px 10px;border:1px solid color-mix(in srgb,var(--panel-accent,#bfe0d9) 22%,transparent);border-radius:8px;background:color-mix(in srgb,var(--panel-accent,#bfe0d9) 7%,transparent);color:#e4efe8;font-size:11px;line-height:1.35; }
+.battle-question-panel .question-play-tip svg { flex:none;color:var(--panel-accent,#bfe0d9); }
 .battle-question-panel .question-answer {
   display: flex;
   align-items: stretch;

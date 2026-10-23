@@ -52,6 +52,8 @@
 .chapter-card-copy small{display:block;color:#e7d98c;font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
 .chapter-card-copy strong{display:block;margin-top:6px;font:700 clamp(19px,1.7vw,27px)/1.08 Georgia,serif;color:#fff;max-width:15ch}
 .chapter-card-copy em{display:block;margin-top:8px;color:#c0d0cb;font-size:12px;font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chapter-card-how{display:flex;align-items:flex-start;gap:7px;min-height:48px;margin-top:11px;padding:9px 10px;border:1px solid color-mix(in srgb,var(--chapter-accent) 26%,transparent);border-radius:9px;background:rgba(3,13,17,.68);color:#e3eee8;font-size:11px;line-height:1.35}
+.chapter-card-how svg{flex:none;margin-top:1px;color:var(--chapter-accent)}
 .chapter-card-progress{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:16px;color:#d4e4dd;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
 .chapter-card-meter{display:block;margin-top:7px}.chapter-card-meter i{display:block;height:4px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden}.chapter-card-meter b{display:block;height:100%;background:linear-gradient(90deg,#61e2d5,#d5c66e);border-radius:inherit}
 .chapter-card.is-locked .chapter-card-art{opacity:.52}
@@ -83,6 +85,7 @@
   .chapter-card-copy small, .chapter-card-progress { font-size: 11px; }
   .chapter-card-copy strong { font-size: clamp(21px, 6vw, 27px); }
   .chapter-card-copy em { font-size: 12px; }
+  .chapter-card-how { min-height:0;max-width: min(100%, 44ch);font-size:11px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -93,4 +96,18 @@
   .chapter-select { height: auto; min-height: 100dvh; overflow: visible; }
   .chapter-select-grid { height: auto; padding-bottom: 28px; }
   .chapter-card { height: 420px; }
+}
+
+/* Leave room for the play instruction in the compact illustrated list. */
+@media (max-width: 680px) {
+  .chapter-select .chapter-card { height:auto !important;min-height:238px !important;padding:29px 14px 14px 138px !important; }
+  .chapter-select .chapter-card-art { top:50% !important;height:150px !important;transform:translateY(-50%); }
+  .chapter-select .chapter-card-copy { min-height:0 !important; }
+  .chapter-select .chapter-card-how { min-height:0;margin-top:8px;padding:8px;font-size:10px;line-height:1.32; }
+  .chapter-select .chapter-card-progress { flex:none;margin-top:10px !important; }
+  .chapter-select .chapter-card-meter { flex:none; }
+}
+@media (max-width: 350px) {
+  .chapter-select .chapter-card { padding-left:112px !important; }
+  .chapter-select .chapter-card-art { left:3px !important;width:105px !important;height:125px !important; }
 }

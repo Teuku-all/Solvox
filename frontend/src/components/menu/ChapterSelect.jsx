@@ -4,6 +4,7 @@ import { LEVELS, isLocalDevelopment, isUnlocked } from '../../data/levels';
 import { getBoss } from '../../data/bosses';
 import PixelIcon from '../shared/PixelIcon';
 import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
+import { getChapterGuide } from '../../data/chapterGuide';
 
 function chapterProgress(id, progress) {
   if ((progress.completedLevels || []).map(Number).includes(Number(id))) return 100;
@@ -58,6 +59,7 @@ export default function ChapterSelect({ progress, onSelectChapter, onBack, lang,
           const pct = chapterProgress(level.id, progress);
           const title = lang === 'en' ? level.titleEn : level.title;
           const bossName = lang === 'en' ? boss.nameEn : boss.name;
+          const guide = getChapterGuide(level.id, lang);
 
           return (
             <button
@@ -67,7 +69,7 @@ export default function ChapterSelect({ progress, onSelectChapter, onBack, lang,
               className={`chapter-card ${open ? 'is-open' : 'is-locked'} ${clear ? 'is-clear' : ''}`}
               style={{ '--chapter-accent': level.accent }}
               onClick={() => onSelectChapter?.(level.id)}
-              aria-label={`${t('chapter')} ${level.id}: ${title}. ${clear ? '100%' : open ? (pct ? `${pct}%` : t('readyToPlay')) : t('locked')}`}
+              aria-label={`${t('chapter')} ${level.id}: ${title}. ${guide.brief} ${clear ? '100%' : open ? (pct ? `${pct}%` : t('readyToPlay')) : t('locked')}`}
             >
               <span className="chapter-card-difficulty">
                 {lang === 'en' ? level.difficultyEn : level.difficulty}
@@ -81,6 +83,7 @@ export default function ChapterSelect({ progress, onSelectChapter, onBack, lang,
                 <small>{t('chapter')} {level.id}</small>
                 <strong>{title}</strong>
                 <em>{bossName}</em>
+                <span className="chapter-card-how"><PixelIcon name="book" size={14} />{guide.brief}</span>
               </span>
 
               <span className="chapter-card-progress">

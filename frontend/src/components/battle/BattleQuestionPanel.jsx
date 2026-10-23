@@ -1,6 +1,7 @@
 import React from 'react';
 import Keypad from './Keypad';
 import PixelIcon from '../shared/PixelIcon';
+import { getChapterGuide } from '../../data/chapterGuide';
 
 /**
  * Solvox battle learning console.
@@ -125,6 +126,7 @@ export default function BattleQuestionPanel({
   const panelTheme = QUESTION_PANEL_THEME_BY_LEVEL[Number(levelId)] || {};
 
   const isStoryChapter = Number.isInteger(Number(levelId)) && Number(levelId) >= 1 && Number(levelId) <= 5;
+  const chapterGuide = getChapterGuide(levelId, lang);
 
 
   return (
@@ -158,6 +160,7 @@ export default function BattleQuestionPanel({
             <span>{t('concept')}</span>
             <b>{q?.concept || '-'}</b>
           </div>
+          {chapterGuide && <p className="question-play-tip"><PixelIcon name="spark" size={14} /><span>{chapterGuide.brief}</span></p>}
         </div>
 
         {autoResolve ? (simulationReady ? <div className="question-answer-auto" role="status" aria-live="polite">
