@@ -1843,6 +1843,44 @@
 .math-sim-distributive > footer button { min-height: 36px; padding: 6px 12px; border: 1px solid #62b6ff; border-radius: 8px; background: linear-gradient(180deg, #2876bd, #164a82); box-shadow: inset 0 1px rgba(255,255,255,.32), 0 3px 0 #0d2e54; color: white; font-weight: 900; cursor: pointer; }
 .math-sim-distributive > footer button:disabled { border-color: #41576b; background: #25374a; box-shadow: none; color: #8195a8; cursor: default; }
 .math-sim-distributive-original { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.math-sim-distributive.is-drag-drop { grid-template-rows:auto auto minmax(0,1fr) auto auto; border-color:rgba(255,123,203,.58); background:radial-gradient(ellipse at 50% 0,rgba(206,73,159,.2),transparent 68%),linear-gradient(145deg,rgba(51,34,68,.98),rgba(20,21,43,.98)); }
+.math-sim-distributive.is-drag-drop > header > span { color:#ff9cda; }
+.math-sim-distributive-bank { display:grid; gap:5px; padding:7px 9px; border:1px solid rgba(255,123,203,.38); border-radius:9px; background:rgba(37,26,54,.72); }
+.math-sim-distributive-bank > strong { color:#ffe0f2; font-size:10px; }
+.math-sim-distributive-bank > div { display:flex; flex-wrap:wrap; gap:6px; }
+.math-sim-distributive-source { min-width:48px; min-height:36px; padding:5px 11px; border:1px solid #f3a4d5; border-radius:8px; background:linear-gradient(145deg,#f9d3ec,#d58bc2); box-shadow:inset 0 1px rgba(255,255,255,.8),0 3px 0 #75446e; color:#482949; font-size:14px; font-weight:900; cursor:grab; touch-action:none; user-select:none; }
+.math-sim-distributive-source.is-selected { outline:2px solid #ffe49b; outline-offset:2px; }
+.math-sim-distributive-source.is-used { opacity:.35; cursor:default; }
+.math-sim-distributive-bank > small { min-height:14px; color:#eac7e1; font-size:9px; }
+.math-sim-distributive-board.is-drop-board { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:stretch; gap:8px; }
+.math-sim-distributive.is-drag-drop .math-sim-distributive-group { min-width:0; grid-template-columns:minmax(0,1fr); grid-template-rows:auto minmax(0,1fr); gap:6px; padding:7px; border:1px solid rgba(255,123,203,.3); border-radius:9px; background:linear-gradient(150deg,rgba(67,43,77,.72),rgba(32,28,54,.85)); }
+.math-sim-distributive.is-drag-drop .math-sim-distributive-factor { min-height:32px; justify-self:stretch; border-color:#bd76ad; background:linear-gradient(145deg,#8c4c83,#533d72); color:#ffe4f4; font-size:14px; }
+.math-sim-distributive-drop-column { display:grid; align-content:center; gap:7px; }
+.math-sim-distributive-drop-column .math-sim-distributive-term { min-height:42px; border:1px dashed rgba(255,164,216,.72); background:rgba(28,24,48,.82); color:#ffeafa; touch-action:manipulation; }
+.math-sim-distributive-drop-column .math-sim-distributive-term.is-drop-hover,.math-sim-distributive-drop-column .math-sim-distributive-term.is-selected { border-color:#ffe49b; background:rgba(120,70,119,.78); box-shadow:0 0 0 2px rgba(255,228,155,.2); }
+.math-sim-distributive-drop-column .math-sim-distributive-term.is-applied { border-color:#79d7b7; background:linear-gradient(145deg,rgba(36,104,93,.9),rgba(20,63,67,.92)); }
+.math-sim-distributive.is-drag-drop .math-sim-distributive-term > i { color:#ff9cda; }
+.math-sim-distributive.is-drag-drop .math-sim-distributive-term > b { color:#ffe49b; }
+.math-sim-distributive.is-drag-drop .math-sim-distributive-result { border-color:rgba(255,123,203,.45); background:rgba(48,33,66,.8); }
+.math-sim-distributive.is-drag-drop .math-sim-distributive-result > strong { color:#ffd0eb; }
+.math-sim-distributive.is-drag-drop .math-sim-distributive-result.is-ready { border-color:#79d7b7; background:rgba(22,74,66,.7); }
+.math-sim-distributive.is-drag-drop .math-sim-distributive-result.is-ready > strong { color:#b4ffe5; }
+.math-sim-distributive.is-drag-drop > footer button { border-color:#ed8bc8; background:linear-gradient(180deg,#a84f93,#693d79); box-shadow:inset 0 1px rgba(255,255,255,.32),0 3px 0 #38274e; }
+.math-sim-distributive.chapter-3-distributive { border-color:rgba(255,184,107,.6); background:radial-gradient(ellipse at 50% 0,rgba(202,117,54,.2),transparent 68%),linear-gradient(145deg,rgba(67,46,40,.98),rgba(25,25,38,.98)); }
+.math-sim-distributive.chapter-3-distributive > header > span { color:#ffc27e; }
+.math-sim-distributive.chapter-3-distributive .math-sim-distributive-board.is-drop-board { grid-template-columns:minmax(0,1fr); border-color:rgba(255,184,107,.38); }
+.math-sim-distributive.chapter-3-distributive .math-sim-distributive-factor { width:100%; font-family:inherit; cursor:grab; touch-action:none; user-select:none; }
+.math-sim-distributive.chapter-3-distributive .math-sim-distributive-factor.is-selected { outline:2px solid #fff0bf; outline-offset:2px; }
+.math-sim-distributive.chapter-3-distributive .math-sim-distributive-group { border-color:rgba(255,184,107,.34); background:linear-gradient(150deg,rgba(83,54,41,.78),rgba(40,31,37,.88)); }
+.math-sim-distributive.chapter-3-distributive .math-sim-distributive-factor { border-color:#d99657; background:linear-gradient(145deg,#b4723d,#704631); color:#fff0cc; }
+.math-sim-distributive.chapter-3-distributive .math-sim-distributive-drop-column.is-factor-drop-column { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.math-sim-distributive.chapter-3-distributive .math-sim-distributive-drop-column .math-sim-distributive-term { border-color:rgba(238,170,108,.72); background:rgba(43,32,34,.88); }
+.math-sim-distributive.chapter-3-distributive .math-sim-distributive-drop-column .math-sim-distributive-term.is-drop-hover,.math-sim-distributive.chapter-3-distributive .math-sim-distributive-drop-column .math-sim-distributive-term.is-selected { border-color:#fff0bf; background:rgba(134,83,48,.78); }
+.math-sim-distributive.chapter-3-distributive .math-sim-distributive-term > i { color:#ffc27e; }
+.math-sim-distributive.chapter-3-distributive .math-sim-distributive-term > b { color:#fff0bf; }
+.math-sim-distributive.chapter-3-distributive .math-sim-distributive-result { border-color:rgba(255,184,107,.45); background:rgba(54,39,36,.86); }
+.math-sim-distributive.chapter-3-distributive .math-sim-distributive-result > strong { color:#ffd49d; }
+.math-sim-distributive.chapter-3-distributive > footer button { border-color:#d99657; background:linear-gradient(180deg,#a76136,#694331); box-shadow:inset 0 1px rgba(255,255,255,.32),0 3px 0 #3c2927; }
 @media (max-width: 760px) {
   .math-sim-distributive { gap: 5px; padding: 7px; }
   .math-sim-distributive > header > p { font-size: 10px; }
@@ -1854,6 +1892,15 @@
   .math-sim-distributive-term { min-height: 25px; padding: 2px 4px; font-size: 10px; }
   .math-sim-distributive > footer { font-size: 9px; }
   .math-sim-distributive > footer button { min-height: 32px; padding: 5px 8px; font-size: 10px; }
+  .math-sim-distributive.is-drag-drop { grid-template-rows:auto auto minmax(0,1fr) auto auto; }
+  .math-sim-distributive-bank { padding:5px 7px; }
+  .math-sim-distributive-source { min-width:42px; min-height:34px; padding:4px 9px; }
+  .math-sim-distributive-board.is-drop-board { gap:5px; padding:5px; }
+  .math-sim-distributive.is-drag-drop .math-sim-distributive-group { gap:4px; padding:5px; }
+  .math-sim-distributive-drop-column { gap:5px; }
+  .math-sim-distributive-drop-column .math-sim-distributive-term { min-height:38px; font-size:9px; }
+  .math-sim-distributive.chapter-3-distributive .math-sim-distributive-board.is-drop-board { grid-template-columns:minmax(0,1fr); }
+  .math-sim-distributive.chapter-3-distributive .math-sim-distributive-drop-column.is-factor-drop-column { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
 
 /* Metallic frame, weighted pans, and restrained motion shared by every chapter. */

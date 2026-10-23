@@ -125,22 +125,97 @@ function Side({ text, mode, groups = 0 }) {
   </div>;
 }
 
-function DistributiveModel({ model, equation, lang, onComplete }) {
+function DistributiveModel({ model, equation, lang, onComplete, onError }) {
   const [opened, setOpened] = useState(!model.prelude);
   const [applied, setApplied] = useState(() => model.groups.map((group) => group.terms.map(() => false)));
+  const [selectedTerm, setSelectedTerm] = useState('');
+  const [hoverTarget, setHoverTarget] = useState('');
+  const [dropMessage, setDropMessage] = useState('');
+  const dragRef = useRef(null);
   const done = opened && model.groups.every((group, groupIndex) => group.terms.every((_, termIndex) => applied[groupIndex][termIndex]));
+  const placeTerm = (payload, targetKey) => {
+    const [sourceType, sourceGroupRaw, sourceTermRaw] = payload.split(':');
+    const sourceGroup = Number(sourceGroupRaw);
+    const sourceTerm = Number(sourceTermRaw);
+    const [targetGroup, targetTerm] = targetKey.split(':').map(Number);
+    if (sourceGroup !== targetGroup || (sourceType !== 'factor' && sourceTerm !== targetTerm)) {
+      setDropMessage(lang === 'en' ? 'Drop the factor into a matching term slot.' : 'Letakkan faktor pada kotak suku yang sesuai.');
+      onError?.();
+      return;
+    }
+    if (!opened || applied[targetGroup]?.[targetTerm]) return;
+    setApplied((current) => current.map((terms, groupIndex) => groupIndex === targetGroup
+      ? terms.map((value, termIndex) => termIndex === targetTerm ? true : value)
+      : terms));
+    setSelectedTerm('');
+    setDropMessage('');
+  };
+  const startTermDrag = (event, termKey) => {
+    const [sourceType, sourceGroup, sourceTerm] = termKey.split(':');
+    if (!opened || event.button !== 0 || (sourceType !== 'factor' && applied[Number(sourceGroup)]?.[Number(sourceTerm)])) return;
+    event.preventDefault();
+    const pointerId = event.pointerId;
+    const drag = { pointerId, termKey, cleanup: null };
+    dragRef.current?.cleanup?.();
+    dragRef.current = drag;
+    const findTarget = (x, y) => document.elementFromPoint(x, y)?.closest('[data-distributive-target]')?.dataset.distributiveTarget || '';
+    const move = (moveEvent) => {
+      if (moveEvent.pointerId !== pointerId || dragRef.current !== drag) return;
+      setHoverTarget(findTarget(moveEvent.clientX, moveEvent.clientY));
+    };
+    const finish = (upEvent) => {
+      if (upEvent.pointerId !== pointerId || dragRef.current !== drag) return;
+      const target = findTarget(upEvent.clientX, upEvent.clientY);
+      drag.cleanup();
+      dragRef.current = null;
+      setHoverTarget('');
+      if (target) placeTerm(termKey, target);
+      else setSelectedTerm(termKey);
+    };
+    const cancel = () => {
+      drag.cleanup();
+      dragRef.current = null;
+      setHoverTarget('');
+    };
+    drag.cleanup = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', finish);
+      window.removeEventListener('pointercancel', cancel);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', finish);
+    window.addEventListener('pointercancel', cancel);
+  };
+  useEffect(() => () => dragRef.current?.cleanup?.(), []);
   const applyTerm = (groupIndex, termIndex) => {
     if (!opened) return;
     setApplied((current) => current.map((terms, index) => index === groupIndex ? terms.map((value, term) => term === termIndex ? true : value) : terms));
   };
-  return <section className="math-sim-distributive" aria-label={lang === 'en' ? 'Expand the parentheses' : 'Buka tanda kurung'}>
+  return <section className={`math-sim-distributive ${model.dragDrop ? 'is-drag-drop chapter-3-distributive' : ''}`} aria-label={lang === 'en' ? 'Expand the parentheses' : 'Buka tanda kurung'}>
     <header><span>{lang === 'en' ? 'VISUAL STEP' : 'LANGKAH VISUAL'}</span><strong>{lang === 'en' ? 'Distribute the outside factor' : 'Sebarkan angka di luar kurung'}</strong><p>{lang === 'en' ? 'Multiply the factor by every term inside its parentheses.' : 'Kalikan faktor di luar kurung dengan setiap suku di dalamnya.'}</p></header>
     {model.prelude && <button type="button" className={`math-sim-distributive-prelude ${opened ? 'is-done' : ''}`} disabled={opened} onClick={() => setOpened(true)}>{opened ? '✓ ' : ''}{lang === 'en' ? 'Combine the matching terms inside: (2x + 3) + x → 3x + 3' : 'Gabungkan suku sejenis di dalam: (2x + 3) + x → 3x + 3'}</button>}
-    <div className="math-sim-distributive-board">
+    {model.dragDrop && !model.dragFactor && <div className="math-sim-distributive-bank" aria-label={lang === 'en' ? 'Terms to distribute' : 'Suku yang akan didistribusikan'}>
+      <strong>{lang === 'en' ? 'Drag each term into its factor column' : 'Seret setiap suku ke kolom faktornya'}</strong>
+      <div>{model.groups.flatMap((group, groupIndex) => group.terms.map(([term], termIndex) => {
+        const key = `term:${groupIndex}:${termIndex}`;
+        const used = applied[groupIndex][termIndex];
+        return <button key={key} type="button" disabled={!opened || used} className={`math-sim-distributive-source ${selectedTerm === key ? 'is-selected' : ''} ${used ? 'is-used' : ''}`} onPointerDown={(event) => startTermDrag(event, key)} onClick={() => setSelectedTerm(key)}>{term}</button>;
+      }))}</div>
+      <small role="status">{dropMessage || (selectedTerm ? (lang === 'en' ? 'Now tap the matching empty slot.' : 'Sekarang ketuk kotak kosong yang sesuai.') : (lang === 'en' ? 'You can also tap a term, then tap its slot.' : 'Kamu juga bisa mengetuk suku lalu mengetuk kotaknya.'))}</small>
+    </div>}
+    <div className={`math-sim-distributive-board ${model.dragDrop ? 'is-drop-board' : ''}`}>
       {model.groups.map((group, groupIndex) => <div className="math-sim-distributive-group" key={`${group.factor}-${groupIndex}`}>
-        <div className="math-sim-distributive-factor">{group.negative ? '−' : '×'}{group.factor}</div>
+        {model.dragFactor ? <button type="button" className={`math-sim-distributive-factor ${selectedTerm === `factor:${groupIndex}:` ? 'is-selected' : ''}`} onPointerDown={(event) => startTermDrag(event, `factor:${groupIndex}:`)} onClick={() => setSelectedTerm(`factor:${groupIndex}:`)} aria-label={`${lang === 'en' ? 'Drag factor' : 'Seret faktor'} ${group.factor} ${lang === 'en' ? 'to each term slot' : 'ke setiap kotak suku'}`}>{group.negative ? '−' : '×'}{group.factor}</button> : <div className="math-sim-distributive-factor">{group.negative ? '−' : '×'}{group.factor}</div>}
         <div className="math-sim-distributive-copies" aria-label={`${group.copies} ${lang === 'en' ? 'equal groups' : 'kelompok sama'}`}>
-          {Array.from({ length: Math.min(group.copies, 5) }, (_, copyIndex) => <div className="math-sim-distributive-copy" key={copyIndex}>
+          {model.dragDrop ? <div className={`math-sim-distributive-drop-column ${model.dragFactor ? 'is-factor-drop-column' : ''}`} aria-label={`${lang === 'en' ? 'Factor column' : 'Kolom faktor'} ${group.factor}`}>
+            {group.terms.map(([term, product], termIndex) => {
+              const targetKey = `${groupIndex}:${termIndex}`;
+              const sourceTargetSelected = selectedTerm === `factor:${groupIndex}:` || selectedTerm === `term:${groupIndex}:${termIndex}`;
+              return <button key={targetKey} type="button" data-distributive-target={targetKey} className={`math-sim-distributive-term ${applied[groupIndex][termIndex] ? 'is-applied' : ''} ${hoverTarget === targetKey ? 'is-drop-hover' : ''} ${sourceTargetSelected ? 'is-selected' : ''}`} onClick={() => selectedTerm && placeTerm(selectedTerm, targetKey)} aria-label={`${lang === 'en' ? 'Drop factor on' : 'Letakkan faktor pada'} ${term} ${lang === 'en' ? 'to make' : 'untuk menjadi'} ${product}`}>
+                {applied[groupIndex][termIndex] ? <><span>{term}</span><i>→</i><b>{product}</b></> : <><span>{term}</span><i>×</i><b>{lang === 'en' ? 'Drop factor' : 'Jatuhkan faktor'}</b></>}
+              </button>;
+            })}
+          </div> : Array.from({ length: Math.min(group.copies, 5) }, (_, copyIndex) => <div className="math-sim-distributive-copy" key={copyIndex}>
             {group.terms.map(([term, product], termIndex) => <button type="button" key={termIndex} disabled={!opened || applied[groupIndex][termIndex]} className={`math-sim-distributive-term ${applied[groupIndex][termIndex] ? 'is-applied' : ''}`} onClick={() => applyTerm(groupIndex, termIndex)} aria-label={`${lang === 'en' ? 'Multiply' : 'Kalikan'} ${group.negative ? '−' : ''}${group.factor} × ${term}`}>
               <span>{term}</span><i>→</i><b>{applied[groupIndex][termIndex] ? product : '?'}</b>
             </button>)}
@@ -151,7 +226,7 @@ function DistributiveModel({ model, equation, lang, onComplete }) {
       {model.prefix && <strong className="math-sim-distributive-prefix">{model.prefix}</strong>}
     </div>
     <div className={`math-sim-distributive-result ${done ? 'is-ready' : ''}`}><small>{lang === 'en' ? 'Expanded equation' : 'Persamaan setelah kurung dibuka'}</small><strong>{done ? localizeEquation(model.result, lang) : (lang === 'en' ? 'Apply the factor to every term' : 'Kalikan setiap suku dengan faktornya')}</strong></div>
-    <footer><span>{done ? (lang === 'en' ? 'Great! Continue to the balance.' : 'Bagus! Lanjutkan ke timbangan.') : (lang === 'en' ? 'Tap each term to reveal its product.' : 'Tekan setiap suku untuk melihat hasil perkaliannya.')}</span><button type="button" disabled={!done} onClick={onComplete}>{lang === 'en' ? 'Continue to balance' : 'Lanjut ke timbangan'} <b>→</b></button></footer>
+    <footer><span>{done ? (lang === 'en' ? 'Great! Continue to the balance.' : 'Bagus! Lanjutkan ke timbangan.') : model.dragFactor ? (lang === 'en' ? 'Drag the factor into each term slot.' : 'Seret faktor ke setiap kotak suku.') : model.dragDrop ? (lang === 'en' ? 'Drop each term into its matching factor column.' : 'Letakkan setiap suku pada kolom faktor yang sesuai.') : (lang === 'en' ? 'Tap each term to reveal its product.' : 'Tekan setiap suku untuk melihat hasil perkaliannya.')}</span><button type="button" disabled={!done} onClick={onComplete}>{lang === 'en' ? 'Continue to balance' : 'Lanjut ke timbangan'} <b>→</b></button></footer>
     <span className="math-sim-distributive-original">{localizeEquation(equation, lang)}</span>
   </section>;
 }
@@ -193,7 +268,7 @@ const chapterScenes = [
   '/assets/backgrounds/level5/chapter5-video-poster.jpg',
 ];
 const DISTRIBUTIVE_MODELS = {
-  24: { groups: [{ factor: '4', copies: 4, terms: [['m', '4m'], ['−2', '−8']] }], result: '4m − 8 = 16' },
+  24: { dragDrop: true, dragFactor: true, groups: [{ factor: '4', copies: 4, terms: [['m', '4m'], ['−2', '−8']] }], result: '4m − 8 = 16' },
   29: { groups: [{ factor: '3', copies: 3, terms: [['2n', '6n'], ['+1', '+3']] }], result: '6n + 3 = 27' },
   30: { prefix: '10 −', groups: [{ factor: '2', negative: true, copies: 2, terms: [['x', '−2x'], ['+3', '−6']] }], result: '10 − 2x − 6 = 2' },
   34: { groups: [{ factor: '3', copies: 3, terms: [['m', '3m'], ['+2', '+6']] }, { factor: '2', copies: 2, terms: [['m', '2m'], ['+7', '+14']] }], result: '3m + 6 = 2m + 14' },
@@ -1114,7 +1189,7 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
         {modelIndex > 0 && <small className="math-sim-model-progress">{model.slice(0, modelIndex).map((stage) => stage.correct).join(' â†’ ')}</small>}
       </div>)}
 
-      {modelReady && distributiveModel && !distributiveComplete && <DistributiveModel model={distributiveModel} equation={config.equation} lang={lang} onComplete={completeDistributiveModel} />}
+      {modelReady && distributiveModel && !distributiveComplete && <DistributiveModel model={distributiveModel} equation={config.equation} lang={lang} onComplete={completeDistributiveModel} onError={() => setStepErrors((count) => count + 1)} />}
 
       {(!chapter5Question || modelReady) && (!distributiveModel || distributiveComplete) && <div className={`math-sim-balance-workspace ${divisionChoiceCorrect && !divisionReady ? 'has-division-lab' : ''}`}>
         <div className={`math-sim-balance-stage ${overPans ? 'is-awaiting-drop' : ''} ${balanceDelta > 0 ? 'is-left-heavy' : balanceDelta < 0 ? 'is-right-heavy' : 'is-level'}`}>
