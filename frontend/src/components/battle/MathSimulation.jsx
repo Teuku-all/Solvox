@@ -794,6 +794,12 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
   const balanceEquation = `${formatBalanceSide(balanceRows[0], lang)} = ${formatBalanceSide(balanceRows[1], lang)}`;
   const initialGroup = config.mode === 'groups' && !stepIndex ? Number(config.equation.match(/^(\d+)(?:[a-z]|\()/i)?.[1] || 0) : 0;
   const next = config.steps[stepIndex];
+  const chapter4Q3TileStep = questionNumber === 33 && stepIndex < 3;
+  const chapter4Q3Guide = questionNumber === 33
+    ? (lang === 'en'
+      ? ['Add ten −1 tiles to each side.', 'Add four −a tiles to each side.', 'Add twelve +1 tiles to each side.'][stepIndex] || c.balanceGuide
+      : ['Tambahkan ubin −1 sebanyak 10 kali pada masing-masing ruas.', 'Tambahkan ubin −a sebanyak 4 kali pada masing-masing ruas.', 'Tambahkan ubin +1 sebanyak 12 kali pada masing-masing ruas.'][stepIndex] || c.balanceGuide)
+    : c.balanceGuide;
   const recordStepError = (kind, attempted = '') => {
     setStepErrors((count) => count + 1);
     setStepErrorHistory((history) => [...history, {
@@ -1284,7 +1290,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
             ><span>{tile.label}</span></button>)}
           </div>
           <div className="math-sim-add-controls"><button type="button" disabled={busy || !modelReady || ready || Boolean(operationAnimation)} onClick={() => addBalanceTile(0, selectedTileOption)}>{lang === 'en' ? `Add ${selectedTileOption.label} left` : `Tambah ${selectedTileOption.label} kiri`}</button><button type="button" disabled={busy || !modelReady || ready || Boolean(operationAnimation)} onClick={() => addBalanceTile(1, selectedTileOption)}>{lang === 'en' ? `Add ${selectedTileOption.label} right` : `Tambah ${selectedTileOption.label} kanan`}</button></div>
-          {questionNumber > 10 && <div className="math-sim-operation-panel">
+          {questionNumber > 10 && !chapter4Q3TileStep && <div className="math-sim-operation-panel">
             <strong>{lang === 'en' ? 'Operations on both sides' : 'Operasi pada kedua ruas'}</strong>
             <p>{operationAnimation ? (lang === 'en' ? 'Applying the operation to both sides…' : 'Menerapkan operasi pada kedua ruas…') : balanceOperation ? c.applyOperation : (lang === 'en' ? 'Choose an operation' : 'Pilih operasi')}</p>
             {!['expand', 'simplify'].includes(next?.operation) && <div className={`math-sim-operation-values ${chapter3DivisionStep ? 'is-divisor-choice' : ''}`} aria-label={chapter3DivisionStep ? (lang === 'en' ? 'Choose divisor' : 'Pilih pembagi') : (lang === 'en' ? 'Choose a number' : 'Pilih angka')}>{chapter3DivisionStep && <span>{lang === 'en' ? 'Divisor' : 'Pilih pembagi'}</span>}{operationValues.map((value) => <button type="button" key={value} disabled={busy || !modelReady || ready || Boolean(operationAnimation)} className={operationAmount === value ? 'is-selected' : ''} onClick={() => selectBalanceOperationNumber(value)}>{value}</button>)}</div>}
@@ -1300,7 +1306,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
         <div><strong>{c.solvedLabel}</strong><small>{balanceEquation}</small></div>
         <span className="math-sim-complete-timer" aria-hidden="true"><span /></span>
       </div> : chapter5Question && !modelReady ? <footer className="math-sim-ch5-next"><PixelIcon name="right" size={16} /><span>{lang === 'en' ? 'Once the equation matches the story, the balance opens for the next step.' : 'Setelah persamaan sesuai cerita, timbangan terbuka untuk langkah berikutnya.'}</span></footer> : <footer className="math-sim-balance-footer">
-        <div className="math-sim-balance-guide"><span className="math-sim-guide-mascot" aria-hidden="true"><PixelIcon name="spark" size={23} /></span><p>{c.balanceGuide}</p></div>
+        <div className="math-sim-balance-guide"><span className="math-sim-guide-mascot" aria-hidden="true"><PixelIcon name="spark" size={23} /></span><p>{chapter4Q3Guide}</p></div>
         <div className="math-sim-balance-actions">
           <button type="button" className="math-sim-reset" onClick={goBackOneStep} disabled={!canGoBackOneStep}><PixelIcon name="reset" size={17} /><span>{c.backStep}</span></button>
           <span className="math-sim-balance-step-label">{c.step} {Math.min(stepIndex + 1, config.steps.length)}/{config.steps.length}</span>

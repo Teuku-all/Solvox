@@ -34,9 +34,10 @@ const raw = {
   31: ['symbolic', '5x - 3 = 2x + 9', '- 2x|3x - 3 = 9; + 3|3x = 12; / 3|x = 4'],
   32: ['symbolic', '7y + 4 = 3y - 12', '- 3y|4y + 4 = -12; - 4|4y = -16; / 4|y = -4'],
   33: ['symbolic', '4a + 10 = 6a - 2', [
-    { operation: '- 4a', after: '10 = 2a - 2' },
-    { operation: '+ 2', after: '2a = 12', sideResults: ['12', '2a'] },
-    { operation: '/ 2', after: 'a = 6', sideResults: ['a', '6'] },
+    { operation: '- 10', after: '4a = 6a - 12' },
+    { operation: '- 4a', after: '0 = 2a - 12' },
+    { operation: '+ 12', after: '12 = 2a' },
+    { operation: '/ 2', after: 'a = 6', sideResults: ['6', 'a'] },
   ]],
   34: ['symbolic', '3(m + 2) = 2(m + 7)', 'expand|3m + 6 = 2m + 14; - 2m|m + 6 = 14; - 6|m = 8'],
   35: ['symbolic', '8 - 2p = 4p + 20', '- 4p|8 - 6p = 20; - 8|-6p = 12; / -6|p = -2'],
