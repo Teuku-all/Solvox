@@ -403,16 +403,9 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   };
 
   const handleWrongAnswer = ({ elapsed, attemptNow, history, tracker, bankAwareFeedback }) => {
-    const shouldBossAttack = tracker.wrongAttempts > 0 && tracker.wrongAttempts % 3 === 0;
     setAnswer('');
-
-    if (!shouldBossAttack) {
-      setBusy(false);
-      window.requestAnimationFrame(() => document.querySelector('.battle-answer-input')?.focus());
-      return;
-    }
-
     setBusy(true);
+    setSimulationOpen(false);
     combatRef.current?.bossAttack();
     playBossAttack(levelId);
     later(() => {
@@ -422,8 +415,10 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
       combatRef.current?.playerHurt();
 
       if (nextHp > 0) {
-        setBusy(false);
-        window.requestAnimationFrame(() => document.querySelector('.battle-answer-input')?.focus());
+        later(() => {
+          setBusy(false);
+          window.requestAnimationFrame(() => document.querySelector('.battle-answer-input')?.focus());
+        }, Math.max(0, bossAttackDurationMs - bossAttackImpactMs) + 150);
         return;
       }
 
