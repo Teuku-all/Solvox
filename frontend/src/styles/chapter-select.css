@@ -101,7 +101,10 @@
 /* Leave room for the play instruction in the compact illustrated list. */
 @media (max-width: 680px) {
   .chapter-select .chapter-card { height:auto !important;min-height:238px !important;padding:29px 14px 14px 138px !important; }
-  .chapter-select .chapter-card-art { top:50% !important;height:150px !important;transform:translateY(-50%); }
+  .chapter-select .chapter-card-art { top:50% !important;height:150px !important;transform:translateY(-50%) scale(1.025);transform-origin:center; }
+  .chapter-select .chapter-card.is-open:hover .chapter-card-art,
+  .chapter-select .chapter-card.is-open:focus-visible .chapter-card-art,
+  .chapter-select .chapter-card.is-open:active .chapter-card-art { transform:translateY(-50%) scale(1.055); }
   .chapter-select .chapter-card-copy { min-height:0 !important; }
   .chapter-select .chapter-card-how { min-height:0;margin-top:8px;padding:8px;font-size:10px;line-height:1.32; }
   .chapter-select .chapter-card-progress { flex:none;margin-top:10px !important; }

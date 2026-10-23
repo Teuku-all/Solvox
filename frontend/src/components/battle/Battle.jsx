@@ -514,11 +514,15 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
           {autoResolveChapter && <ArenaBackground levelId={levelId} paused={isBalanceQuestion && !hideBalancePopup} />}
           {/* Top HUD */}
           <div className="battle-top-rail">
-            <SolvoxBackButton
-              className="battle-home-back solvox-back-button--compact"
+            <button
+              className="battle-home-back"
+              type="button"
               onClick={onBack}
-              ariaLabel={t('backToMap')}
-            />
+              aria-label={t('backToMap')}
+              title={t('backToMap')}
+            >
+              <img src="/assets/ui/utility/icons/back-icon.webp" alt="" aria-hidden="true" draggable="false" />
+            </button>
 
             <div className="hp-card hp-player">
               <div className="hp-card-head">
@@ -538,7 +542,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
               </div>
               <div className="hp-footer">
                 <span>{hp <= 0 ? t('defeated') : t('readyStatus')}</span>
-                <span><img src="/assets/ui/reference/heart-icon.png" alt="" /> HP</span>
+                <span><PixelIcon name="heart" size={14} /> HP</span>
               </div>
             </div>
 

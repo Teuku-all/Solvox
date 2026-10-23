@@ -54,47 +54,59 @@
       "width": 960,
       "height": 960
     },
-    "/assets/ui/character-select/buttons/back.webp": {
-      "src": "/assets/optimized/back-1080-1f671ab148da.webp",
-      "srcSet": "/assets/optimized/back-1080-1f671ab148da.webp 1080w",
-      "width": 1080,
-      "height": 360
-    },
-    "/assets/ui/character-select/divider/crystal-seam.webp": {
+    "/assets/ui/utility/huds/character-select/divider/crystal-seam.webp": {
       "src": "/assets/optimized/crystal-seam-1080-2d031a00d121.webp",
       "srcSet": "/assets/optimized/crystal-seam-1080-2d031a00d121.webp 1080w",
       "width": 1080,
       "height": 608
     },
-    "/assets/ui/character-select/icons/crystal-star.webp": {
-      "src": "/assets/optimized/crystal-star-1080-e3000106b2d7.webp",
-      "srcSet": "/assets/optimized/crystal-star-1080-e3000106b2d7.webp 1080w",
-      "width": 1080,
-      "height": 1080
-    },
-    "/assets/ui/character-select/icons/eye-preview.webp": {
-      "src": "/assets/optimized/eye-preview-1080-287346588f6b.webp",
-      "srcSet": "/assets/optimized/eye-preview-1080-287346588f6b.webp 1080w",
-      "width": 1080,
-      "height": 1080
-    },
-    "/assets/ui/character-select/nameplates/banner-plate.webp": {
+    "/assets/ui/utility/huds/character-select/nameplates/banner-plate.webp": {
       "src": "/assets/optimized/banner-plate-1080-df73dd71ea45.webp",
       "srcSet": "/assets/optimized/banner-plate-1080-df73dd71ea45.webp 1080w",
       "width": 1080,
       "height": 360
     },
-    "/assets/ui/character-select/nameplates/header-bar.webp": {
+    "/assets/ui/utility/huds/character-select/nameplates/header-bar.webp": {
       "src": "/assets/optimized/header-bar-1080-09e7b77d2f0c.webp",
       "srcSet": "/assets/optimized/header-bar-1080-09e7b77d2f0c.webp 1080w",
       "width": 1080,
       "height": 360
     },
-    "/assets/ui/character-select/panels/character-info.webp": {
+    "/assets/ui/utility/huds/character-select/panels/character-info.webp": {
       "src": "/assets/optimized/character-info-1080-def50f1b4107.webp",
       "srcSet": "/assets/optimized/character-info-1080-def50f1b4107.webp 1080w",
       "width": 1080,
       "height": 1440
+    },
+    "/assets/ui/utility/icons/back-icon.webp": {
+      "src": "/assets/optimized/back-icon-545-b3735158582b.webp",
+      "srcSet": "/assets/optimized/back-icon-545-b3735158582b.webp 545w",
+      "width": 545,
+      "height": 592
+    },
+    "/assets/ui/utility/icons/back.webp": {
+      "src": "/assets/optimized/back-1080-1f671ab148da.webp",
+      "srcSet": "/assets/optimized/back-1080-1f671ab148da.webp 1080w",
+      "width": 1080,
+      "height": 360
+    },
+    "/assets/ui/utility/icons/crystal-star.webp": {
+      "src": "/assets/optimized/crystal-star-1080-e3000106b2d7.webp",
+      "srcSet": "/assets/optimized/crystal-star-1080-e3000106b2d7.webp 1080w",
+      "width": 1080,
+      "height": 1080
+    },
+    "/assets/ui/utility/icons/eye-preview.webp": {
+      "src": "/assets/optimized/eye-preview-1080-287346588f6b.webp",
+      "srcSet": "/assets/optimized/eye-preview-1080-287346588f6b.webp 1080w",
+      "width": 1080,
+      "height": 1080
+    },
+    "/assets/ui/utility/icons/settings-v101.webp": {
+      "src": "/assets/optimized/settings-v101-60-067a93c921aa.webp",
+      "srcSet": "/assets/optimized/settings-v101-60-067a93c921aa.webp 60w",
+      "width": 60,
+      "height": 60
     }
   },
   "anchors": {

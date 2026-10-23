@@ -20,9 +20,13 @@ const sources = [
 
 async function main() {
   await fs.mkdir(outputDir, { recursive: true });
-  // Include decorative selection art without changing the supplied originals.
-  for (const folder of ['buttons', 'divider', 'icons', 'nameplates', 'panels']) {
-    const dir = `ui/character-select/${folder}`;
+  // Include decorative UI art without changing the supplied originals.
+  for (const dir of [
+    'ui/utility/huds/character-select/divider',
+    'ui/utility/huds/character-select/nameplates',
+    'ui/utility/huds/character-select/panels',
+    'ui/utility/icons',
+  ]) {
     for (const name of await fs.readdir(path.join(publicDir, 'assets', dir))) {
       if (/\.webp$/i.test(name)) sources.push([`${dir}/${name}`, [1080]]);
     }

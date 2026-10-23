@@ -51,12 +51,6 @@ const SHAPES = {
 };
 
 const RASTER = {
-  party:'/assets/ui/reference/nav-multiplayer-icon.png',
-  attack:'/assets/ui/reference/attack-skill-icon.png',
-  heart:'/assets/ui/reference/heart-icon.png',
-  shield:'/assets/ui/reference/shield-icon.png',
-  energy:'/assets/ui/reference/energy-icon.png',
-  lock:'/assets/ui/reference/lock-icon.png',
   pixelNinja:'/assets/characters/kazura/idle/01.png',
 };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 
 const UTILITY_ART = {
-  back: '/assets/ui/character-select/buttons/back.webp',
+  back: '/assets/ui/utility/icons/back.webp',
   close: '/assets/ui/utility/icons/close-v96.png',
 };
 

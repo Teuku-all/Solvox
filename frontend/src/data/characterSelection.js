@@ -1,15 +1,15 @@
 import { PLAYER } from './player';
 import { PLAYER_ASSETS } from './playerAssets';
 
-const UI = '/assets/ui/character-select';
+const UI = '/assets/ui/utility/huds/character-select';
 export const SELECTION_ART = Object.freeze({
   divider: `${UI}/divider/crystal-seam.webp`,
   header: `${UI}/nameplates/header-bar.webp`,
   banner: `${UI}/nameplates/banner-plate.webp`,
-  crystal: `${UI}/icons/crystal-star.webp`,
-  eye: `${UI}/icons/eye-preview.webp`,
+  crystal: '/assets/ui/utility/icons/crystal-star.webp',
+  eye: '/assets/ui/utility/icons/eye-preview.webp',
   panel: `${UI}/panels/character-info.webp`,
-  back: `${UI}/buttons/back.webp`,
+  back: '/assets/ui/utility/icons/back.webp',
 });
 
 // Presentation names are independent of the saved campaign / multiplayer IDs.

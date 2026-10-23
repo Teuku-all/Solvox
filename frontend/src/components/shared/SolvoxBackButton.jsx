@@ -1,6 +1,6 @@
 import React from 'react';
 
-const BACK_ART = '/assets/ui/character-select/buttons/back.webp';
+const BACK_ART = '/assets/ui/utility/icons/back.webp';
 
 export default function SolvoxBackButton({
   className = '',
