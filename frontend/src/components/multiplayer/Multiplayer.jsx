@@ -485,7 +485,7 @@ useEffect(()=>{
         <div className="multi-character-selection-heading"><div><small>{t('yourFighter')}</small><h2>{t('characterSelect')}</h2></div><span>{t('multiplayerCharacterHint')}</span></div>
         <CharacterPicker value={char} onChange={changeMyCharacter} levelId={room.levelId||level} t={t}/>
       </section>}
-      <div className="room-status">{statusText()}</div>
+      <div className={`room-status ${room.status==='finished'?'is-finished':''}`}>{statusText()}</div>
       {room.status==='waiting'&&<button className="primary-btn wide-action" onClick={ready}><PixelIcon name="check" size={16}/><span>{t('ready')}</span></button>}
       {room.status==='generating'&&<div className="match-loading"><PixelIcon name="spark" size={16}/> {t('generatingMatch')}</div>}
 {room.status==='battle'&&room.question&&<div className="battle-page battle-reference multiplayer-battle-page">
@@ -548,9 +548,13 @@ useEffect(()=>{
 {room.status==='finished'&&<div className={`match-result ${winnerName?(didWin?'is-win':'is-loss'):'is-draw'}`}>
   <div className="result-status-pill"><i/>{didWin?(lang==='en'?'VICTORY':'KEMENANGAN'):winnerName?(lang==='en'?'MATCH COMPLETE':'PERTANDINGAN SELESAI'):(lang==='en'?'DRAW':'SERI')}</div>
   <div className="result-emblem"><PixelIcon name={winnerName?'trophy':'star'} size={42}/></div>
-  <h2>{winnerName?(didWin?(lang==='en'?'Victory!':'Kamu Menang!'):`${winnerName} — ${t('matchFinished')}`):t('draw')}</h2>
+  <h2>{winnerName?(didWin?(lang==='en'?'Victory!':'Kamu Menang!'):`${winnerName} ${lang==='en'?'wins the match':'menang'}`):t('draw')}</h2>
   <p className="result-subtitle">{lang==='en'?'Match results and player performance':'Hasil pertandingan dan performa pemain'}</p>
-  <div className="result-score-strip">{room.players?.map(p=><div className={p.id===me?.id?'is-self':''} key={p.id}><span>{p.name}{p.id===me?.id&&<small>{lang==='en'?'YOU':'KAMU'}</small>}</span><b>{room.mode==='turn'?`${p.hp} HP`:`${p.score} ${t('score')}`}</b></div>)}</div>
+  <div className="result-score-strip" aria-label={lang==='en'?'Final scores':'Skor akhir'}>{room.players?.map(p=><div className={`${p.id===me?.id?'is-self':''} ${p.id===room.winner?'is-winner':''}`} key={p.id}>
+    <span className="result-score-avatar"><img src={findCharacter(p.character).portrait} alt=""/></span>
+    <span className="result-score-player"><b>{p.name}</b><small>{p.id===room.winner?(lang==='en'?'WINNER':'PEMENANG'):p.id===me?.id?(lang==='en'?'YOU':'KAMU'):(lang==='en'?'OPPONENT':'LAWAN')}</small></span>
+    <b className="result-score-value">{room.mode==='turn'?`${p.hp} HP`:`${p.score} ${t('score')}`}</b>
+  </div>)}</div>
   <div className="match-pedagogy"><span className="result-pedagogy-icon"><PixelIcon name="spark" size={15}/></span><span>{room.finishSummary?.[me?.id]||statusText()}</span></div>
   <section className="match-evaluation" aria-label={t('matchEvaluation')}>
     <div className="result-section-heading"><span><small>{lang==='en'?'PERFORMANCE':'RINGKASAN'}</small><h3>{t('matchEvaluation')}</h3></span><PixelIcon name="chart" size={19}/></div>
