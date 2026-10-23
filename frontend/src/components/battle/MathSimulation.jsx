@@ -1189,7 +1189,7 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
       <header className="math-sim-reference-question">
         <button type="button" className="math-sim-close" onClick={onClose} aria-label={lang === 'en' ? 'Close simulation' : 'Tutup simulasi'}><PixelIcon name="close" size={18} /></button>
         <div className="math-sim-reference-heading"><span className="math-sim-chapter-gem" aria-hidden="true"><img src="/assets/ui/character-select/icons/crystal-star.webp" alt="" /></span><strong>{c.chapter} 2</strong><i>&#8226;</i><b>{c.question} {((questionNumber - 1) % 10) + 1}/10</b></div>
-        <p>{lang === 'en' ? 'Choose the inverse operation. Apply it to one side, then drag the same tile to the other side.' : 'Pilih operasi kebalikan, terapkan pada satu ruas, lalu seret ubin yang sama ke ruas sebelahnya.'}</p>
+        <p>{questionNumber === 11 ? (lang === 'en' ? 'Make equal groups on both sides, place the tiles, then match corresponding groups.' : 'Buat kelompok sama besar di kedua ruas, susun ubinnya, lalu cocokkan kelompok pasangannya.') : (lang === 'en' ? 'Choose the inverse operation. Apply it to one side, then drag the same tile to the other side.' : 'Pilih operasi kebalikan, terapkan pada satu ruas, lalu seret ubin yang sama ke ruas sebelahnya.')}</p>
         <strong className="math-sim-reference-equation">{equation}</strong>
         <div className="math-sim-reference-progress" aria-label={`${progress}%`}><span style={{ width: `${progress}%` }} /></div>
       </header>

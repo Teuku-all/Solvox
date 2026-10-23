@@ -1462,7 +1462,8 @@
   grid-template-rows: auto auto minmax(0, 1fr) auto auto;
   overflow: hidden;
 }
-.math-sim-ch2-reference > .c2p-simulation { min-height: 0; height: 100%; grid-template-rows: auto minmax(0, 1fr) auto auto; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.math-sim-ch2-reference.is-partition { grid-template-rows: auto minmax(0, 1fr); }
+.math-sim-ch2-reference > .c2p-simulation { min-width: 0; min-height: 0; height: 100%; grid-template-rows: auto minmax(0, 1fr) auto auto; padding: 0; border: 0; background: transparent; box-shadow: none; }
 .math-sim-ch2-reference > .c2p-simulation .c2p-header { display: none; }
 .math-sim-ch2-reference > .c2p-simulation .c2p-scale { min-height: 0; overflow: auto; }
 .math-sim-ch2-reference > .c2p-simulation .c2p-instruction { padding: 3px 4px; }
@@ -1549,7 +1550,7 @@
 .math-sim-balance-reference.chapter-3 .math-sim-operation-values.is-divisor-choice > button { min-width: 38px; min-height: 28px; border-color: rgba(108, 189, 234, .58); border-radius: 6px; background: linear-gradient(180deg, #1c4b76, #112f55); color: #d8efff; font-size: 12px; box-shadow: inset 0 1px rgba(255,255,255,.12), 0 2px 0 rgba(3, 15, 33, .8); }
 .math-sim-balance-reference.chapter-3 .math-sim-operation-values.is-divisor-choice > button.is-selected { border-color: #8be4ff; background: linear-gradient(180deg, #197acb, #14539b); color: white; box-shadow: inset 0 1px #abebff, 0 0 10px rgba(57, 170, 255, .42); }
 .math-sim-ch2-reference > .c2p-simulation { grid-template-rows: auto auto minmax(0, 1fr) auto auto; gap: 8px; }
-.math-sim-ch2-reference > .c2p-simulation .c2p-scale,
+.math-sim-ch2-reference > .c2p-simulation .c2p-scale { overflow: auto; overscroll-behavior: contain; }
 .math-sim-ch2-reference > .c2p-simulation .c2p-toolbar { overflow: hidden; }
 .math-sim-ch2-reference > .c2p-simulation .c2p-instruction { padding: 8px 10px; border: 1px solid rgba(111, 205, 213, .3); border-left: 3px solid #6bd5d8; border-radius: 8px; background: rgba(11, 42, 65, .62); color: #daeff0; font-size: 11px; }
 .math-sim-ch2-reference .c2p-phase-track li { padding: 4px 7px; }
@@ -1651,7 +1652,7 @@
   .math-sim-ch2-flow li,.c2p-phase-track li { justify-content: center; gap: 4px; padding: 4px 3px; font-size: 8px; text-align: center; }
   .math-sim-ch2-flow li > b,.c2p-phase-track li > b { flex-basis: 17px; width: 17px; height: 17px; font-size: 9px; }
   .math-sim-ch2-reference > .c2p-simulation { grid-template-rows: auto auto minmax(0,1fr) auto auto; gap: 5px; }
-  .math-sim-ch2-reference > .c2p-simulation .c2p-scale { grid-template-columns: minmax(0,1fr); gap: 5px; overflow: hidden; }
+  .math-sim-ch2-reference > .c2p-simulation .c2p-scale { grid-template-columns: minmax(0,1fr); gap: 5px; }
   .math-sim-ch2-reference > .c2p-simulation .c2p-side { padding: 6px; gap: 4px; }
   .math-sim-ch2-reference .c2p-groups { grid-template-columns: repeat(var(--c2p-group-count), minmax(0,1fr)); gap: 3px; }
   .math-sim-ch2-reference .c2p-group { min-height: 55px; gap: 3px; padding: 4px 2px; }

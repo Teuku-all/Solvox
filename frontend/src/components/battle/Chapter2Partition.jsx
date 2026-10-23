@@ -210,7 +210,7 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
     </section>;
   };
 
-  return <section className="math-sim c2p-simulation" aria-label={text.title}>
+  return <section className="c2p-simulation" aria-label={text.title}>
     <header className="c2p-header"><div><small>CHAPTER 2 · {isEnglish ? `QUESTION ${questionNumber}/10` : `SOAL ${questionNumber}/10`}</small><h2>{text.title}</h2></div><button type="button" onClick={undo} disabled={busy || !history.length}>{text.undo}</button></header>
     {progress.complete ? <div className="c2p-solved"><span>✓</span><strong>{text.finished}</strong><small>{text.final}: {localize(config.steps[0]?.after || config.equation, lang)}</small></div> : <>
       <p className="c2p-instruction">{partitionComplete ? allSorted ? text.matching : text.fill : text.instruction}</p>
