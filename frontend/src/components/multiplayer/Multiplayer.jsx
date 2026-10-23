@@ -40,11 +40,7 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
   const [hintMessage,setHintMessage]=useState('');
   const [hintLoading,setHintLoading]=useState(false);
   const [answerFeedback,setAnswerFeedback]=useState(null);
-  const [keypadVisible,setKeypadVisible]=useState(()=>{
-    const value=localStorage.getItem('solvox.keypad');
-    const legacy=localStorage.getItem('numericore.keypad');
-    return value!==null?value!=='0':legacy!==null?legacy!=='0':localStorage.getItem('aljabarmaster.keypad')!=='0';
-  });
+  const [keypadVisible,setKeypadVisible]=useState(false);
   const [seconds,setSeconds]=useState(45);
   const [battleImpacts,setBattleImpacts]=useState([]);
   const [attackingSide,setAttackingSide]=useState('');
@@ -60,7 +56,6 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
     apiJson('/api/dashboard?limit=20').then(data=>setDashboard(data)).catch(()=>{setDashboard(null);setDashboardError(true)}).finally(()=>setDashboardLoading(false));
   };
   useEffect(()=>{if(playerName)setName(playerName)},[playerName]);
-  useEffect(()=>{localStorage.setItem('solvox.keypad',keypadVisible?'1':'0')},[keypadVisible]);
   useEffect(()=>()=>{if(answerFeedbackTimerRef.current)clearTimeout(answerFeedbackTimerRef.current)},[]);
   useEffect(()=>{
     setMultiplayerLobbyMusicActive(!dashboardOnly&&room?.status!=='battle'&&room?.status!=='finished');
