@@ -283,3 +283,70 @@
     transition: none;
   }
 }
+
+.cutscene__backdrop {
+  background: radial-gradient(ellipse at 50% 35%, rgb(20 37 67 / 45%), rgb(2 6 23 / 89%) 72%);
+  backdrop-filter: blur(5px);
+}
+.cutscene__panel {
+  width: min(66rem, calc(100% - 2.5rem));
+  height: clamp(16rem, 34vh, 23rem);
+  max-height: 55vh;
+  margin: 0 auto 1.2rem;
+  padding: 1.65rem clamp(1.1rem, 3vw, 2.5rem) 1rem;
+  border: 1px solid rgb(240 189 100 / 60%);
+  border-top: 3px solid #f3c979;
+  border-radius: 0.9rem;
+  background: radial-gradient(ellipse at 50% 0, rgb(34 64 105 / 38%), transparent 65%), linear-gradient(150deg, rgb(8 24 48 / 98%), rgb(4 13 30 / 99%));
+  box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 55%), inset 0 1px rgb(255 255 255 / 12%);
+}
+.cutscene__speaker {
+  left: clamp(1.1rem, 3vw, 2.5rem);
+  border-color: #f3c979;
+  border-radius: 0.55rem 0.55rem 0 0;
+  background: linear-gradient(135deg, #d59b45, #875021);
+  box-shadow: 0 -4px 14px rgb(0 0 0 / 24%);
+  color: #fff9e9;
+}
+.cutscene__text {
+  display: block;
+  min-height: 0;
+  max-width: 74ch;
+  overflow-y: auto;
+  color: #f2f5fb;
+  font-size: clamp(1rem, 1.55vw, 1.25rem);
+  line-height: 1.5;
+  scrollbar-color: #8b6c4e transparent;
+  animation: cutscene-line-enter 220ms ease-out both;
+}
+.cutscene__progress {
+  width: 100%;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(129 156 194 / 20%);
+}
+.cutscene__progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #74d9ed, #f3c979);
+  box-shadow: 0 0 10px rgb(243 201 121 / 38%);
+  transition: width 280ms ease;
+}
+.cutscene__controls { border-top: 0; padding-top: 0.7rem; }
+.cutscene__button { border-radius: 0.5rem; transition: background 180ms ease, border-color 180ms ease, transform 180ms ease; }
+.cutscene__button--primary { background: linear-gradient(150deg, #f7cf84, #d68f37); color: #1c2638; }
+.cutscene__button--primary:hover { background: #ffe0a1; }
+.cutscene__portrait > span { border: 1px solid rgb(221 192 135 / 35%); border-radius: 999px; background: rgb(8 20 40 / 84%); box-shadow: 0 5px 16px rgb(0 0 0 / 30%); }
+@keyframes cutscene-line-enter { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+@media (max-width: 600px) {
+  .cutscene__panel { width: calc(100% - 1rem); height: clamp(16rem, 45vh, 24rem); max-height: 62vh; margin-bottom: 0.5rem; padding: 1.35rem 0.85rem 0.7rem; }
+  .cutscene__speaker { left: 0.85rem; }
+  .cutscene__text { font-size: 0.97rem; line-height: 1.42; }
+  .cutscene__controls { gap: 0.4rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cutscene__text { animation: none; }
+  .cutscene__progress span { transition: none; }
+}

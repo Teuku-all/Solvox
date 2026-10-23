@@ -1,7 +1,7 @@
 const QuestionGenerator = require('./question-generator');
 const levels = {
-  1: { title:'Gerbang Suku Sejenis', titleEn:'Like-Term Gate', icon:'🔢', difficulty:'Pemula', difficultyEn:'Beginner', theme:'algebra' },
-  2: { title:'Pabrik Pangkat', titleEn:'Power Factory', icon:'✖️', difficulty:'Menengah', difficultyEn:'Intermediate', theme:'multiply' },
+  1: { title:'Gerbang Kesetaraan', titleEn:'Balance Gate', icon:'🔢', difficulty:'Pemula', difficultyEn:'Beginner', theme:'algebra' },
+  2: { title:'Pabrik Pengali', titleEn:'Multiplier Factory', icon:'✖️', difficulty:'Menengah', difficultyEn:'Intermediate', theme:'multiply' },
   3: { title:'Ruang Persamaan', titleEn:'Equation Chamber', icon:'gear', difficulty:'Lanjutan', difficultyEn:'Advanced', theme:'equation' },
   4: { title:'Kuil Pecahan', titleEn:'Fraction Temple', icon:'📊', difficulty:'Sulit', difficultyEn:'Advanced', theme:'fraction' },
   5: { title:'Benteng Bayangan — FINAL BOSS', titleEn:'Shadow Fortress — FINAL BOSS', icon:'👑', difficulty:'Boss', difficultyEn:'Boss', theme:'mixed' }

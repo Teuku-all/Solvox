@@ -30,9 +30,11 @@ export default function CutsceneStory({
       setIsAuto(false);
       return undefined;
     }
-    const timer = window.setTimeout(() => setCurrentIndex((index) => index + 1), 3500);
+    const beat = dialogues[currentIndex]?.[lang] || '';
+    const readingTime = Math.min(11000, Math.max(4200, beat.length * 48));
+    const timer = window.setTimeout(() => setCurrentIndex((index) => index + 1), readingTime);
     return () => window.clearTimeout(timer);
-  }, [isAuto, currentIndex, dialogues.length]);
+  }, [isAuto, currentIndex, dialogues, lang]);
 
   const handleNext = () => {
     if (currentIndex < dialogues.length - 1) {
@@ -71,9 +73,10 @@ export default function CutsceneStory({
 
       <section className="cutscene__panel" aria-live="polite">
         <div className="cutscene__speaker">{speakerName}</div>
-        <button className="cutscene__text" type="button" onClick={handleNext}>
+        <button key={currentIndex} className="cutscene__text" type="button" onClick={handleNext}>
           {currentBeat[lang] || ''}
         </button>
+        <div className="cutscene__progress" aria-hidden="true"><span style={{ width: `${((currentIndex + 1) / dialogues.length) * 100}%` }} /></div>
         <div className="cutscene__controls">
           <span className="cutscene__counter">{currentIndex + 1} / {dialogues.length}</span>
           <div className="cutscene__actions">

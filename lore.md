@@ -56,10 +56,10 @@ Dokumen ini **hanya berisi naskah + catatan penempatan (implementasi)**. Tidak a
 ### 1.1 Dunia SolvoX
 
 **ID**
-Dunia SolvoX bukan dunia biasa: ia dibangun dari aturan. Setiap hukum aljabar—suku sejenis, pangkat, persamaan, pecahan—adalah tiang yang menopang realitas. Selama aturannya utuh, dunia berdiri. Selama jawabannya bisa ditemukan, dunia bernafas.
+SolvoX berdiri di atas aturan aljabar: tambah dan kurang, kali dan bagi, persamaan, serta pecahan. Ketika satu aturan rusak, tempat yang bergantung padanya ikut berubah.
 
 **EN**
-The world of SolvoX is no ordinary world: it is built out of rules. Every algebraic law—like terms, powers, equations, fractions—is a pillar that holds reality up. As long as the rules hold, the world stands. As long as an answer can be found, the world breathes.
+SolvoX rests on the rules of algebra: addition and subtraction, multiplication and division, equations, and fractions. When a rule breaks, the place that depends on it begins to change.
 
 ### 1.2 Sihir = Logika
 
@@ -144,18 +144,18 @@ Kazura and Asuna first meet **at the Gate in Chapter 1**, both heading for the s
 ### 3.1 Wolf — Penjaga Gerbang (`wolf`, Shadow)
 
 **ID**
-Dahulu Wolf adalah roh penjaga Gerbang Suku Sejenis: tugasnya memisahkan yang sejenis dari yang tidak, dengan mata yang tak pernah salah. Void membuatnya kehilangan kemampuan membedakan—kini ia menganggap *semua* yang mendekat sebagai "tak sejenis", dan karena itu menyerang tanpa ampun. Ia tidak marah; ia hanya tidak lagi bisa mengenali. Skill: *Claw Strike, Dark Howl, Shadow Dash.*
+Dahulu Wolf menjaga Gerbang Kesetaraan. Ia mengenali kapan kedua ruas bernilai sama. Void merusak penglihatannya; kini setiap perubahan tampak seperti ancaman, bahkan ketika keseimbangan bisa dipulihkan. Skill: *Claw Strike, Dark Howl, Shadow Dash.*
 
 **EN**
-Wolf was once the guardian spirit of the Like-Term Gate: its task was to separate like from unlike, with an eye that never erred. The Void stole its ability to tell the difference—now it regards everyone who approaches as "unlike", and therefore strikes without mercy. It is not angry; it simply can no longer recognize. Skills: *Claw Strike, Dark Howl, Shadow Dash.*
+Wolf was once the guardian spirit of the Balance Gate: its task was to separate like from unlike, with an eye that never erred. The Void stole its ability to tell the difference—now it regards everyone who approaches as "unlike", and therefore strikes without mercy. It is not angry; it simply can no longer recognize. Skills: *Claw Strike, Dark Howl, Shadow Dash.*
 
-### 3.2 Wraith — Penjaga Pabrik Pangkat (`wraith`, Shadow / Arc)
+### 3.2 Wraith — Penjaga Pabrik Pengali (`wraith`, Shadow / Arc)
 
 **ID**
-Wraith menjaga Pabrik Pangkat, tempat bilangan dilipatgandakan oleh pangkatnya. Void membuat pangkat "meluber" tanpa kendali, dan Wraith pun terbelah menjadi bayangan yang melipatgandakan dirinya—mengulang satu operasi yang sama tanpa pernah berhenti, karena takut berhenti berarti aturan benar-benar hilang. Skill: *Spectral Claw, Void Surge, Wraith Step.*
+Wraith menjaga Pabrik Pengali. Void membuat mesin terus mengalikan tanpa pernah membagi hasilnya. Wraith ikut terbelah menjadi bayangan-bayangan yang mengulang gerakan yang sama, takut berhenti sebelum mesin kembali seimbang. Skill: *Spectral Claw, Void Surge, Wraith Step.*
 
 **EN**
-Wraith guards the Power Factory, where numbers are multiplied by their powers. The Void made powers spill out of control, and Wraith split into a shadow that multiplies itself—repeating the same single operation without ever stopping, afraid that stopping means the rule is truly gone. Skills: *Spectral Claw, Void Surge, Wraith Step.*
+Wraith guards the Multiplier Factory. The Void keeps its machines multiplying without ever dividing the results. Wraith splits into shadows that repeat the same movement, afraid to stop before the machinery is balanced again. Skills: *Spectral Claw, Void Surge, Wraith Step.*
 
 ### 3.3 Naga Persamaan — Equation Drake (`equation-drake`, Arc / Lightning)
 
@@ -189,11 +189,11 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 > Format beat: **ID** lalu **EN**. Label segmen: `intro` / `win` / `lose`.
 > Kontrol: Next · Lewati · Auto (lihat Bagian 0.3).
 
-### Bab 1 — Gerbang Suku Sejenis (`Like-Term Gate`)
+### Bab 1 — Gerbang Kesetaraan (`Balance Gate`)
 
 #### `intro` — Beat 1 · Gerbang
-- **ID · Narasi:** Gerbang itu berdiri di tengah padang yang laut—bukan terbuat dari batu, melainkan dari dua baris bilangan yang seharusnya sama. Yang kiri bergetar. Yang kanan memudar.
-- **EN · Narration:** The Gate stands in a plain that is a sea—made not of stone, but of two rows of numbers that should be the same. The left trembles. The right fades.
+- **ID · Narasi:** Di tengah padang, dua lempeng angka membentuk gerbang. Ruas kiri bergetar; ruas kanan perlahan memudar. Ada sesuatu yang harus dikembalikan agar keduanya sama.
+- **EN · Narration:** Two slabs of numbers form a gate in the middle of the plain. The left side trembles; the right slowly fades. Something must be restored to make them equal.
 
 #### `intro` — Beat 2 · KAZURA (background)
 - **ID · KAZURA:** Namaku Kazura. Pedang ini—Aletheia—bukan dibuat, tapi membeku dari jawaban pertamaku. Kata orang, aku lahir dari desa yang dihapus Void. Aku tidak ingat wajah mereka. Aku ingat suara yang bertanya. Dan aku ingat aku menjawab benar.
@@ -216,18 +216,18 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 #### `intro` — Beat 4 · Wolf (background)
 - **ID · Narasi:** Gerbang menganga. Dari baliknya, sesuatu merangkak keluar—empat kaki, mata yang mencoba mengelompokkan Kazura dan gagal berkali-kali dalam satu detik.
 - **EN · Narration:** The gate gapes. From behind it, something crawls out—four legs, an eye trying to classify Kazura and failing again and again within a single second.
-- **ID · Wolf:** Sejenis... tidak... sejenis... **tidak.** Kau semua tidak sejenis. Kau semua harus lenyap.
-- **EN · Wolf:** Like... no... like... **no.** None of you are alike. All of you must vanish.
-- **ID · KAZURA:** (Kata-katanya rusak. Ia tidak menyerang karena benci.) Dengar. Aku akan menunjukkan padamu mana yang sejenis.
-- **EN · KAZURA:** (Its words are broken. It doesn't attack from hate.) Listen. I'll show you which ones are alike.
-- **ID · Narasi:** Aletheia menyala. Each wrong answer a wound—Kazura tahu itu. Ia menarik nafas.
-- **EN · Narration:** Aletheia ignites. Every wrong answer a wound—Kazura knows it. He draws a breath.
+- **ID · Wolf:** Kiri... kanan... tidak sama. Gerbang ini tak boleh terbuka.
+- **EN · Wolf:** Left... right... unequal. This gate must stay shut.
+- **ID · KAZURA:** Kalau ada yang ditambah di kiri, aku bisa menguranginya. Kita lihat lagi setelah itu.
+- **EN · KAZURA:** If something was added on the left, I can take it away. Then we'll look again.
+- **ID · Narasi:** Aletheia menyala. Kazura menarik napas dan memperhatikan kedua ruas sebelum melangkah.
+- **EN · Narration:** Aletheia lights up. Kazura takes a breath and studies both sides before stepping forward.
 
 #### `win` — Bab 1
 - **ID · Narasi:** Wolf ambruk, bukan hancur—ia meringkuk, dan matanya untuk pertama kali dalam waktu lama **mengenali** sesuatu. Dua baris bilangan di gerbang perlahan menjadi sama, lalu menyatu.
 - **EN · Narration:** Wolf collapses—not shattered, but curling up, and for the first time in a long while its eye *recognizes* something. The two rows of numbers at the gate slowly become the same, then merge.
-- **ID · Wolf:** ...Sejenis. Kau... sejenis dengan yang kucari.
-- **EN · Wolf:** ...Alike. You... are like the one I was looking for.
+- **ID · Wolf:** ...Sama. Kedua ruasnya sama lagi.
+- **EN · Wolf:** ...Equal. Both sides are equal again.
 - **ID · KAZURA:** Beristirahatlah. Aturanmu kembali.
 - **EN · KAZURA:** Rest. Your rule is back.
 - **ID · Narasi:** Gerbang terbuka. Di ujung koridor, samar, kilau kristal menghilang di tikungan. Kazura menatap lama.
@@ -236,20 +236,20 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 #### `lose` — Bab 1
 - **ID · Narasi:** Aletheia terlepas dari tangan Kazura. Gerbang tak bergerak—dua baris bilangan itu tetap menolak menyatu, dan Wolf kembali menyerang tanpa mengenali.
 - **EN · Narration:** Aletheia slips from Kazura's hand. The gate does not move—the two rows still refuse to merge, and Wolf strikes again without recognizing.
-- **ID · Wolf:** Tidak sejenis. Tidak sejenis. Tidak—
-- **EN · Wolf:** Unlike. Unlike. Un—
+- **ID · Wolf:** Tidak sama. Masih tidak sama—
+- **EN · Wolf:** Unequal. Still unequal—
 - **ID · Narasi:** Kazura menutup mata, dan satu hal terakhir terlintas: *jawabannya belum benar.* Bukan pedangnya yang lemah—jawabannya. Ada satu operasi yang ia lewatkan.
 - **EN · Narration:** Kazura closes his eyes, and one last thing crosses his mind: *the answer wasn't right yet.* Not his blade that was weak—the answer. There was one operation he skipped.
 - **ID · KAZURA:** ...Sekali lagi. Aku belum selesai menjawab.
 - **EN · KAZURA:** ...Once more. I'm not done answering.
 
-### Bab 2 — Pabrik Pangkat (`Power Factory`)
+### Bab 2 — Pabrik Pengali (`Multiplier Factory`)
 
 #### `intro` — Beat 1 · Pabrik
-- **ID · Narasi:** Pabrik itu bernafas. Setiap pipa menyemburkan angka yang tumbuh membesar—2 menjadi 4, 4 menjadi 16—lalu pecah sebelum sempat selesai.
-- **EN · Narration:** The factory breathes. Every pipe spurts numbers that grow larger—2 into 4, 4 into 16—then burst before they can finish.
-- **ID · KAZURA:** (Pangkat yang salah, dipaksa terus. Seperti sesuatu yang menolak berhenti menghitung.)
-- **EN · KAZURA:** (The wrong power, forced onward. Like something refusing to stop counting.)
+- **ID · Narasi:** Roda-roda pabrik berputar terlalu cepat. Satu peti menjadi empat, lalu enam belas. Tak satu pun dikirim ke jalur pembagian.
+- **EN · Narration:** The factory wheels spin too fast. One crate becomes four, then sixteen. None reaches the dividing line.
+- **ID · KAZURA:** (Semua terus dikalikan. Siapa yang menghentikan mesinnya?)
+- **EN · KAZURA:** (Everything keeps multiplying. Who's going to stop the machine?)
 
 #### `intro` — Beat 2 · Wraith (background)
 - **ID · Narasi:** Di tengah pabrik, sebuah bayangan berlipat—satu menjadi dua, dua menjadi empat, tak berujung, dan setiap salinan mengulang gerakan yang persis sama.
@@ -290,8 +290,8 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 - **EN · Narration:** The Drake coils around both sides of the chamber like a living chain, its scales flashing between the equals sign and the question mark. It holds the balance with its entire body.
 - **ID · Naga Persamaan:** Kau mengubah satu sisi. Pemain selalu mengubah satu sisi. Keseimbangan akan hancur.
 - **EN · Equation Drake:** You alter one side. Players always alter one side. The balance will collapse.
-- **ID · KAZURA:** Keseimbangan yang tidak bergerak bukan keseimbangan. Itu mati.
-- **EN · KAZURA:** A balance that never moves is not balance. It is death.
+- **ID · KAZURA:** Kalau satu ruas berubah, ruas satunya harus ikut. Beri aku ruang untuk mencoba.
+- **EN · KAZURA:** If one side changes, the other has to follow. Give me room to try.
 
 #### `win` — Bab 3
 - **ID · Narasi:** Naga melepaskan belitannya, dan ruang kembali rata—sisi kiri dan kanan akhirnya beristirahat sejajar. Tanda tanya memudar, digantikan tanda sama-dengan yang tenang.
@@ -340,8 +340,8 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 #### `intro` — Beat 1 · Benteng
 - **ID · Narasi:** Benteng itu tidak berdiri di atas tanah—ia menggantung, tersusun dari aturan-aturan yang dicabut dari dunia. Setiap langkah menuju pintunya terasa seperti menaiki persamaan yang sisinya tidak seimbang.
 - **EN · Narration:** The fortress does not stand on ground—it hangs, built from rules pulled out of the world. Every step toward its door feels like climbing an equation whose sides don't balance.
-- **ID · Narasi:** Di kakinya, Asuna menunggu. Kristalnya kini menyala terang—bukan lagi menjauh, tapi sengaja.
-- **EN · Narration:** At its foot, Asuna waits. Her crystals now glow bright—no longer retreating, but deliberately.
+- **ID · Narasi:** Asuna menunggu di kaki benteng. Kristalnya menyala terang saat ia melihat Kazura mendekat.
+- **EN · Narration:** Asuna waits below the fortress. Her crystals brighten when she sees Kazura approach.
 
 #### `intro` — Beat 2 · Bersatu
 - **ID · ASUNA:** Kau lambat.
@@ -352,8 +352,8 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 - **EN · ASUNA:** I read the rule. You cut the path. Seems this time we need both.
 - **ID · KAZURA:** ...Sepakat. Untuk sekali ini.
 - **EN · KAZURA:** ...Agreed. For once.
-- **ID · Narasi:** Pedang dan kristal akhirnya sejajar—bukan karena sihir, tapi karena mereka berhenti berlawanan arah.
-- **EN · Narration:** Blade and crystal finally align—not by magic, but because they stopped pulling in opposite directions.
+- **ID · Narasi:** Asuna mengangkat kristalnya. Kazura menghunus pedang. Keduanya maju ke pintu benteng.
+- **EN · Narration:** Asuna raises her crystal. Kazura draws his sword. Together they approach the fortress door.
 
 #### `intro` — Beat 3 · Axiom (background)
 - **ID · Narasi:** Pintu benteng terbuka tanpa suara. Di dalamnya, seorang penjaga duduk di atas singgasana yang terbuat dari hukum-hukum yang ia kumpulkan. Ia tidak menyerang. Ia bahkan tidak berdiri.
@@ -372,10 +372,10 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 - **EN · Axiom:** ...I forgot what it felt like to believe. You two... answered it. Together.
 - **ID · ASUNA:** Bukan karena jawabannya sempurna.
 - **EN · ASUNA:** Not because the answer was perfect.
-- **ID · KAZURA:** Tapi karena kami tidak berhenti sampai jawabannya ada.
-- **EN · KAZURA:** But because we didn't stop until the answer existed.
-- **ID · Narasi:** Benteng meruntuh bukan sebagai kehancuran, tapi sebagai pembebasan. Di kejauhan, satu per satu, gerbang-gerbang dunia terbuka kembali.
-- **EN · Narration:** The fortress collapses not as destruction, but as release. In the distance, one by one, the world's gates open again.
+- **ID · KAZURA:** Kami memeriksa lagi setiap kali salah.
+- **EN · KAZURA:** We checked again whenever we got it wrong.
+- **ID · Narasi:** Singgasana runtuh. Cahaya keluar dari sela-sela benteng, lalu gerbang-gerbang dunia terbuka satu per satu.
+- **EN · Narration:** The throne crumbles. Light spills through the fortress walls, and the world's gates open one by one.
 
 ---
 
@@ -384,11 +384,11 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 > **Judul rute:** "Nalar yang Tak Pernah Diam" — *The Reason That Never Falls Silent*
 > **Cermin penuh** dari Rute Kazura: kanon peristiwa & ending **identik**; yang berbeda hanya POV, urutan penemuan, dan penafsiran. Epilog **sama persis** (Bagian 6).
 
-### Bab 1 — Gerbang Suku Sejenis (`Like-Term Gate`)
+### Bab 1 — Gerbang Kesetaraan (`Balance Gate`)
 
 #### `intro` — Beat 1 · Gerbang
-- **ID · Narasi:** Gerbang itu berdiri di tengah padang yang laut—dua baris bilangan yang seharusnya sama. Yang kiri bergetar. Yang kanan memudar. Asuna berhenti tiga langkah darinya.
-- **EN · Narration:** The Gate stands in a plain that is a sea—two rows of numbers that should be the same. The left trembles. The right fades. Asuna stops three steps away.
+- **ID · Narasi:** Dua lempeng angka membentuk gerbang di tengah padang. Ruas kiri bergetar; ruas kanan memudar. Asuna berhenti tiga langkah darinya.
+- **EN · Narration:** Two slabs of numbers form a gate in the middle of the plain. The left side trembles; the right fades. Asuna stops three steps away.
 
 #### `intro` — Beat 2 · ASUNA (background)
 - **ID · ASUNA:** Namaku Asuna. Kristal ini bukan perhiasan—ia pecahan tablet hukum kerajaanku, yang menempel saat aku lari. Aku pembaca terakhirnya. Dan aku satu-satunya yang selamat justru karena pergi.
@@ -414,16 +414,16 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 #### `intro` — Beat 4 · Wolf (background)
 - **ID · Narasi:** Gerbang menganga. Sesuatu merangkak keluar—empat kaki, satu mata yang mencoba mengelompokkan Asuna dan gagal berkali-kali dalam satu detik.
 - **EN · Narration:** The gate gapes. Something crawls out—four legs, one eye trying to classify Asuna and failing again and again within a second.
-- **ID · Wolf:** Sejenis... tidak... sejenis... **tidak.**
-- **EN · Wolf:** Like... no... like... **no.**
-- **ID · ASUNA:** (Matanya tidak rusak. Cara ia **membaca** yang rusak.) Tunggu. Biar kutunjukkan padamu cara membacanya.
-- **EN · ASUNA:** (Its eye isn't broken. The way it *reads* is.) Wait. Let me show you how to read it.
+- **ID · Wolf:** Kiri... kanan... tidak sama.
+- **EN · Wolf:** Left... right... unequal.
+- **ID · ASUNA:** Lihat yang ditambahkan pada satu ruas. Kita bisa membatalkannya tanpa merusak yang lain.
+- **EN · ASUNA:** Look at what was added to one side. We can undo it without disturbing the other.
 
 #### `win` — Bab 1
 - **ID · Narasi:** Wolf meringkuk, dan matanya mengenali sesuatu. Dua baris bilangan di gerbang menyatu.
 - **EN · Narration:** Wolf curls up, and its eye recognizes something. The two rows at the gate merge.
-- **ID · Wolf:** ...Sejenis. Kau... sejenis dengan yang kucari.
-- **EN · Wolf:** ...Alike. You... are like the one I was looking for.
+- **ID · Wolf:** ...Sama. Kedua ruasnya sama lagi.
+- **EN · Wolf:** ...Equal. Both sides are equal again.
 - **ID · ASUNA:** Aturanmu pulang. Maafkan kami yang mengubahnya sebelum memahaminya.
 - **EN · ASUNA:** Your rule has come home. Forgive us for changing it before we understood it.
 - **ID · Narasi:** Gerbang terbuka. Di ujung koridor, samar, sebuah bahu berbaju biru menghilang di tikungan. Asuna menatap lama—lalu mencatat satu baris di tablet lengan bajunya.
@@ -435,13 +435,13 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 - **ID · ASUNA:** (Aku membaca aturannya... tapi aku salah membaca *diriku*. Aku menahan yang seharusnya kulepas.) Bukan gerbangnya. Aku.
 - **EN · ASUNA:** (I read the rule... but I misread *myself*. I held what I should have released.) Not the gate. Me.
 
-### Bab 2 — Pabrik Pangkat (`Power Factory`)
+### Bab 2 — Pabrik Pengali (`Multiplier Factory`)
 
 #### `intro` — Beat 1 · Pabrik
-- **ID · Narasi:** Pabrik itu bernafas. Angka tumbuh membesar di tiap pipa—2 menjadi 4, 4 menjadi 16—lalu pecah sebelum selesai.
-- **EN · Narration:** The factory breathes. Numbers grow larger in every pipe—2 into 4, 4 into 16—then burst before finishing.
-- **ID · ASUNA:** (Pangkat yang salah, dipaksa terus-menerus. Ini bukan pertumbuhan—ini kepanikan.)
-- **EN · ASUNA:** (The wrong power, forced on and on. This is not growth—this is panic.)
+- **ID · Narasi:** Roda-roda pabrik terus menggandakan peti. Jalur pembagian di sampingnya kosong, tertutup debu.
+- **EN · Narration:** The factory wheels keep multiplying crates. The dividing line beside them stands empty and dusty.
+- **ID · ASUNA:** (Mesinnya tahu cara mengalikan. Sekarang cari cara membalikkan prosesnya.)
+- **EN · ASUNA:** (The machine knows how to multiply. Now I need to reverse it.)
 
 #### `intro` — Beat 2 · Wraith (background)
 - **ID · Narasi:** Sebuah bayangan berlipat tak berujung, tiap salinan mengulang gerakan yang persis sama.
@@ -480,8 +480,8 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 - **EN · Narration:** The Drake coils around both sides like a living chain, holding balance with its whole body.
 - **ID · Naga Persamaan:** Kau mengubah satu sisi. Keseimbangan akan hancur.
 - **EN · Equation Drake:** You alter one side. The balance will collapse.
-- **ID · ASUNA:** Aku tidak mengubahnya. Aku **memahaminya**. Keseimbangan yang tak boleh disentuh bukan keseimbangan—itu penjara.
-- **EN · ASUNA:** I am not altering it. I am *understanding* it. A balance that must not be touched is not balance—it is a prison.
+- **ID · ASUNA:** Aku akan mengubah kedua ruasnya bersama. Lihat, keseimbangannya tetap terjaga.
+- **EN · ASUNA:** I'll change both sides together. Look—the balance still holds.
 
 #### `win` — Bab 3
 - **ID · Narasi:** Naga melepas belitannya. Ruang rata. Di lantai, jejak rumus Kazura tertulis tergesa—dan Asuna tersenyum tipis: *ternyata ia belajar bertanya.*
@@ -490,8 +490,8 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 - **EN · ASUNA:** (You're starting to read. Good.)
 
 #### `lose` — Bab 3
-- **ID · Narasi:** Ruang miring lebih jauh. Naga menahan Asuna sebagai "perusak keseimbangan". Ia kalah karena menahan terlalu lama, bukan karena salah membaca.
-- **EN · Narration:** The chamber tilts further. The Drake holds Asuna as a "destroyer of balance". She lost from holding too long, not from misreading.
+- **ID · Narasi:** Ruang miring lebih jauh. Asuna tetap menahan satu sisi, tetapi tidak sempat mengubah sisi yang lain. Naga menutup jalan keluarnya.
+- **EN · Narration:** The chamber tilts further. Asuna holds one side but cannot change the other in time. The Drake blocks her way out.
 - **ID · ASUNA:** (Aku menahan keseimbangan orang lain sampai melupakan milikku sendiri.)
 - **EN · ASUNA:** (I kept everyone else in balance until I forgot my own.)
 
@@ -556,8 +556,8 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 - **EN · Axiom:** ...I forgot what it felt like to believe. You two... answered it. Together.
 - **ID · ASUNA:** Bukan karena jawabannya sempurna.
 - **EN · ASUNA:** Not because the answer was perfect.
-- **ID · KAZURA:** Tapi karena kami tidak berhenti sampai jawabannya ada.
-- **EN · KAZURA:** But because we didn't stop until the answer existed.
+- **ID · KAZURA:** Kami memeriksa lagi setiap kali salah.
+- **EN · KAZURA:** We checked again whenever we got it wrong.
 - **ID · Narasi:** Di kejauhan, satu per satu, gerbang dunia terbuka kembali. Asuna menoleh ke tablet lengan bajunya—dan menulis baris terakhir.
 - **EN · Narration:** In the distance, one by one, the world's gates open again. Asuna turns to the tablet on her sleeve—and writes the final line.
 
@@ -565,7 +565,7 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 
 ## Bagian 6 — Epilog (Identik Kedua Rute)
 
-> **Judul:** "Lima `x`" — *Five x's*
+> **Judul:** "Gerbang Terakhir" — *The Last Gate*
 > Diputar **setelah kontribusi Bab 5 selesai** (setelah `win` Bab 5), **sebelum** layar `Evaluation`. **Teks identik** untuk Rute Kazura dan Rute Asuna; hanya nama karakter yang tampil sebagai "aku" yang berbeda di kalimat pembuka (ditandai `{POV}`).
 
 #### `epilogue` — Beat 1 · Langit
@@ -577,22 +577,20 @@ Axiom is the final guardian and the mastermind behind everything. He once upheld
 - **EN · {POV}:** The world knows me as {KAZURA/ASUNA}. But what I remember from this ending isn't my name.
 
 #### `epilogue` — Beat 3 · Bersama
-- **ID · Narasi:** Mereka berdiri berdampingan—pedang dan kristal—bukan karena takdir, tapi karena sebuah pilihan yang masing-masing buat berkali-kali: untuk tidak berhenti sebelum jawabannya ada.
-- **EN · Narration:** They stand side by side—blade and crystal—not by fate, but by a choice each made again and again: not to stop before the answer existed.
+- **ID · Narasi:** Kazura dan Asuna berdiri berdampingan. Pedang Kazura turun; Asuna menutup tabletnya. Untuk pertama kali, tak ada gerbang yang harus mereka buka.
+- **EN · Narration:** Kazura and Asuna stand together. Kazura lowers his sword; Asuna closes her tablet. For once, there is no gate left to open.
 
-#### `epilogue` — Beat 4 · Lima x
-- **ID · ASUNA:** Kau tahu, di lima ruangan itu... kita menjawab lima hal yang berbeda. Suku sejenis. Pangkat. Persamaan. Pecahan. Dan aturan yang menahannya semua.
-- **EN · ASUNA:** You know, in those five rooms... we answered five different things. Like terms. Powers. Equations. Fractions. And the rule that held them all.
-- **ID · KAZURA:** Lima `x` yang berbeda. Tapi satu jawaban yang sama.
-- **EN · KAZURA:** Five different `x`. But one and the same answer.
-- **ID · ASUNA:** Jawabannya bukan angka.
-- **EN · ASUNA:** The answer isn't a number.
-- **ID · KAZURA:** Jawabannya adalah kita tidak berhenti.
-- **EN · KAZURA:** The answer is that we didn't stop.
+#### `epilogue` — Beat 4 · Langkah berikutnya
+- **ID · ASUNA:** Di gerbang kita mengurangi. Di pabrik kita membagi. Setelah itu, setiap soal meminta cara berpikir yang berbeda.
+- **EN · ASUNA:** At the gate we subtracted. At the factory we divided. Every problem after that asked us to think differently.
+- **ID · KAZURA:** Dan kalau langkah pertama keliru, kita bisa mengulangnya.
+- **EN · KAZURA:** And if the first step is wrong, we can try it again.
+- **ID · ASUNA:** Kali ini, bersama.
+- **EN · ASUNA:** This time, together.
 
 #### `epilogue` — Beat 5 · Penutup
-- **ID · Narasi:** Di bawah langit yang kini penuh aturan yang pulang, dua jalan yang dulu berlawanan berjalan searah. Bukan karena keduanya menjadi sama—tapi karena keduanya akhirnya saling melengkapi.
-- **EN · Narration:** Under a sky now full of rules come home, two roads that once opposed now walk the same way. Not because they became the same—but because they finally completed each other.
+- **ID · Narasi:** Di bawah langit yang kembali terang, Kazura dan Asuna berjalan ke arah yang sama. Mereka masih berbeda. Kini mereka tahu kapan harus saling mendengar.
+- **EN · Narration:** Beneath a clear sky, Kazura and Asuna take the same road. They are still different. Now they know when to listen to each other.
 - **ID · Narasi:** **Dua jalan. Satu solusi.**
 - **EN · Narration:** **Two roads. One solution.**
 - **ID · Narasi:** *(Layar narasi menutup. Lanjut ke Evaluation.)*
@@ -619,7 +617,7 @@ Ganti placeholder "*...masih menunggu untuk ditulis* / *...yet to be written*" d
 | Bab | Boss | Role | Element | HP | DMG | Skills |
 |---|---|---|---|---|---|---|
 | 1 | Wolf | Penjaga Gerbang | Shadow | 150 | 18 | Claw Strike · Dark Howl · Shadow Dash |
-| 2 | Wraith | Penjaga Pabrik Pangkat | Shadow / Arc | 165 | 19 | Spectral Claw · Void Surge · Wraith Step |
+| 2 | Wraith | Penjaga Pabrik Pengali | Shadow / Arc | 165 | 19 | Spectral Claw · Void Surge · Wraith Step |
 | 3 | Naga Persamaan (Equation Drake) | Penjaga Ruang Persamaan | Arc / Lightning | 180 | 22 | Arc Breath · Equation Surge · Vector Rush |
 | 4 | Titan | Penghancur Kuil Pecahan | Bone / Earth | 185 | 21 | Rib Crush · Bone Roar · Tomb Rush |
 | 5 | Axiom | Penguasa Benteng Bayangan | Arc / Void | 210 | 24 | Axiom Break · Void Equation · Null Collapse |

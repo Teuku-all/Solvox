@@ -116,8 +116,8 @@ export default function Evaluation({ result, onClose, onRematch, onNext, nextLev
 
           <div className="eval-accordion">
             {result.questionLogs?.length ? result.questionLogs.map((item, index) => (
-              <details key={`${item.idx}-${index}`} open={expanded === index} onToggle={(event) => setExpanded(event.currentTarget.open ? index : null)} className={`eval-detail ${item.correct ? 'ok' : 'bad'}`}>
-                <summary>
+              <details key={`${item.idx}-${index}`} open={expanded === index} className={`eval-detail ${item.correct ? 'ok' : 'bad'}`}>
+                <summary onClick={(event) => { event.preventDefault(); setExpanded((current) => current === index ? null : index); }}>
                   <span className="eval-detail-status"><PixelIcon name={item.correct ? 'check' : 'close'} size={14} /></span>
                   <div>
                     <b>{t('questionNumber')} {item.questionId ?? index + 1} · {item.concept}</b>
