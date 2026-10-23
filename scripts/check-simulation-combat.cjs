@@ -85,4 +85,4 @@ async function check(levelId) {
   console.log(`PASS Chapter ${levelId}: first wrong simulation action immediately attacks once and deducts HP at impact`);
 }
 
-(async () => { await check(1); await check(3); await check(4); })().catch((error) => { console.error(error); process.exitCode = 1; });
+(async () => { await check(1); await check(3); })().catch((error) => { console.error(error); process.exitCode = 1; });

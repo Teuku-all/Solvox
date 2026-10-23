@@ -63,7 +63,7 @@ export const CHAPTER_GUIDE = {
       goal: 'Menyelesaikan persamaan dengan variabel di kiri dan kanan, termasuk bentuk bertanda kurung dan koefisien pecahan.',
       steps: [
         { title: 'Kenali suku variabel dan bilangan', body: 'Suku adalah bagian yang dipisahkan tanda tambah atau kurang. Pada 5x − 3 = 2x + 9, suku variabelnya 5x dan 2x, sedangkan bilangannya −3 dan +9. Perhatikan tanda setiap suku.' },
-        { title: 'Buka kurung dan sederhanakan jika diminta', body: 'Jika model tanda kurung muncul, selesaikan distribusi sebelum masuk ke timbangan. Contoh: 3(m + 2) menjadi 3m + 6. Jika diminta menyederhanakan suku sejenis, pilih tindakan itu lalu terapkan pada kiri dan kanan. Tanda minus di depan kurung berlaku ke semua isinya: −(2x + 5) menjadi −2x − 5.' },
+        { title: 'Buka kurung dan sederhanakan jika diminta', body: 'Gunakan Buka tanda kurung atau Sederhanakan suku sejenis sesuai tahap di panel. Contoh: 3(m + 2) menjadi 3m + 6. Tanda minus di depan kurung berlaku ke semua isinya: −(2x + 5) menjadi −2x − 5.' },
         { title: 'Kumpulkan variabel di satu ruas', body: 'Pada 5x − 3 = 2x + 9, kurangi 2x pada kedua ruas sehingga menjadi 3x − 3 = 9. Gunakan panel operasi untuk mengubah persamaan; ubin chapter ini tetap di ruasnya.' },
         { title: 'Selesaikan operasi pada kedua ruas', body: 'Pilih nilai atau suku beserta operasinya, terapkan ke kiri lalu ke kanan. Ruas yang diproses berubah lebih dahulu. Persamaan kembali setara setelah operasi yang sama selesai di ruas lainnya.' },
         { title: 'Hilangkan bilangan di samping variabel', body: 'Pada 3x − 3 = 9, tambahkan 3 ke kedua ruas agar menjadi 3x = 12. Ikuti urutan yang diminta; beberapa soal menghilangkan bilangan terlebih dahulu sebelum mengumpulkan variabel.' },
@@ -161,7 +161,7 @@ export const CHAPTER_GUIDE = {
       goal: 'Solve equations with variables on both sides, including parentheses and fractional coefficients.',
       steps: [
         { title: 'Identify variable terms and numbers', body: 'Terms are separated by plus or minus signs. In 5x − 3 = 2x + 9, variable terms are 5x and 2x, and numbers are −3 and +9. Keep track of every sign.' },
-        { title: 'Expand and simplify when requested', body: 'If a parentheses model appears, complete distribution before using the scale. For example, 3(m + 2) becomes 3m + 6. When asked to combine like terms, choose that action and apply it to both sides. A minus before parentheses applies to every term: −(2x + 5) becomes −2x − 5.' },
+        { title: 'Expand and simplify when requested', body: 'Use Expand the parentheses or Combine like terms for the current stage. For example, 3(m + 2) becomes 3m + 6. A minus before parentheses applies to every term: −(2x + 5) becomes −2x − 5.' },
         { title: 'Collect variables on one side', body: 'In 5x − 3 = 2x + 9, subtract 2x from both sides to get 3x − 3 = 9. Use the operation panel; tiles stay on their sides in this chapter.' },
         { title: 'Complete operations on both sides', body: 'Choose the value or term and operation, apply to the left, then to the right. The first side updates immediately. Equality is restored after the same operation finishes on the other side.' },
         { title: 'Remove the number beside the variable', body: 'From 3x − 3 = 9, add 3 to both sides to get 3x = 12. Follow the requested order; some questions remove numbers before collecting variables.' },

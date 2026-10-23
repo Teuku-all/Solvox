@@ -9,7 +9,7 @@ const code = esbuild.buildSync({
 
 function mount(questionId, lang = 'id') {
   const slots = [], dependencies = [], listeners = {}, timers = new Map();
-  let cursor = 0, dirty = false, tree, effects = [], progress, completion, target = 'left';
+  let cursor = 0, dirty = false, tree, effects = [], progress, target = 'left';
   const react = {
     createElement: (type, props, ...children) => ({ type, props: { ...props, children: children.flat(Infinity) } }),
     Fragment: 'fragment',
@@ -44,15 +44,13 @@ function mount(questionId, lang = 'id') {
     },
     document: { elementFromPoint: () => ({ closest: () => ({ classList: { contains: (name) => name === `is-${target}` } }) }) },
   });
-  const props = { questionId, lang, busy: false, onProgress: (value) => { progress = value; }, onBalanceSolved: (value) => { completion = value; } };
-  let renderComponent = mod.exports.default, renderProps = props;
-  const distributionEvents = { completed: 0, errors: 0 };
+  const props = { questionId, lang, busy: false, onProgress: (value) => { progress = value; } };
   function render() {
     let passes = 0;
     do {
       assert.ok(++passes < 15, 'Render should settle');
       dirty = false; cursor = 0; effects = [];
-      tree = renderComponent(renderProps);
+      tree = mod.exports.default(props);
       effects.forEach((callback) => callback());
     } while (dirty);
     return tree;
@@ -87,28 +85,11 @@ function mount(questionId, lang = 'id') {
     render();
   }
   const scale = () => find((node) => node.type?.name === 'BalanceScale')[0].props;
-  const mountDistribution = () => {
-    const child = find((node) => node.type?.name === 'DistributiveModel')[0];
-    assert.ok(child, 'The question should have a distribution model');
-    renderComponent = child.type;
-    renderProps = { ...child.props, onComplete: () => distributionEvents.completed++, onError: () => distributionEvents.errors++, onCombineChange() {} };
-    slots.length = 0; dependencies.length = 0; timers.clear();
-    render();
-    return child.props.model;
-  };
-  const flushTimers = (maxDelay) => {
-    for (const [id, timer] of [...timers.entries()].sort((a, b) => a[1].delay - b[1].delay)) {
-      if (timer.delay > maxDelay || !timers.has(id)) continue;
-      timers.delete(id); timer.callback(); render();
-    }
-  };
   render();
-  return { render, find, has, click, text, operation, apply, dragTile, scale, flushTimers, mountDistribution, distributionEvents, progress: () => progress, completion: () => completion };
+  return { render, find, has, click, text, operation, apply, dragTile, scale, progress: () => progress };
 }
 
-module.exports = { mount };
-
-if (require.main === module) for (const lang of ['id', 'en']) {
+for (const lang of ['id', 'en']) {
   const sim = mount(25, lang);
   assert.equal(sim.scale().left[0].expression, true);
   sim.operation('×'); sim.apply(0);

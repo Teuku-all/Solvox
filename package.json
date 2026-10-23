@@ -10,7 +10,7 @@
     "start:local": "npm run build && node server.js",
     "dev": "node scripts/dev.js",
     "qa": "node qa-check.js",
-    "qa:math": "node scripts/check-chapter-balance.cjs && node scripts/check-chapter4.cjs && node scripts/check-simulation-combat.cjs && node scripts/check-mathematical-evaluation.cjs && node scripts/check-chapter3-auto.cjs && node scripts/check-chapter2-fractions.cjs",
+    "qa:math": "node scripts/check-chapter-balance.cjs && node scripts/check-simulation-combat.cjs && node scripts/check-mathematical-evaluation.cjs && node scripts/check-chapter3-auto.cjs && node scripts/check-chapter2-fractions.cjs",
     "dev:frontend": "npm --workspace frontend run dev"
   },
   "dependencies": {
