@@ -259,7 +259,18 @@ function rebindSocket(room,player,socket){player.id=socket.id;player.connected=t
 const FRONTEND_DIST=path.join(__dirname,'..','frontend','dist');
 app.use(express.json({limit:'128kb'}));
 
-if(!process.env.VERCEL) app.use(express.static(FRONTEND_DIST));
+if(!process.env.VERCEL) app.use(express.static(FRONTEND_DIST, {
+  setHeaders(res, filePath) {
+    const assetPath = filePath.replace(/\\/g, '/');
+    if (/\/assets\/optimized\//.test(assetPath) || /\/assets\/[^/]+-[\w-]{8,}\.(js|css)$/.test(assetPath)) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    } else if (/\.(webp|png|jpe?g|mp4|mp3|ttf)$/.test(assetPath)) {
+      res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+    } else if (assetPath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache');
+    }
+  },
+}));
 app.use('/api/single-player',singlePlayerRoutes);
 
 app.post('/api/questions/generate',(req,res)=>{

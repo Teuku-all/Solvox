@@ -1,32 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 
-// Selection-only renderer: keep combat timing, effects and asset loading untouched.
-// Align the supplied frames by their feet; transparent padding differs per pose.
-function measureFrame(image) {
-  const canvas = document.createElement('canvas');
-  canvas.width = image.naturalWidth;
-  canvas.height = image.naturalHeight;
-  const context = canvas.getContext('2d', { willReadFrequently: true });
-  context.drawImage(image, 0, 0);
-  const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
-  let bottom = 0;
-  for (let y = 0; y < canvas.height; y += 1) {
-    for (let x = 0; x < canvas.width; x += 1) {
-      if (data[(y * canvas.width + x) * 4 + 3] > 32) bottom = y + 1;
-    }
-  }
-  let left = canvas.width;
-  let right = 0;
-  for (let y = Math.max(0, bottom - Math.ceil(canvas.height * 0.07)); y < bottom; y += 1) {
-    for (let x = 0; x < canvas.width; x += 1) {
-      if (data[(y * canvas.width + x) * 4 + 3] > 32) {
-        left = Math.min(left, x);
-        right = Math.max(right, x);
-      }
-    }
-  }
-  return { image, footX: left <= right ? (left + right) / 2 : canvas.width / 2, bottom: bottom || canvas.height };
-}
+import { loadAssetImage } from '../../services/assetImageCache';
+import { selectionFrameAnchor } from '../../services/optimizedAssets';
+import { selectionFrameSources } from '../../services/selectionAssets';
 
 export default function SinglePlayerIdleSprite({ asset, reducedMotion, onReady, onLoadError }) {
   const readyReportedRef = useRef(false);
@@ -44,30 +20,34 @@ export default function SinglePlayerIdleSprite({ asset, reducedMotion, onReady, 
     framesRef.current = [];
     readyReportedRef.current = false;
     let failed = 0;
-    const images = sequence.frames.map((name) => {
-      const image = new Image();
-      image.decoding = 'async';
-      return { image, src: `${asset.base}/${asset.selectionIdle?.folder || asset.sequenceFolders?.idle || 'idle'}/${name}` };
-    });
-    images.forEach(({ image, src }, index) => {
-      image.onload = () => {
-        if (alive) {
-          // Show available poses immediately, without waiting for the full loop.
-          framesRef.current[index] = measureFrame(image);
-          redrawRef.current();
-        }
-      };
-      image.onerror = () => {
+    const sources = selectionFrameSources(asset);
+    const loadFrame = async (src, index) => {
+      try {
+        const image = await loadAssetImage(src, { fetchPriority: index === 0 ? 'high' : 'low' });
+        if (!alive) return false;
+        const anchor = selectionFrameAnchor(src) || { footX: image.naturalWidth / 2, bottom: image.naturalHeight };
+        framesRef.current[index] = { image, ...anchor };
+        redrawRef.current();
+        return true;
+      } catch {
         failed += 1;
-        if (alive && failed === images.length) errorCallbackRef.current?.();
-      };
-      image.src = src;
-    });
-    return () => {
-      alive = false;
-      images.forEach(({ image }) => { image.onload = null; image.onerror = null; });
+        if (alive && failed === sources.length) errorCallbackRef.current?.();
+        return false;
+      }
     };
-  }, [asset, sequence]);
+    // Let the first pose paint before downloading the rest of the animation.
+    (async () => {
+      const firstLoaded = await loadFrame(sources[0], 0);
+      if (!alive) return;
+      if (!reducedMotion) sources.slice(1).forEach((src, index) => loadFrame(src, index + 1));
+      else if (!firstLoaded) {
+        for (let index = 1; index < sources.length && alive; index++) {
+          if (await loadFrame(sources[index], index)) break;
+        }
+      }
+    })();
+    return () => { alive = false; };
+  }, [asset, sequence, reducedMotion]);
 
   useEffect(() => {
     let raf = 0;

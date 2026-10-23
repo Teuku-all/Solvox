@@ -22,7 +22,7 @@
   background: #081920;
   box-shadow: 0 30px 90px rgba(0, 0, 0, .65), inset 0 1px rgba(255, 255, 255, .07);
   color: #eef7f0;
-  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-body-solvox, "Segoe UI", system-ui, sans-serif);
 }
 
 .tutorial-head {
@@ -57,7 +57,7 @@
 .tutorial-hero-art div { display: flex; align-items: center; gap: 10px; color: #f3f7ed; font: 750 1.2rem/1.2 Georgia, serif; white-space: nowrap; }
 .tutorial-hero-art div b, .tutorial-hero-art em { color: #f1d58f; }
 .tutorial-hero-art i { width: 85%; height: 3px; border-radius: 4px; background: linear-gradient(90deg, transparent, #a9d5bf, transparent); }
-.tutorial-hero-art em { font: 800 .95rem/1 Inter, "Segoe UI", sans-serif; }
+.tutorial-hero-art em { font: 800 .95rem/1 var(--font-body-solvox, "Segoe UI", system-ui, sans-serif); }
 .tutorial-close { position: absolute; top: 18px; right: 18px; z-index: 3; display: grid; width: 44px; height: 44px; place-items: center; padding: 8px; border: 1px solid rgba(193, 226, 204, .28); border-radius: 11px; background: rgba(3, 18, 22, .65); color: #eef7f0; cursor: pointer; }
 .tutorial-close:hover { background: rgba(50, 94, 88, .55); }
 .tutorial-close img { width: 19px !important; height: 19px !important; filter: none !important; box-shadow: none !important; }
@@ -74,8 +74,9 @@
 .tutorial-section-symbol { display: grid; width: 52px; height: 52px; place-items: center; border: 1px solid rgba(226, 200, 119, .4); border-radius: 14px; background: linear-gradient(145deg, rgba(120, 105, 45, .32), rgba(33, 77, 72, .42)); color: #f0d591; }
 .tutorial-section-heading h3 { margin: 0 0 4px; color: #f2f5e8; font-size: 1.3rem; line-height: 1.2; }
 .tutorial-section-heading p { margin: 0; color: #b1c7c0; font-size: .88rem; line-height: 1.5; }
-.tutorial-route { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 18px; }
-.tutorial-route span { display: inline-flex; align-items: center; min-height: 33px; padding: 6px 10px; border: 1px solid rgba(131, 218, 188, .2); border-radius: 8px; background: rgba(36, 84, 76, .27); color: #d9eee1; font-size: .76rem; font-weight: 700; }
+.tutorial-route { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 18px; counter-reset: route; }
+.tutorial-route span { counter-increment: route; display: inline-flex; align-items: center; min-height: 33px; padding: 6px 10px; border: 1px solid rgba(131, 218, 188, .2); border-radius: 8px; background: rgba(36, 84, 76, .27); color: #d9eee1; font-size: .76rem; font-weight: 700; }
+.tutorial-route span::before { content: counter(route); display: grid; flex: none; width: 20px; height: 20px; margin-right: 7px; place-items: center; border: 1px solid rgba(173, 226, 199, .32); border-radius: 50%; color: #a9e3c8; font-size: .65rem; }
 .tutorial-route svg { flex: none; color: #d9c686; }
 .tutorial-guide-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
 .tutorial-guide-card { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; min-width: 0; min-height: 129px; padding: 16px; border: 1px solid rgba(143, 211, 195, .15); border-radius: 13px; background: linear-gradient(145deg, rgba(25, 57, 60, .82), rgba(11, 31, 39, .84)); }

@@ -1,0 +1,150 @@
+{
+  "assets": {
+    "/assets/characters/kazura/splash/kazura-selection.webp": {
+      "src": "/assets/optimized/kazura-selection-1080-dfa3a48d2e1b.webp",
+      "srcSet": "/assets/optimized/kazura-selection-540-83873c1ec1a4.webp 540w, /assets/optimized/kazura-selection-1080-dfa3a48d2e1b.webp 1080w",
+      "width": 1080,
+      "height": 1440
+    },
+    "/assets/characters/asuka/splash/asuna-selection.webp": {
+      "src": "/assets/optimized/asuna-selection-1080-51aee33766a6.webp",
+      "srcSet": "/assets/optimized/asuna-selection-540-da6ba0de22e0.webp 540w, /assets/optimized/asuna-selection-1080-51aee33766a6.webp 1080w",
+      "width": 1080,
+      "height": 1440
+    },
+    "/assets/backgrounds/character select/character-select-bg-desktop.webp": {
+      "src": "/assets/optimized/character-select-bg-desktop-1672-3908917be332.webp",
+      "srcSet": "/assets/optimized/character-select-bg-desktop-960-79c89b14191e.webp 960w, /assets/optimized/character-select-bg-desktop-1672-3908917be332.webp 1672w",
+      "width": 1672,
+      "height": 941
+    },
+    "/assets/backgrounds/character select/character-select-bg-mobile.webp": {
+      "src": "/assets/optimized/character-select-bg-mobile-720-74381b254d83.webp",
+      "srcSet": "/assets/optimized/character-select-bg-mobile-540-95023eecb8a7.webp 540w, /assets/optimized/character-select-bg-mobile-720-74381b254d83.webp 720w",
+      "width": 720,
+      "height": 1280
+    },
+    "/assets/home/home-background-v83-poster.jpg": {
+      "src": "/assets/optimized/home-background-v83-poster-1920-3e6aff665544.webp",
+      "srcSet": "/assets/optimized/home-background-v83-poster-960-19f5c74a38c0.webp 960w, /assets/optimized/home-background-v83-poster-1920-3e6aff665544.webp 1920w",
+      "width": 1920,
+      "height": 1083
+    },
+    "/assets/home/home-background-cinematic-poster.jpg": {
+      "src": "/assets/optimized/home-background-cinematic-poster-1248-9c267e474d57.webp",
+      "srcSet": "/assets/optimized/home-background-cinematic-poster-960-9049a09b0312.webp 960w, /assets/optimized/home-background-cinematic-poster-1248-9c267e474d57.webp 1248w",
+      "width": 1248,
+      "height": 704
+    },
+    "/assets/ui/brand/solvox-logo-v89.png": {
+      "src": "/assets/optimized/solvox-logo-v89-480-b2fac0a41170.webp",
+      "srcSet": "/assets/optimized/solvox-logo-v89-480-b2fac0a41170.webp 480w",
+      "width": 480,
+      "height": 178
+    },
+    "/assets/ui/modes/single-mode-v94.webp": {
+      "src": "/assets/optimized/single-mode-v94-960-2f44864a4cff.webp",
+      "srcSet": "/assets/optimized/single-mode-v94-480-6f23041a2e28.webp 480w, /assets/optimized/single-mode-v94-960-2f44864a4cff.webp 960w",
+      "width": 960,
+      "height": 960
+    },
+    "/assets/ui/modes/multi-mode-v94.webp": {
+      "src": "/assets/optimized/multi-mode-v94-960-bce8a8b543f0.webp",
+      "srcSet": "/assets/optimized/multi-mode-v94-480-b028446f605d.webp 480w, /assets/optimized/multi-mode-v94-960-bce8a8b543f0.webp 960w",
+      "width": 960,
+      "height": 960
+    },
+    "/assets/ui/character-select/buttons/back.webp": {
+      "src": "/assets/optimized/back-1080-1f671ab148da.webp",
+      "srcSet": "/assets/optimized/back-1080-1f671ab148da.webp 1080w",
+      "width": 1080,
+      "height": 360
+    },
+    "/assets/ui/character-select/divider/crystal-seam.webp": {
+      "src": "/assets/optimized/crystal-seam-1080-2d031a00d121.webp",
+      "srcSet": "/assets/optimized/crystal-seam-1080-2d031a00d121.webp 1080w",
+      "width": 1080,
+      "height": 608
+    },
+    "/assets/ui/character-select/icons/crystal-star.webp": {
+      "src": "/assets/optimized/crystal-star-1080-e3000106b2d7.webp",
+      "srcSet": "/assets/optimized/crystal-star-1080-e3000106b2d7.webp 1080w",
+      "width": 1080,
+      "height": 1080
+    },
+    "/assets/ui/character-select/icons/eye-preview.webp": {
+      "src": "/assets/optimized/eye-preview-1080-287346588f6b.webp",
+      "srcSet": "/assets/optimized/eye-preview-1080-287346588f6b.webp 1080w",
+      "width": 1080,
+      "height": 1080
+    },
+    "/assets/ui/character-select/nameplates/banner-plate.webp": {
+      "src": "/assets/optimized/banner-plate-1080-df73dd71ea45.webp",
+      "srcSet": "/assets/optimized/banner-plate-1080-df73dd71ea45.webp 1080w",
+      "width": 1080,
+      "height": 360
+    },
+    "/assets/ui/character-select/nameplates/header-bar.webp": {
+      "src": "/assets/optimized/header-bar-1080-09e7b77d2f0c.webp",
+      "srcSet": "/assets/optimized/header-bar-1080-09e7b77d2f0c.webp 1080w",
+      "width": 1080,
+      "height": 360
+    },
+    "/assets/ui/character-select/panels/character-info.webp": {
+      "src": "/assets/optimized/character-info-1080-def50f1b4107.webp",
+      "srcSet": "/assets/optimized/character-info-1080-def50f1b4107.webp 1080w",
+      "width": 1080,
+      "height": 1440
+    }
+  },
+  "anchors": {
+    "/assets/characters/kazura/kazura-front/idle-kazura-01.webp": {
+      "footX": 151,
+      "bottom": 703
+    },
+    "/assets/characters/kazura/kazura-front/idle-kazura-02.webp": {
+      "footX": 153.5,
+      "bottom": 704
+    },
+    "/assets/characters/kazura/kazura-front/idle-kazura-03.webp": {
+      "footX": 152.5,
+      "bottom": 704
+    },
+    "/assets/characters/kazura/kazura-front/idle-kazura-04.webp": {
+      "footX": 152,
+      "bottom": 705
+    },
+    "/assets/characters/kazura/kazura-front/idle-kazura-05.webp": {
+      "footX": 153,
+      "bottom": 704
+    },
+    "/assets/characters/kazura/kazura-front/idle-kazura-06.webp": {
+      "footX": 153.5,
+      "bottom": 704
+    },
+    "/assets/characters/asuka/asuka-front/idle-asuka-01.webp": {
+      "footX": 154.5,
+      "bottom": 701
+    },
+    "/assets/characters/asuka/asuka-front/idle-asuka-02.webp": {
+      "footX": 154,
+      "bottom": 700
+    },
+    "/assets/characters/asuka/asuka-front/idle-asuka-03.webp": {
+      "footX": 154,
+      "bottom": 700
+    },
+    "/assets/characters/asuka/asuka-front/idle-asuka-04.webp": {
+      "footX": 154,
+      "bottom": 700
+    },
+    "/assets/characters/asuka/asuka-front/idle-asuka-05.webp": {
+      "footX": 154,
+      "bottom": 700
+    },
+    "/assets/characters/asuka/asuka-front/idle-asuka-06.webp": {
+      "footX": 154.5,
+      "bottom": 701
+    }
+  }
+}

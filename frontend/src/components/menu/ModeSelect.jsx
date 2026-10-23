@@ -1,6 +1,8 @@
 import React from 'react';
 import PixelIcon from '../shared/PixelIcon';
 import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
+import DeferredBackdrop from '../shared/DeferredBackdrop';
+import { responsiveAsset } from '../../services/optimizedAssets';
 
 const MODE_ART = {
   single: '/assets/ui/modes/single-mode-v94.webp',
@@ -22,7 +24,7 @@ function ModeCard({type,label,eyebrow,description,action,onActivate,t}){
       </span>
     </div>
     <div className="mode-card-art" aria-hidden="true">
-      <img src={MODE_ART[type]} alt="" draggable="false" />
+      <img {...responsiveAsset(MODE_ART[type], '(max-width: 760px) 70vw, 35vw')} alt="" draggable="false" />
     </div>
     <span className="mode-card-tag" aria-hidden="true">
       <span>{isSingle ? t('modePrimary') : t('modeSocial')}</span>
@@ -33,9 +35,7 @@ function ModeCard({type,label,eyebrow,description,action,onActivate,t}){
 export default function ModeSelect({lang,t,onBack,onSingle,onMulti}){
   return <div className="mode-select">
     <div className="mode-select-backdrop" aria-hidden="true">
-      <video autoPlay loop muted playsInline preload="metadata" poster="/assets/home/home-background-v83-poster.jpg">
-        <source src="/assets/home/home-background-v83.mp4" type="video/mp4" />
-      </video>
+      <DeferredBackdrop src="/assets/home/home-background-v83.mp4" poster="/assets/home/home-background-v83-poster.jpg" />
       <div />
     </div>
 

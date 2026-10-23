@@ -113,3 +113,33 @@ button span,.nav-pill,.stage-crown,.chapter-card-copy,.mode-card-copy,.multi-hea
   .multi-header .multi-back-btn .solvox-back-art{width:19px!important;height:19px!important;flex-basis:19px!important}
   .multi-header .multi-back-btn .solvox-back-label{height:19px!important;font-size:.58rem!important}
 }
+
+/* About page: clarify team hierarchy and keep reading sizes comfortable. */
+.about-page{align-items:center;padding-top:72px;padding-bottom:48px}
+.about-back{font-family:var(--font-body-solvox);font-size:var(--text-caption);font-weight:700}
+.about-shell{width:min(1120px,100%);padding:clamp(24px,4vw,44px);border-radius:18px;border-color:rgba(188,230,163,.22);backdrop-filter:blur(12px)}
+.about-kicker{font-family:var(--font-body-solvox);font-size:var(--text-caption);font-weight:750}
+.about-shell h1{font-family:var(--font-heading-solvox);font-size:clamp(2rem,4vw,3rem);line-height:1.12;letter-spacing:-.02em}
+.about-intro{font-size:var(--text-body);line-height:1.7}
+.about-divider{margin:24px 0 20px}
+.about-grid{gap:16px}
+.about-card{min-height:210px;padding:24px 20px;border-radius:12px;border-top-color:rgba(200,226,143,.42);background:linear-gradient(150deg,rgba(21,48,37,.84),rgba(5,20,17,.78))}
+.about-card:hover{transform:translateY(-3px)}
+.about-card h2{font-family:var(--font-heading-solvox);font-size:1.125rem;line-height:1.3}
+.about-card span{width:fit-content;margin-top:2px;padding:5px 8px;border:1px solid rgba(207,231,142,.22);border-radius:4px;background:rgba(207,231,142,.08);font-size:var(--text-caption);letter-spacing:.045em}
+.about-card p{font-size:var(--text-body);line-height:1.65;color:#bfd0c4}
+.about-index{color:rgba(216,243,161,.48);font-size:var(--text-caption)}
+.about-footer{padding-top:16px;border-top:1px solid rgba(195,225,127,.16);font-family:var(--font-heading-solvox);font-size:.875rem;color:#cfddc7}
+.about-team-brand{width:min(320px,72%);margin-bottom:20px}
+.about-team-brand-img{filter:drop-shadow(0 5px 14px rgba(88,190,134,.14))}
+@media(max-width:760px){
+  .about-page{align-items:flex-start;padding-top:72px;padding-bottom:28px}
+  .about-shell{padding:22px 18px;border-radius:14px}
+  .about-card{min-height:0;padding:18px}
+  .about-team-brand{width:min(280px,82%);margin-bottom:15px}
+}
+@media(max-width:420px){
+  .about-shell h1{font-size:1.75rem;line-height:1.15}
+  .about-card h2{font-size:1rem}
+  .about-card p{font-size:var(--text-body);line-height:1.6}
+}

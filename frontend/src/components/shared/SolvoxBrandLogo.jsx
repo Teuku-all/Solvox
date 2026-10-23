@@ -1,4 +1,5 @@
 import React from 'react';
+import { responsiveAsset } from '../../services/optimizedAssets';
 
 /** V89 — single-source Solvox image logo. */
 export default function SolvoxBrandLogo({ compact = false, className = '' }) {
@@ -9,7 +10,7 @@ export default function SolvoxBrandLogo({ compact = false, className = '' }) {
       aria-label="Solvox"
     >
       <img
-        src="/assets/ui/brand/solvox-logo-v89.png"
+        {...responsiveAsset('/assets/ui/brand/solvox-logo-v89.png', '300px')}
         alt="Solvox"
         draggable="false"
       />

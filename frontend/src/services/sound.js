@@ -23,6 +23,8 @@ const SOUND_FILES = Object.freeze({
 
 function playHomeMusic() {
   if (!homeMusicWanted || !enabled()) return;
+  // Avoid downloading the music before the browser allows user-initiated audio.
+  if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
   if (!homeMusic) {
     homeMusic = new Audio('/assets/audio/home-theme.mp3');
     homeMusic.preload = 'auto';

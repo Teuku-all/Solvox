@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ArenaBackground from './ArenaBackground';
 import BattleQuestionPanel from './BattleQuestionPanel';
 import MathSimulation from './MathSimulation';
-import { SIMULATIONS } from '../../data/algebraSimulation';
+import { getSimulationAnswer, SIMULATIONS } from '../../data/algebraSimulation';
 import CombatStage from './CombatStage';
 import HitEffect from './HitEffect';
 import { loadChapterQuestions, validateChapterAnswer } from '../../services/singlePlayerGame';
@@ -17,6 +17,7 @@ import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 import { playBossAttack, playSound } from '../../services/sound';
 
 export default function Battle({ levelId, playerId = 'traveler', lang, t, onComplete, onBack }) {
+  const autoResolveChapter = Number(levelId) === 1;
   const boss = getBoss(levelId);
   const bossAttackImpactMs = getBossImpactMs(boss.spriteId, 'attack', 360);
   const bossDieDurationMs = getBossSequenceDurationMs(boss.spriteId, 'die');
@@ -62,6 +63,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
 
   const combatRef = useRef(null);
   const endedRef = useRef(false);
+  const autoSubmittedQuestionRef = useRef(null);
   const timersRef = useRef(new Set());
   const questionAttemptRef = useRef({
     wrongAttempts: 0,
@@ -121,6 +123,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   useEffect(() => {
     const now = Date.now();
 
+    autoSubmittedQuestionRef.current = null;
     endedRef.current = false;
     setIdx(0);
     setAnswer('');
@@ -185,6 +188,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   useEffect(() => {
     const now = Date.now();
 
+    autoSubmittedQuestionRef.current = null;
     setAnswer('');
     setFeedback(null);
     setBusy(false);
@@ -282,7 +286,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
       feedbackBankCode: bankMatch?.code || null,
       feedbackBankRow: bankMatch?.id || null,
     };
-    setFeedback(baseFeedback);
+    setFeedback(autoResolveChapter ? null : baseFeedback);
     playSound(isCorrect ? 'correct' : 'wrong');
 
     if (isCorrect) {
@@ -309,7 +313,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
         text: q.text,
         concept: q.concept,
         errorTag: q.errorTag,
-        feedback: q.feedback,
+        feedback: autoResolveChapter ? null : q.feedback,
         correct: true,
         answer,
         correctAnswer: verdict.correctAnswer,
@@ -322,7 +326,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
         feedbackBankHistory: [...(tracker.feedbackBankHistory || [])],
         feedbackBankMatched: (tracker.feedbackBankHistory || []).some((entry) => entry.matched),
         firstAttemptCorrect: tracker.wrongAttempts === 0,
-        explanation: q.feedback,
+        explanation: autoResolveChapter ? null : q.feedback,
         simulation: { ...simulation },
       };
       const logs = [...questionLogs, log];
@@ -432,6 +436,25 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   const q = questions[idx];
   const maxEnemy = boss.hp;
   const isBalanceQuestion = Boolean(SIMULATIONS[Number(q?.id)]);
+
+  useEffect(() => {
+    if (!autoResolveChapter || !q || !simulation.ready || simulation.questionId !== q.id || busy) return;
+    if (autoSubmittedQuestionRef.current === q.id) return;
+    const solvedValue = getSimulationAnswer(q.id);
+    if (!solvedValue) {
+      setActionError(lang === 'en' ? 'The simulation answer is unavailable.' : 'Jawaban simulasi belum tersedia.');
+      return;
+    }
+    if (answer !== solvedValue) { setAnswer(solvedValue); return; }
+    autoSubmittedQuestionRef.current = q.id;
+    submit();
+  }, [autoResolveChapter, q?.id, simulation.ready, simulation.questionId, busy, answer, lang, submit]);
+
+  useEffect(() => {
+    if (!autoResolveChapter || !isBalanceQuestion || !q) return;
+    if (!simulation.ready || simulation.questionId !== q.id) setSimulationOpen(true);
+  }, [autoResolveChapter, isBalanceQuestion, q?.id, simulation.ready, simulation.questionId]);
+
   const hideBalancePopup = isBalanceQuestion && (
     !simulationOpen
     || balanceSolvedQuestionId === Number(q?.id)
@@ -455,10 +478,10 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
 
   return (
     <div className={`battle-page battle-reference ${isBalanceQuestion && !hideBalancePopup ? 'has-balance-overlay' : ''}`}>
-      <div className="battle-world">
+    <div className={`battle-world${autoResolveChapter ? ' is-auto-resolve' : ''}`}>
         <ArenaBackground levelId={levelId} paused={isBalanceQuestion && !hideBalancePopup} />
 
-        <div className={`battle-ui${feedback?.type === 'wrong' ? ' has-feedback' : ''}`}> 
+        <div className={`battle-ui${feedback?.type === 'wrong' ? ' has-feedback' : ''}${autoResolveChapter ? ' is-auto-resolve' : ''}`}>
           {/* Top HUD */}
           <div className="battle-top-rail">
             <button
@@ -543,7 +566,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
             <button type="button" onClick={devJumpToQuestion} disabled={busy || Number(devQuestionIndex) === idx}>{lang === 'en' ? 'Jump' : 'Lompat'}</button>
           </div>}
 
-          {feedback?.type === 'wrong' && (
+          {!autoResolveChapter && feedback?.type === 'wrong' && (
             <aside className="battle-mistake-banner" role="alert" aria-live="polite">
               <span className="battle-mistake-icon" aria-hidden="true">
                 <PixelIcon name="warning" size={15} />
@@ -586,6 +609,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
             simulationReady={simulation.ready && simulation.questionId === q.id}
             onOpenSimulation={() => setSimulationOpen(true)}
             submit={submit}
+            autoResolve={autoResolveChapter}
             hintsUsed={currentHints}
             hintsLeft={Math.max(0, 3 - currentHints)}
             hintCost={[5, 10, 15][currentHints] ?? 15}

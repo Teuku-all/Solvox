@@ -149,6 +149,23 @@ export function evaluateSolvoxChapter(result = {}) {
   const hintHeavyRatio = logs.length ? logs.filter((item) => Number(item.hintsUsed) >= 2).length / logs.length : 0;
   const accuracyHigh = accuracy >= 70;
 
+  if (chapterId === 1) {
+    const stepsCompleted = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepsCompleted) || 0), 0);
+    const stepsTotal = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepsTotal) || 0), 0);
+    const stepErrors = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepErrors) || 0), 0);
+    if (stepsTotal > 0 && stepsCompleted >= stepsTotal && stepErrors === 0 && answered >= total) {
+      return { category: 'master', title: CATEGORY_TITLES[lang].master, message: rules.master, source: 'Solvox learning rules' };
+    }
+    const message = lang === 'en'
+      ? (stepErrors > 0
+        ? `${stepErrors} equation step correction(s) were needed. Review how the same operation is applied to both sides of an equation.`
+        : `You completed ${stepsCompleted} of ${stepsTotal} equation steps. Finish the remaining simulations to complete this chapter.`)
+      : (stepErrors > 0
+        ? `Ada ${stepErrors} koreksi langkah persamaan. Tinjau kembali cara menerapkan operasi yang sama pada kedua ruas.`
+        : `Kamu menyelesaikan ${stepsCompleted} dari ${stepsTotal} langkah persamaan. Selesaikan simulasi yang tersisa untuk menuntaskan chapter ini.`);
+    return { category: stepErrors > 0 ? 'simulation-review' : 'simulation-progress', title: lang === 'en' ? (stepErrors > 0 ? 'Review equation steps' : 'Simulation progress') : (stepErrors > 0 ? 'Tinjau langkah persamaan' : 'Progres simulasi'), message, source: 'Solvox learning rules' };
+  }
+
   if (wrongIds.length === 0 && ((chapterId === 1 && accuracy === 100 && hintsUsed === 0) ||
       (chapterId === 2 && accuracy === 100 && hintsUsed === 0 && avgTime <= 15) ||
       (chapterId === 3 && accuracy === 100) ||

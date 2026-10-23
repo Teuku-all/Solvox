@@ -1,5 +1,7 @@
 import React from 'react';
 import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
+import DeferredBackdrop from '../shared/DeferredBackdrop';
+import { responsiveAsset } from '../../services/optimizedAssets';
 
 const DEVS = [
   { name: 'Teuku Al Jumanatul Ali', roleKey: 'developerRoleEngineering', copyKey: 'developerTeuku' },
@@ -11,9 +13,7 @@ export default function AboutDevelopers({ t, lang, onBack }) {
   return (
     <main className="about-page" data-lang={lang}>
       <div className="about-bg" aria-hidden="true">
-        <video autoPlay loop muted playsInline preload="metadata" poster="/assets/home/home-background-v83-poster.jpg">
-          <source src="/assets/home/home-background-v83.mp4" type="video/mp4" />
-        </video>
+        <DeferredBackdrop src="/assets/home/home-background-v83.mp4" poster="/assets/home/home-background-v83-poster.jpg" />
         <div className="about-bg-shade" />
       </div>
 
@@ -24,8 +24,7 @@ export default function AboutDevelopers({ t, lang, onBack }) {
 
       <section className="about-shell" aria-labelledby="about-title">
         <div className="about-team-brand" aria-label="Zero to One Game Development Team">
-          <span className="about-team-brand-glow" aria-hidden="true"><img src="/assets/ui/brand/zero-to-one-team.png" alt="" /></span>
-          <img src="/assets/ui/brand/zero-to-one-team.png" alt="Zero to One Game Development Team" className="about-team-brand-img" draggable="false" />
+          <img {...responsiveAsset('/assets/ui/brand/zero-to-one-team.png', '(max-width: 760px) 290px, 360px')} alt="Zero to One Game Development Team" className="about-team-brand-img" draggable="false" fetchPriority="high" />
         </div>
         <div className="about-kicker">{t('aboutUs')}</div>
         <h1 id="about-title">{t('aboutUsTitle')}</h1>

@@ -17,9 +17,12 @@
     "socket.io": "^4.8.1"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.9"
   },
   "workspaces": [
     "frontend"
-  ]
+  ],
+  "devDependencies": {
+    "sharp": "^0.35.5"
+  }
 }

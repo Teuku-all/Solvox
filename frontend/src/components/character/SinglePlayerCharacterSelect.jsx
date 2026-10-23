@@ -4,6 +4,8 @@ import { SELECTION_ART, SELECTION_CHARACTERS } from '../../data/characterSelecti
 import CinematicCharacterChoice from './CinematicCharacterChoice';
 import SinglePlayerCharacterDetail from './SinglePlayerCharacterDetail';
 import '../../styles/character-selection.css';
+import { optimizedAsset, responsiveAsset } from '../../services/optimizedAssets';
+import { warmSelectionCharacter } from '../../services/selectionAssets';
 
 export default function SinglePlayerCharacterSelect({ levelId, onStart, onBack, lang = 'id' }) {
   const [phase, setPhase] = useState('choice');
@@ -32,9 +34,14 @@ export default function SinglePlayerCharacterSelect({ levelId, onStart, onBack, 
   const markReady = useCallback(() => setReady(true), []);
 
   useEffect(() => {
+    const focused = SELECTION_CHARACTERS.find((item) => item.id === activeId);
+    if (focused) warmSelectionCharacter(focused.asset);
+  }, [activeId]);
+
+  useEffect(() => {
     aliveRef.current = true;
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => setReducedMotion(media.matches);
+    const update = () => setReducedMotion(media.matches || localStorage.getItem('solvox.reducedMotion') === '1');
     media.addEventListener('change', update);
     return () => { aliveRef.current = false; clearTimeout(timerRef.current); media.removeEventListener('change', update); };
   }, []);
@@ -102,8 +109,8 @@ export default function SinglePlayerCharacterSelect({ levelId, onStart, onBack, 
   return (
     <main className="spx" data-phase={phase} data-preview={previewId || undefined} data-ready={ready} aria-busy={busy || moving}>
       <div className="spx-environment" aria-hidden="true"><picture>
-        <source media="(max-width: 1050px) and (orientation: portrait)" srcSet={CHARACTER_SELECT_BACKGROUND.mobile} />
-        <img src={CHARACTER_SELECT_BACKGROUND.desktop} alt="" fetchPriority="high" />
+        <source media="(max-width: 1050px) and (orientation: portrait)" srcSet={responsiveAsset(CHARACTER_SELECT_BACKGROUND.mobile).srcSet} sizes="100vw" />
+        <img {...responsiveAsset(CHARACTER_SELECT_BACKGROUND.desktop, '100vw')} alt="" fetchPriority="high" />
       </picture></div>
       <div className="spx-world-light" aria-hidden="true" />
       <div ref={detailLayerRef} className="spx-detail-layer" aria-hidden={!detailVisible}>
@@ -118,7 +125,7 @@ export default function SinglePlayerCharacterSelect({ levelId, onStart, onBack, 
       </div>
       <button className="spx-back" type="button" disabled={moving || busy} onClick={back}
         aria-label={lang === 'en' ? (phase === 'choice' ? 'Back to chapters' : 'Back to characters') : (phase === 'choice' ? 'Kembali ke chapter' : 'Kembali ke karakter')}>
-        <img src={SELECTION_ART.back} alt="" /><span>{lang === 'en' ? 'BACK' : 'KEMBALI'}</span>
+        <img src={optimizedAsset(SELECTION_ART.back)} alt="" decoding="async" /><span>{lang === 'en' ? 'BACK' : 'KEMBALI'}</span>
       </button>
     </main>
   );

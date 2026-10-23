@@ -21,7 +21,7 @@ Multiplayer needs one long-running Node.js web service. That process serves the 
 
 ## Deploy commands
 
-Use Node.js 18 or newer and the repository root (the folder containing `package.json`). Configure the host with:
+Use Node.js 20.9 or newer and the repository root (the folder containing `package.json`). Install development dependencies during the build: the image optimizer uses `sharp` before Vite bundles the frontend. Configure the host with:
 
 - Install: `npm ci`
 - Build: `npm run build`
@@ -39,6 +39,8 @@ npm start
 ```
 
 `npm run start:local` is a convenience command that builds and starts in one step. For development, use `npm run dev`.
+
+Frontend builds automatically generate responsive WebP files in `frontend/public/assets/optimized` and their manifest in `frontend/src/data/optimizedAssets.json`. Both Vercel's workspace build and the root build run this step. Keep the original media under `frontend/public/assets`; editing it and rebuilding produces new cache URLs. Deploy the complete `frontend/dist` folder, including its optimized assets. The Node server and Vercel cache these generated URLs for one year; original assets use a shorter cache period.
 
 ## Persistent data
 

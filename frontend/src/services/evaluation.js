@@ -32,7 +32,18 @@ export function summarizePerformance(result = {}){
   const retryEfficiency = clamp(100 - retryQuestions * 8);
   const consistency = answeredQuestions ? Math.round(((correctQuestions + firstAttemptCorrect) / (answeredQuestions * 2)) * 100) : 0;
   const cts = Math.round((firstAttemptRate * .55) + (consistency * .45));
-  const mastery = Math.round(
+  const automaticChapter = Number(result.chapterId) === 1;
+  const simulationStepsTotal = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepsTotal) || 0), 0);
+  const simulationStepsCompleted = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepsCompleted) || 0), 0);
+  const simulationStepErrors = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepErrors) || 0), 0);
+  const simulationStepCompletionRate = simulationStepsTotal
+    ? Math.round(simulationStepsCompleted / simulationStepsTotal * 100)
+    : 0;
+  const simulationStepAccuracy = simulationStepsCompleted
+    ? clamp(100 - simulationStepErrors * 8)
+    : 0;
+  const simulationMastery = Math.round(simulationStepCompletionRate * .7 + simulationStepAccuracy * .3);
+  const mastery = automaticChapter ? simulationMastery : Math.round(
     clamp(accuracy) * .40 +
     clamp(firstAttemptRate) * .15 +
     clamp(timeEfficiency) * .15 +
@@ -77,6 +88,11 @@ export function summarizePerformance(result = {}){
     totalTime,
     avgTimePerAnsweredQuestion,
     completionRate,
+    simulationStepsTotal,
+    simulationStepsCompleted,
+    simulationStepErrors,
+    simulationStepCompletionRate,
+    simulationStepAccuracy,
     maxHp,
     hpRemaining,
     damageTaken,

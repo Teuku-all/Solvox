@@ -1,5 +1,6 @@
 import React from 'react';
 import SolvoxBrandLogo from '../shared/SolvoxBrandLogo';
+import DeferredBackdrop from '../shared/DeferredBackdrop';
 
 const NAV_ITEMS = [
   { id: 'play', labelKey: 'homeMain' },
@@ -21,17 +22,7 @@ export default function HomeMenu({ onMain, onTutorial, onSettings, onFeedback, o
   return (
     <div className="home-menu" data-ui="solvox-home">
       <div className="home-menu-backdrop" aria-hidden="true">
-        <video
-          className="home-menu-backdrop-video"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          poster="/assets/home/home-background-v83-poster.jpg"
-        >
-          <source src="/assets/home/home-background-v83.mp4" type="video/mp4" />
-        </video>
+        <DeferredBackdrop className="home-menu-backdrop-video" src="/assets/home/home-background-v83.mp4" poster="/assets/home/home-background-v83-poster.jpg" />
         <div className="home-menu-shade" />
       </div>
 

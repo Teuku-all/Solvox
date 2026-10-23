@@ -1,6 +1,6 @@
 /* Shared finishing layer for the menu screens and compact dialogs. */
 :root {
-  --solvox-heading: Georgia, 'Times New Roman', serif;
+  --solvox-heading: var(--font-heading-solvox);
   --solvox-focus: #d9d27f;
 }
 
@@ -17,13 +17,13 @@
 }
 
 .mode-select-header h1 {
-  font-size: clamp(2.1rem, 4vw, 3.2rem) !important;
+  font-size: var(--text-title) !important;
   line-height: 1.04 !important;
 }
 .mode-select-header p { font-size: clamp(.88rem, 1.1vw, 1rem) !important; }
 .mode-card-copy p { line-height: 1.55 !important; }
 .chapter-select-title h1 {
-  font-size: clamp(2rem, 3.5vw, 3rem) !important;
+  font-size: var(--text-title) !important;
   line-height: 1.05 !important;
 }
 .chapter-card-copy strong { line-height: 1.1 !important; }
@@ -267,3 +267,9 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
   }
   .chapter-card-meter { margin-top: 7px !important; }
 }
+
+/* Keep the same type hierarchy from the menu to character selection. */
+.home-menu-item { font-family: var(--font-display-solvox); font-size: 1.75rem; font-weight: 400; letter-spacing: .015em; line-height: 1.5; }
+.solvox-back-label { font-family: var(--font-body-solvox); font-size: var(--text-caption); font-weight: 650; }
+.mode-select-header p, .chapter-select-title p, .mode-card-copy p { font-size: var(--text-body) !important; line-height: 1.65 !important; }
+@media (max-width: 640px) { .home-menu-item { font-size: 1.5rem; } }

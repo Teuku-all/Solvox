@@ -1,9 +1,10 @@
 import React from 'react';
 import { SELECTION_ART, SELECTION_CHARACTERS } from '../../data/characterSelection';
+import { optimizedAsset, responsiveAsset } from '../../services/optimizedAssets';
 
 export function CharacterEmblem({ character }) {
   return character.emblem === 'crystal'
-    ? <img className="spx-emblem" src={SELECTION_ART.crystal} alt="" />
+    ? <img className="spx-emblem" src={optimizedAsset(SELECTION_ART.crystal)} alt="" decoding="async" />
     : <svg className="spx-emblem spx-sword" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 3 39 11v15L24 44 9 26V11Z" stroke="currentColor" strokeWidth="1"/><path d="m24 8 4 7-2 15h-4l-2-15Z M15 28l9 4 9-4 M24 32v7" stroke="currentColor" strokeWidth="2"/></svg>;
 }
 
@@ -21,16 +22,16 @@ export default function CinematicCharacterChoice({ activeId, selectedId, disable
           <button ref={(node) => { choiceRefs.current[character.id] = node; }} type="button" className="spx-art-button"
             aria-label={`${previewLabel} ${character.name}`} disabled={disabled} onClick={() => onOpen(character.id)}>
             <span className="spx-region-light" />
-            <img className="spx-splash" src={character.splash} alt="" draggable="false" fetchPriority="high" />
+            <img className="spx-splash" {...responsiveAsset(character.splash, '(max-width: 800px) 71vw, 60vw')} alt="" draggable="false" fetchPriority="high" />
           </button>
           <div className="spx-nameplate">
-            <img className="spx-nameplate-art" src={SELECTION_ART.banner} alt="" />
+            <img className="spx-nameplate-art" src={optimizedAsset(SELECTION_ART.banner)} alt="" decoding="async" />
             <button className="spx-name-button" type="button" tabIndex={-1} disabled={disabled} onClick={() => onOpen(character.id)} aria-label={`${previewLabel} ${character.name}`}>
               <CharacterEmblem character={character} />
               <span><strong>{character.name}</strong><small>{character.title}</small></span>
             </button>
             <button className="spx-eye" type="button" disabled={disabled} aria-label={`${previewLabel} ${character.name} — preview`} onClick={() => onOpen(character.id)}>
-              <img src={SELECTION_ART.eye} alt="" />
+              <img src={optimizedAsset(SELECTION_ART.eye)} alt="" decoding="async" />
             </button>
           </div>
         </div>
@@ -41,8 +42,8 @@ export default function CinematicCharacterChoice({ activeId, selectedId, disable
         <path className="spx-seam-line" d="M580 -20 420 1020" />
       </svg>
       <div className="spx-seam" aria-hidden="true">
-        <img className="spx-seam-crystal" src={SELECTION_ART.divider} alt="" />
-        <img className="spx-seam-glint" src={SELECTION_ART.divider} alt="" />
+        <img className="spx-seam-crystal" src={optimizedAsset(SELECTION_ART.divider)} alt="" decoding="async" />
+        <img className="spx-seam-glint" src={optimizedAsset(SELECTION_ART.divider)} alt="" decoding="async" />
       </div>
     </div>
   );

@@ -15,11 +15,12 @@ import CutsceneStory from './components/battle/CutsceneStory';
 import { storyScript } from './data/story';
 import SolvoxBrandLogo from './components/shared/SolvoxBrandLogo';
 import PixelIcon from './components/shared/PixelIcon';
-import {LEVELS, isUnlocked} from './data/levels';
+import {LEVELS, isLocalDevelopment, isUnlocked} from './data/levels';
 import {T} from './services/i18n';
 import {summarizePerformance} from './services/evaluation';
 import {GAME_META} from './config/game';
 import {setHomeMusicActive} from './services/sound';
+import {warmSelectionScreen} from './services/selectionAssets';
 
 const STORAGE='solvox.progress.v1';
 const PLAYER_STORAGE='solvox.singlePlayer.character.v1';
@@ -60,6 +61,11 @@ export default function App(){
   useEffect(()=>{ document.documentElement.lang=lang==='en'?'en':'id'; },[lang]);
   useEffect(()=>{document.documentElement.classList.toggle('reduced-motion',localStorage.getItem('solvox.reducedMotion')==='1')},[]);
   useEffect(()=>{window.scrollTo(0,0)},[screen]);
+  useEffect(()=>{
+    if(screen!=='chapters')return;
+    const timer=setTimeout(warmSelectionScreen,200);
+    return()=>clearTimeout(timer);
+  },[screen]);
   useEffect(()=>{ localStorage.setItem(PLAYER_STORAGE,playerId); },[playerId]);
   const reset=()=>{
     if(!confirm(t('resetConfirm')))return;
@@ -116,7 +122,7 @@ export default function App(){
       setScreen('character');
       return;
     }
-    if(!playerSelectionLocked){
+    if(!playerSelectionLocked&&!isLocalDevelopment()){
       // Guard imported/legacy progress where later chapters are unlocked but
       // the one-time character choice was never committed.
       setLevel(1);

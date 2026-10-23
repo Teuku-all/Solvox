@@ -1,3 +1,10 @@
+# Solvox — Character stories and faster artwork
+
+- Kazura and Asuna now have distinct stories in Indonesian and English. Character details use a flowing panel with consistent, readable text on desktop and phones.
+- Menu and selection images have responsive WebP variants. `scripts/optimize-assets.cjs` generates these images, content-hashed URLs, and sprite foot anchors automatically before frontend development and production builds. Keep the supplied originals when replacing artwork.
+- The first selection pose loads before the rest of its animation and is shared across previews. Sprite alignment no longer scans image pixels on the player's device.
+- Menu backgrounds show a lightweight poster first and defer video. Slow connections, data saving, and reduced motion keep the still image. Optimized artwork uses long-lived cache headers on Vercel and the Node server.
+
 # Solvox V117 — Campaign Character Lock, Asuka Sprite Fix, Multiplayer Reliability
 
 - Character selection is offered on Chapter 1 only and remains locked across the campaign. It becomes available again after all chapters are cleared; resetting progress restores the default choice.

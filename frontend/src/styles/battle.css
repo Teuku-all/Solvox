@@ -1311,6 +1311,27 @@
   border-right-color: var(--panel-border-soft, rgba(109,209,198,.12));
 }
 
+.battle-question-panel.is-auto-resolve { grid-template-columns: minmax(0, 1fr); }
+.battle-question-panel.is-auto-resolve .battle-question-main {
+  grid-column: 1;
+  grid-template-rows: 48px minmax(0, 1fr) 58px;
+  border-right: 0;
+}
+.battle-question-panel.is-auto-resolve .question-answer-auto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--panel-border-soft, rgba(106,204,193,.08));
+  color: var(--panel-accent, #b8d2e4);
+  background: linear-gradient(180deg, rgba(10, 22, 30, .45), rgba(4, 12, 18, .72));
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
 .battle-question-panel .question-header,
 .battle-question-panel .battle-keypad-side-head,
 .battle-question-panel .hint-rail-head {
@@ -1400,4 +1421,36 @@
 .battle-question-panel .keypad-key:focus-visible:not(:disabled) {
   border-color: color-mix(in srgb, var(--panel-accent, #7bddd1) 48%, transparent);
   background: linear-gradient(180deg, color-mix(in srgb, var(--panel-key-bg, rgba(41,78,77,.98)) 94%, #ffffff 6%), var(--panel-key-bg-strong, rgba(13,30,31,.99)));
+}
+
+/* Chapter 1 has no side tools, so give its question panel a calmer footprint. */
+.battle-world.is-auto-resolve > .arena-background {
+  inset: 0 0 calc(clamp(230px, 30vh, 292px) + 16px);
+}
+.battle-ui.is-auto-resolve {
+  grid-template-rows: 74px minmax(0, 1fr) clamp(230px, 30vh, 292px);
+}
+.battle-question-panel.is-auto-resolve {
+  border-radius: 16px;
+  box-shadow: 0 18px 48px rgba(0,0,0,.28), inset 0 1px rgba(255,255,255,.055);
+}
+.battle-question-panel.is-auto-resolve .question-header {
+  padding-inline: clamp(16px, 2.4vw, 28px);
+}
+.battle-question-panel.is-auto-resolve .question-content {
+  padding: 16px clamp(22px, 4vw, 44px);
+}
+.battle-question-panel.is-auto-resolve .question-content::before { left: 16px; }
+.battle-question-panel.is-auto-resolve .question-kicker,
+.battle-question-panel.is-auto-resolve .question-context,
+.battle-question-panel.is-auto-resolve .question-text,
+.battle-question-panel.is-auto-resolve .question-concept { margin-left: 14px; }
+.battle-question-panel.is-auto-resolve .question-text {
+  max-width: 960px;
+  font-size: clamp(22px, 2.2vw, 31px);
+}
+.battle-question-panel.is-auto-resolve .question-answer-auto {
+  min-height: 56px;
+  font-size: 13px;
+  letter-spacing: .01em;
 }

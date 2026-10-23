@@ -9,7 +9,11 @@ export function loadAssetImage(src, { fetchPriority = 'auto' } = {}) {
   if ('fetchPriority' in image) image.fetchPriority = fetchPriority;
 
   const promise = new Promise((resolve, reject) => {
-    image.onload = () => resolve(image);
+    image.onload = async () => {
+      // Decode once before a canvas needs the frame; shared promises also dedupe previews.
+      try { await image.decode?.(); } catch { /* A loaded image can still be drawn. */ }
+      resolve(image);
+    };
     image.onerror = () => reject(new Error(src));
     image.src = src;
   }).catch((error) => {

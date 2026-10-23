@@ -1103,3 +1103,74 @@ body { min-width: 320px; }
   .battle-question-panel .battle-question-main { min-height: 210px !important; }
   .battle-question-panel .hint-rail { min-height: 110px !important; }
 }
+
+/* Chapter 1 removes the hint and keypad columns at every viewport size. */
+.battle-question-panel.is-auto-resolve {
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+}
+.battle-question-panel.is-auto-resolve .battle-question-main {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  grid-template-rows: 48px minmax(0, 1fr) 58px !important;
+  border: 0 !important;
+}
+
+@media (max-width: 700px) {
+  .battle-ui.is-auto-resolve {
+    grid-template-rows: auto minmax(190px, 26dvh) auto !important;
+    gap: 8px !important;
+  }
+  .battle-question-panel.is-auto-resolve {
+    min-height: 0 !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    border-radius: 14px !important;
+  }
+  .battle-question-panel.is-auto-resolve .battle-question-main {
+    min-height: clamp(252px, 36dvh, 310px) !important;
+    height: auto !important;
+    grid-template-rows: 44px minmax(0, 1fr) 54px !important;
+  }
+  .battle-question-panel.is-auto-resolve .question-header {
+    min-height: 44px !important;
+    padding: 6px 11px !important;
+    gap: 8px !important;
+  }
+  .battle-question-panel.is-auto-resolve .question-meta { gap: 5px !important; }
+  .battle-question-panel.is-auto-resolve .question-chip { min-height: 24px !important; padding: 3px 7px !important; font-size: 9px !important; }
+  .battle-question-panel.is-auto-resolve .question-chip.is-title { max-width: 36vw !important; }
+  .battle-question-panel.is-auto-resolve .question-content {
+    min-height: 0 !important;
+    padding: 13px 16px !important;
+  }
+  .battle-question-panel.is-auto-resolve .question-content::before { left: 9px !important; }
+  .battle-question-panel.is-auto-resolve .question-kicker,
+  .battle-question-panel.is-auto-resolve .question-context,
+  .battle-question-panel.is-auto-resolve .question-text,
+  .battle-question-panel.is-auto-resolve .question-concept { margin-left: 9px !important; }
+  .battle-question-panel.is-auto-resolve .question-kicker { font-size: 8px !important; }
+  .battle-question-panel.is-auto-resolve .question-context { margin-top: 4px !important; font-size: 11px !important; }
+  .battle-question-panel.is-auto-resolve .question-text {
+    max-width: 100% !important;
+    font-size: clamp(19px, 5.8vw, 25px) !important;
+    line-height: 1.16 !important;
+    overflow-wrap: anywhere !important;
+  }
+  .battle-question-panel.is-auto-resolve .question-concept { margin-top: 7px !important; padding-top: 6px !important; font-size: 9px !important; }
+  .battle-question-panel.is-auto-resolve .question-answer-auto {
+    min-height: 54px !important;
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+  }
+}
+
+@media (max-width: 700px) and (orientation: landscape) {
+  .battle-ui.is-auto-resolve {
+    grid-template-rows: auto minmax(180px, 34dvh) auto !important;
+    min-height: 100dvh !important;
+  }
+  .battle-question-panel.is-auto-resolve .battle-question-main {
+    min-height: 225px !important;
+  }
+}

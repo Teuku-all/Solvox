@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { LEVELS, isUnlocked } from '../../data/levels';
+import DeferredBackdrop from '../shared/DeferredBackdrop';
+import { LEVELS, isLocalDevelopment, isUnlocked } from '../../data/levels';
 import { getBoss } from '../../data/bosses';
 import PixelIcon from '../shared/PixelIcon';
 import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
@@ -15,6 +16,7 @@ function chapterProgress(id, progress) {
 }
 
 export default function ChapterSelect({ progress, onSelectChapter, onBack, lang, t }) {
+  const localDevelopment = isLocalDevelopment();
 
   const completed = useMemo(
     () => new Set((progress.completedLevels || []).map(Number)),
@@ -24,19 +26,7 @@ export default function ChapterSelect({ progress, onSelectChapter, onBack, lang,
   return (
     <div className="chapter-select">
       <div className="chapter-select-bg" aria-hidden="true">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          poster="/assets/home/home-background-cinematic-poster.jpg"
-        >
-          <source
-            src="/assets/home/home-background-cinematic.mp4"
-            type="video/mp4"
-          />
-        </video>
+        <DeferredBackdrop src="/assets/home/home-background-cinematic.mp4" poster="/assets/home/home-background-cinematic-poster.jpg" />
         <div />
       </div>
 
@@ -49,7 +39,9 @@ export default function ChapterSelect({ progress, onSelectChapter, onBack, lang,
         <div className="chapter-select-title">
           <small>{t('singleAdventure')}</small>
           <h1>{t('chooseChapter')}</h1>
-          <p>{t('chooseChapterHint')}</p>
+          <p>{localDevelopment
+            ? (lang === 'en' ? 'Local play: all chapters are open.' : 'Mode lokal: semua chapter terbuka.')
+            : t('chooseChapterHint')}</p>
         </div>
 
         <div className="chapter-select-stat">
@@ -60,7 +52,7 @@ export default function ChapterSelect({ progress, onSelectChapter, onBack, lang,
 
       <main className="chapter-select-grid">
         {LEVELS.map((level) => {
-          const open = isUnlocked(progress, level.id);
+          const open = localDevelopment || isUnlocked(progress, level.id);
           const clear = completed.has(level.id);
           const boss = getBoss(level.id);
           const pct = chapterProgress(level.id, progress);

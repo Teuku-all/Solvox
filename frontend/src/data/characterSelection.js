@@ -20,8 +20,8 @@ export const SELECTION_CHARACTERS = Object.freeze([
     asset: PLAYER_ASSETS.traveler, stats: PLAYER.stats,
     role: { id: 'Ksatria', en: 'Knight' },
     lore: {
-      id: 'Seorang ksatria berbaju zirah biru dengan pedang kristal. Kisah perjalanannya di dunia SolvoX masih menunggu untuk ditulis.',
-      en: 'A knight in azure armor, carrying a crystal sword. His journey through the world of SolvoX is yet to be written.',
+      id: 'Kazura adalah penjaga gerbang utara yang bersumpah memulihkan keseimbangan Solvox. Berbekal zirah biru dan pedang kristal warisan gurunya, ia menelusuri reruntuhan untuk memecahkan teka-teki kuno. Tenang dan pantang menyerah, ia percaya setiap persoalan selalu memiliki jalan keluar.',
+      en: 'Kazura guards the northern gate and has sworn to restore balance to Solvox. With azure armor and his mentor’s crystal sword, he explores forgotten ruins and unravels ancient puzzles. Calm and determined, he believes every problem has a solution.',
     },
   },
   {
@@ -30,8 +30,8 @@ export const SELECTION_CHARACTERS = Object.freeze([
     asset: PLAYER_ASSETS.asuka, stats: PLAYER.stats,
     role: { id: 'Pendekar kristal', en: 'Crystal spellblade' },
     lore: {
-      id: 'Seorang pendekar dengan ornamen kristal dan busana kerajaan. Asal-usul serta perannya dalam petualangan SolvoX masih menunggu untuk ditulis.',
-      en: 'A spellblade adorned with crystals and royal attire. Her origins and role in the SolvoX adventure are yet to be written.',
+      id: 'Asuna adalah pendekar istana yang menjaga rahasia kristal kerajaan. Ketika cahaya Solvox mulai meredup, ia meninggalkan menara untuk mencari sumber kekacauan. Cermat dan berani, Asuna membaca pola di balik setiap teka-teki sebelum mengangkat pedangnya demi melindungi mereka yang membutuhkan.',
+      en: 'Asuna is a royal spellblade entrusted with the kingdom’s crystal secrets. When the light of Solvox begins to fade, she leaves her tower to seek the source of the chaos. Observant and brave, she finds patterns in every puzzle and draws her blade to protect those in need.',
     },
   },
 ]);

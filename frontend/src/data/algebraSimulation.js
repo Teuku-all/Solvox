@@ -61,6 +61,12 @@ export const SIMULATIONS = Object.fromEntries(Object.entries(raw).map(([id, [mod
   }) },
 ]));
 
+export function getSimulationAnswer(questionId){
+  const result=SIMULATIONS[Number(questionId)]?.steps.at(-1)?.after;
+  const match=String(result||'').match(/=\s*(.+)$/);
+  return match?.[1]?.trim()||'';
+}
+
 // Each story has the same three checks: what x means, how quantities relate,
 // and which equation matches the stated total. A second option targets the
 // common misconception described in the design document.
