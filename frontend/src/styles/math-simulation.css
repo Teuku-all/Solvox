@@ -1096,6 +1096,20 @@
 @media (max-width: 760px) and (orientation: portrait) {
   .math-sim-orientation-note { display: block; margin: 4px 0 0; padding: 6px 9px; border: 1px solid rgba(135, 208, 244, .3); border-radius: 7px; background: rgba(14, 42, 69, .72); color: #d4eaff; font-size: 11px; line-height: 1.35; }
 }
+@media (max-width: 420px) and (orientation: portrait) {
+  .is-balance-open .math-sim-balance-reference:is(.chapter-1,.chapter-3,.chapter-4,.chapter-5) .math-sim-balance-footer {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+    padding: 8px;
+  }
+  .is-balance-open .math-sim-balance-reference:is(.chapter-1,.chapter-3,.chapter-4,.chapter-5) .math-sim-balance-guide p {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .is-balance-open .math-sim-balance-reference:is(.chapter-1,.chapter-3,.chapter-4,.chapter-5) .math-sim-balance-actions {
+    justify-content: flex-end;
+  }
+}
 @media (max-width: 420px) {
   .math-sim-tile-grid .math-sim-picker-tile { min-height: 42px; font-size: 14px; }
   .math-sim-balance-item.shape-triangle { min-width: 29px; }
@@ -1365,6 +1379,7 @@
   }
   .is-balance-open .math-sim-add-controls { grid-area: add; margin: 0; gap: 5px; }
   .is-balance-open .math-sim-add-controls button { min-height: 30px; }
+  .is-balance-open .math-sim-auto-simplify { grid-area: operations; align-self: start; }
   .is-balance-open .math-sim-operation-panel {
     display: flex;
     flex-direction: column;
@@ -1770,7 +1785,7 @@
 .math-sim-ch5-next svg { flex:none;color:#d8d277; }
 .math-sim-ch5-token:focus-visible,.math-sim-ch5-slot-token:focus-visible,.math-sim-ch5-slot:focus-visible,.math-sim-ch5-slot:focus-within { outline:2px solid #f1dc88;outline-offset:2px; }
 @media (max-width:760px) {
-  .math-sim-ch5-model-builder { grid-template-rows:auto auto minmax(290px,1fr);gap:6px; }
+  .math-sim-ch5-model-builder { grid-template-rows:repeat(3,max-content);align-content:start;gap:6px; }
   .math-sim-ch5-journey { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .math-sim-ch5-journey span { justify-content:center;padding:5px 3px;font-size:9px;text-align:center; }
   .math-sim-ch5-journey b { width:18px;height:18px;font-size:9px; }
@@ -1781,7 +1796,9 @@
   .math-sim-ch5-variable-choices { grid-template-columns:1fr;gap:6px; }
   .math-sim-ch5-variable-choices button { min-height:48px;padding:8px; }
   .math-sim-ch5-variable-choices button > span { font-size:11px; }
-  .math-sim-ch5-model-area { gap:6px;padding:8px; }
+  .math-sim-ch5-model-area { min-height:0;grid-template-rows:repeat(5,max-content);align-content:start;gap:6px;padding:8px; }
+  .math-sim-ch5-token-bank { grid-template-rows:max-content max-content; }
+  .math-sim-ch5-tokens { overflow:visible; }
   .math-sim-ch5-instruction { font-size:11px; }
   .math-sim-ch5-slots { min-height:70px;gap:4px;padding:5px; }
   .math-sim-ch5-slot { min-width:56px;min-height:54px;padding:5px; }
@@ -2318,6 +2335,8 @@
 .math-sim-balance-reference.chapter-5 .math-sim-tile-dock { border-color:#725192; background:radial-gradient(circle at 90% 0,rgba(181,92,255,.14),transparent 46%),linear-gradient(155deg,#332743,#211c38); }
 .math-sim-balance-reference.chapter-5 .math-sim-add-controls button,.math-sim-balance-reference.chapter-5 .math-sim-operation-options button,.math-sim-balance-reference.chapter-5 .math-sim-operation-sides button,.math-sim-balance-reference.chapter-5 .math-sim-balance-actions button { border-color:#78529d; background:linear-gradient(180deg,#573c78,#342b59); color:#f2e5ff; }
 .math-sim-balance-reference.chapter-5 .math-sim-operation-options button.is-selected { border-color:#c68cff; background:linear-gradient(180deg,#8051aa,#513b7a); }
+.math-sim-auto-simplify { display:grid; gap:6px; min-width:0; padding:10px 12px; border:1px solid #a879cf; border-radius:9px; background:rgba(40,29,62,.9); color:#f2e5ff; font-size:clamp(12px,1.3vw,14px); line-height:1.4; overflow-wrap:anywhere; }
+.math-sim-auto-simplify strong { color:#fff; font-size:clamp(14px,1.6vw,17px); }
 
 /* Chapter 2 grouping is one workspace inside the balance simulation. */
 .math-sim-ch2-reference.is-partition > .c2p-simulation {
@@ -2409,6 +2428,22 @@
   .math-sim-ch2-reference.is-partition .c2p-pool { max-height: min(20vh, 128px); }
   .math-sim-ch2-reference.is-partition .c2p-group > span { max-height: 62px; }
   .math-sim-ch2-reference.is-partition .c2p-scale-center { display: grid; }
+}
+
+/* Let every balance control remain reachable on short portrait screens. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .is-balance-open .math-sim-balance-reference:is(.chapter-3,.chapter-4,.chapter-5) .math-sim-balance-workspace {
+    grid-template-rows: minmax(155px, min(38%, 240px)) max-content;
+    align-content: start;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  .is-balance-open .math-sim-balance-reference:is(.chapter-3,.chapter-4,.chapter-5) .math-sim-tile-dock {
+    height: auto;
+    min-height: max-content;
+    overflow: visible;
+  }
 }
 
 /* Keep Chapter 3 parenthesis lesson actions and explanatory text within their cards. */

@@ -65,8 +65,9 @@ must(!home.includes('SolvoxUtilityArt') && !home.includes('home-v31') && !home.i
 must(home.includes('onTutorial') && home.includes("id: 'tutorial'"), 'Home tutorial entry point is missing');
 const tutorial = read('frontend/src/components/menu/Tutorial.jsx');
 const tutorialStyles = read('frontend/src/styles/tutorial.css');
+const balanceScale = read('frontend/src/components/shared/BalanceScale.jsx');
 must(exists('frontend/src/components/menu/Tutorial.jsx') && tutorial.includes('tutorial-title') && tutorial.includes('tutorialGotIt'), 'Tutorial component is missing or incomplete');
-must(tutorial.includes('handlePracticePointerDown') && tutorial.includes("data-tutorial-pan=\"left\"") && tutorial.includes("data-tutorial-pan=\"right\"") && tutorial.includes('Drag and drop tiles') && tutorialStyles.includes('@media (max-width: 720px)') && tutorialStyles.includes('.tutorial-unit-tile.is-tray'), 'Tutorial must teach working balance-tile drag and drop on desktop and mobile');
+must(tutorial.includes('handlePracticePointerDown') && tutorial.includes('<BalanceScale') && tutorial.includes('Drag and drop tiles') && balanceScale.includes('data-balance-side="left"') && balanceScale.includes('data-balance-side="right"') && tutorialStyles.includes('@media (max-width: 720px)') && tutorialStyles.includes('.tutorial-unit-tile.is-tray'), 'Tutorial must teach working balance-tile drag and drop on desktop and mobile');
 
 /* -------------------------------------------------------------------------- */
 /* Main mode selection / learning surfaces                                   */
@@ -106,8 +107,8 @@ must(battle.includes('battle-home-back') && !battle.includes('battle-feedback-to
 must(JSON.parse(read('backend/solvoxQuestions.json')).length === 50 && singlePlayerGame.includes('getChapterQuestions'), 'Backend must own the complete single-player question pack');
 must(battle.includes('getSimulationAnswer') && battle.includes('validateChapterAnswer'), 'Completed simulations must submit the chapter answer automatically');
 must(battle.includes('[1, 2, 3, 4, 5].includes') && battlePanel.includes('autoResolve ?'), 'All campaign chapters must use the automatic question dock');
-must(!battle.includes('battle-mistake-banner') && !battlePanel.includes('hint-rail') && !battlePanel.includes('keypad-toggle'), 'Campaign feedback, hints, or keypad remain visible');
-must(!battlePanel.includes('<Keypad') && !exists('frontend/src/components/battle/Keypad.jsx'), 'Legacy battle keypad remains in use');
+must(!battle.includes('battle-mistake-banner') && battlePanel.includes('!autoResolve && showHintRail') && battlePanel.includes('!autoResolve && (showKeypad || showHintControl || showAttemptCounter)'), 'Campaign feedback, hints, or keypad remain visible');
+must(battlePanel.includes('!autoResolve && showKeypad && keypadVisible && <aside') && battlePanel.includes('<Keypad'), 'Optional keypad must remain outside automatic chapter answers');
 must(battlePanel.includes('QUESTION_PANEL_THEME_BY_LEVEL') && battlePanel.includes('style={panelTheme}'), 'Chapter-aware question panel theme wiring is missing');
 must(!battlePanel.includes('feedback-panel'), 'Learning feedback must not expand inside the question panel');
 must(battle.includes('battle-top-rail') && battle.includes('hp-card') && battle.includes('hp-track'), 'Battle HUD missing');
@@ -220,7 +221,7 @@ must(!read('frontend/src/services/solvoxEvaluation.js').includes("Keep Building"
 must(!evaluation.includes('EVALUASI SOAL SOLVOX.docx'), 'Evaluation UI leaks source filename');
 must(multi.includes('playVsBot') && multi.includes('create(true)') && multi.includes('isBot'), 'Multiplayer bot mode UI is missing');
 must(apiServer.includes('botSubmitTurn') && apiServer.includes('botSubmitScore') && apiServer.includes('isBot'), 'Multiplayer bot backend is missing');
-must(!apiServer.includes('HINT_NOT_ENOUGH_HP') && !battlePanel.includes('hintCost'), 'Retired hint costs remain in battle flows');
+must(!apiServer.includes('HINT_NOT_ENOUGH_HP') && battlePanel.includes('!autoResolve && showHintRail') && battlePanel.includes('!autoResolve && (showKeypad || showHintControl || showAttemptCounter)'), 'Campaign must not expose hint costs');
 must(main.includes("import './styles/evaluation.css';") && main.includes("import './styles/responsive.css';"), 'V105 style layers are not wired');
 must(!exists('frontend/src/styles/responsive-v102.css'), 'Retired responsive V102 stylesheet remains');
 
@@ -371,7 +372,7 @@ const questionBank = JSON.parse(read('backend/solvoxQuestions.json'));
 const { isSameAnswer } = require('./backend/singlePlayerGame');
 const simulationMismatches = Object.entries(simulationConfig).filter(([id, [, , route]]) => {
   const question = questionBank.find((entry) => entry.id === Number(id));
-  const finalEquation = route.split('; ').at(-1).split('|').at(-1);
+  const finalEquation = Array.isArray(route) ? route.at(-1).after : route.split('; ').at(-1).split('|').at(-1);
   const value = finalEquation.split('=').map((side) => side.trim()).find((side) => !/^[a-z]$/i.test(side));
   return !question || !value || !isSameAnswer(value, question.answer);
 });
@@ -573,7 +574,7 @@ must(appV117.includes('save(next);') && appV117.includes('LEGACY_STORAGES.forEac
 must(assetsV117.includes("idle: 'idle-asuka'") && assetsV117.includes("attack: 'attack-asuka'") && assetsV117.includes("hurt: 'hurt-asuka'") && assetsV117.includes("die: 'die-asuka'"), 'V117 Asuka supplied folder mappings are missing');
 must(spriteV117.includes('activeAsset.sequenceFolders?.[mode] || mode'), 'V117 sprite loader ignores character-specific animation folders');
 must(battleV117.includes('const handleWrongAnswer = ({ elapsed, attemptNow, history, tracker, bankAwareFeedback }) =>') && battleV117.includes('setBusy(false);') && multi.includes('match-evaluation'), 'Single-player retry handling or multiplayer evaluation is missing');
-must(!battlePanelV117.includes('keypad-toggle') && !battlePanelV117.includes('hint-rail'), 'Legacy battle controls remain');
+must(battlePanelV117.includes('!autoResolve && showHintRail') && battlePanelV117.includes('!autoResolve && showKeypad && keypadVisible'), 'Campaign must hide optional keypad and hint controls');
 must(viteV117.includes("'/socket.io'") && viteV117.includes('ws: true') && viteV117.includes('http://127.0.0.1:3000'), 'V117 Vite Socket.IO proxy target is missing or may resolve to the wrong localhost interface');
 must(multiplayerV117.includes("socket.on('connect_error',onConnectError)") && multiplayerV117.includes('SOCKET_CONNECTION') && multiplayerV117.includes('socket.emit(\'room:join\'') && multiplayerV117.includes('pendingActionRef.current=action') && multiplayerV117.includes('pendingAction();'), 'V120 multiplayer connection/token recovery or queued click handling is incomplete');
 const multiplayerFighterV120 = read('frontend/src/components/battle/MultiplayerFighter.jsx');

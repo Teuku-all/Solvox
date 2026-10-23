@@ -98,9 +98,17 @@ function mount(questionId, lang = 'id') {
       render();
     }
   }
+  function finishAutoSimplify() {
+    for (const [id, timer] of timers) {
+      if (timer.delay !== 900) continue;
+      timers.delete(id);
+      timer.callback();
+      render();
+    }
+  }
   const scale = () => find((node) => node.type?.name === 'BalanceScale')[0].props;
   render();
-  return { render, find, has, click, text, operation, apply, dragTile, finishZeroPairs, scale, progress: () => progress };
+  return { render, find, has, click, text, operation, apply, dragTile, finishZeroPairs, finishAutoSimplify, scale, progress: () => progress };
 }
 
 for (const lang of ['id', 'en']) {
@@ -197,5 +205,21 @@ for (const lang of ['id', 'en']) {
   assert.equal(chapter4.progress().stepErrors, 0);
   chapter4.operation(String.fromCharCode(247)); chapter4.apply(0); chapter4.apply(1);
   assert.equal(chapter4.scale().equation, 'x = 4');
+
+  const storyArithmetic = mount(45, lang);
+  storyArithmetic.find((node) => node.type?.name === 'Chapter5ModelBuilder')[0].props.onComplete();
+  storyArithmetic.render();
+  assert.equal(storyArithmetic.find(storyArithmetic.has('math-sim-operation-options')).length, 0, 'Chapter 5 must not show a manual simplify button');
+  storyArithmetic.finishAutoSimplify();
+  assert.equal(storyArithmetic.scale().equation, lang === 'en' ? '5x = 35,000' : '5x = 35.000');
+  assert.equal(storyArithmetic.progress().stepsCompleted, 1);
+
+  const storyLikeTerms = mount(49, lang);
+  storyLikeTerms.find((node) => node.type?.name === 'Chapter5ModelBuilder')[0].props.onComplete();
+  storyLikeTerms.render();
+  storyLikeTerms.operation(String.fromCharCode(215)); storyLikeTerms.apply(0); storyLikeTerms.apply(1);
+  assert.equal(storyLikeTerms.find(storyLikeTerms.has('math-sim-operation-options')).length, 0, 'Like terms after multiplying are also automatic');
+  storyLikeTerms.finishAutoSimplify();
+  assert.equal(storyLikeTerms.scale().equation, '5x = 100');
   console.log(`PASS (${lang}): independent pan updates, wrong-drop errors, fraction tiles, Chapter 4 tile interaction, and arithmetic-only question 10`);
 }

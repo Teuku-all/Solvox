@@ -806,6 +806,22 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
     const timer = window.setTimeout(() => setBalanceHintVisible(true), 6500);
     return () => window.clearTimeout(timer);
   }, [balanceDelta, ready, busy, config]);
+  useEffect(() => {
+    if (!chapter5Question || !modelReady || busy || !config || distributiveModel && !distributiveComplete) return undefined;
+    const currentStep = config.steps[stepIndex];
+    if (currentStep?.operation !== 'simplify') return undefined;
+    setOperationAnimation({ operation: 'simplify', value: '', results: splitEquation(localizeEquation(currentStep.after, lang)) });
+    const timer = window.setTimeout(() => {
+      setBalanceRows(splitEquation(localizeEquation(currentStep.after, lang)).map((side) => parseBalanceSide(side, lang)));
+      setStepIndex((index) => index + 1);
+      setBalanceDelta(0);
+      setBalanceOperation('');
+      setOperationSides([]);
+      setOperationAnimation(null);
+      setMessage(lang === 'en' ? 'Like terms combined automatically. Continue with the operation on both sides.' : 'Suku sejenis disederhanakan otomatis. Lanjutkan operasi pada kedua ruas.');
+    }, 900);
+    return () => window.clearTimeout(timer);
+  }, [chapter5Question, modelReady, busy, config, distributiveModel, distributiveComplete, stepIndex, lang]);
 
   if (!config) return null;
   if (chapter2Symbolic && balancePhase === 'dismissed') return null;
@@ -1427,7 +1443,8 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
             ><span>{tile.label}</span></button>)}
           </div>
           <div className="math-sim-add-controls"><button type="button" disabled={busy || !modelReady || ready || Boolean(operationAnimation) || resolvingZeroPair || operationSides.length > 0} onClick={() => addBalanceTile(0, selectedTileOption)}>{lang === 'en' ? `Add ${selectedTileOption.label} left` : `Tambah ${selectedTileOption.label} kiri`}</button><button type="button" disabled={busy || !modelReady || ready || Boolean(operationAnimation) || resolvingZeroPair || operationSides.length > 0} onClick={() => addBalanceTile(1, selectedTileOption)}>{lang === 'en' ? `Add ${selectedTileOption.label} right` : `Tambah ${selectedTileOption.label} kanan`}</button></div>
-          {questionNumber > 10 && !chapter4TileStep && <div className="math-sim-operation-panel">
+          {chapter5Question && next?.operation === 'simplify' && <div className="math-sim-auto-simplify" role="status">{lang === 'en' ? 'Combining like terms automatically…' : 'Menyederhanakan suku sejenis secara otomatis…'} <strong>{localizeEquation(next.after, lang)}</strong></div>}
+          {questionNumber > 10 && !chapter4TileStep && !(chapter5Question && next?.operation === 'simplify') && <div className="math-sim-operation-panel">
             <strong>{lang === 'en' ? 'Operations on both sides' : 'Operasi pada kedua ruas'}</strong>
             <p>{operationAnimation ? (lang === 'en' ? 'Applying the operation to both sides…' : 'Menerapkan operasi pada kedua ruas…') : balanceOperation ? c.applyOperation : (lang === 'en' ? 'Choose an operation' : 'Pilih operasi')}</p>
             {!['expand', 'simplify'].includes(next?.operation) && <div className={`math-sim-operation-values ${chapter3DivisionStep ? 'is-divisor-choice' : ''}`} aria-label={chapter3DivisionStep ? (lang === 'en' ? 'Choose divisor' : 'Pilih pembagi') : (lang === 'en' ? 'Choose a number' : 'Pilih angka')}>{chapter3DivisionStep && <span>{lang === 'en' ? 'Divisor' : 'Pilih pembagi'}</span>}{operationValues.map((value) => <button type="button" key={value} disabled={busy || !modelReady || ready || Boolean(operationAnimation) || operationSides.length > 0} className={operationAmount === value ? 'is-selected' : ''} onClick={() => selectBalanceOperationNumber(value)}>{value}</button>)}</div>}
