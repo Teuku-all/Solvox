@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { classifyMastery, summarizePerformance } from '../../services/evaluation';
 import { evaluateSolvoxChapter } from '../../services/solvoxEvaluation';
 import PixelIcon from '../shared/PixelIcon';
+import SolvoxBackButton from '../shared/SolvoxBackButton';
 import {apiJson} from '../../services/api';
 import useDialogKeyboard from '../shared/useDialogKeyboard';
 import useAnimatedDismiss from '../shared/useAnimatedDismiss';
@@ -166,7 +167,7 @@ export default function Evaluation({ result, onClose, onRematch, onNext, nextLev
           ? 'This evaluation focuses on incorrect answers, repeated attempts, and corrections made during play.'
           : 'Evaluasi ini berfokus pada jawaban yang salah, percobaan ulang, dan koreksi yang dilakukan selama bermain.'}</p>
         <div className="eval-actions">
-          <button className="secondary-btn" onClick={() => dismiss()}>{lang === 'en' ? 'Back to home' : 'Kembali ke beranda'}</button>
+          <SolvoxBackButton className="secondary-btn" onClick={() => dismiss()} label={lang === 'en' ? 'Back to home' : 'Kembali ke beranda'} />
           <button className="secondary-btn rematch-btn" onClick={() => dismiss(onRematch)}><PixelIcon name="retry" size={15} /><span>{t('rematch')}</span></button>
           {nextLevel && <button className="primary-btn" onClick={() => dismiss(() => onNext(nextLevel))}>{t('nextChapter')} →</button>}
         </div>

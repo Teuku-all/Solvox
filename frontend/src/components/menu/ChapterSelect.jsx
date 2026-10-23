@@ -3,8 +3,12 @@ import DeferredBackdrop from '../shared/DeferredBackdrop';
 import { LEVELS, isLocalDevelopment, isUnlocked } from '../../data/levels';
 import { getBoss } from '../../data/bosses';
 import PixelIcon from '../shared/PixelIcon';
+<<<<<<< Updated upstream
 import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 import { getChapterGuide } from '../../data/chapterGuide';
+=======
+import SolvoxBackButton from '../shared/SolvoxBackButton';
+>>>>>>> Stashed changes
 
 function chapterProgress(id, progress) {
   if ((progress.completedLevels || []).map(Number).includes(Number(id))) return 100;
@@ -32,10 +36,7 @@ export default function ChapterSelect({ progress, onSelectChapter, onBack, lang,
       </div>
 
       <header className="chapter-select-top">
-        <button className="chapter-select-back" type="button" onClick={onBack}>
-          <SolvoxUtilityArt name="back" size={28} className="solvox-back-art" />
-          <span className="solvox-back-label">{t('back')}</span>
-        </button>
+        <SolvoxBackButton className="chapter-select-back" labelClassName="solvox-back-label" onClick={onBack} label={t('back')} />
 
         <div className="chapter-select-title">
           <small>{t('singleAdventure')}</small>

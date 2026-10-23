@@ -1,6 +1,7 @@
 import React,{useEffect,useMemo,useState} from 'react';
 import PixelIcon from '../shared/PixelIcon';
 import {SolvoxUtilityArt} from '../shared/SolvoxUtilityArt';
+import SolvoxBackButton from '../shared/SolvoxBackButton';
 import {deriveProfile} from '../../services/profile';
 import {apiJson} from '../../services/api';
 import {getPlayerAsset} from '../../data/playerAssets';
@@ -65,7 +66,7 @@ export default function ProfilePanel({progress,profile,playerId,onClose,onSave,t
   return <div className={`profile-overlay profile-screen-overlay${closing?' is-closing':''}`} role="dialog" aria-modal="true" aria-label={t('profileTitle')}>
     <div className="profile-panel profile-screen">
       <header className="profile-screen-header">
-        <button className="profile-screen-nav profile-screen-back" type="button" onClick={()=>dismiss()}><PixelIcon name="back" size={18}/><span>{t('back')}</span></button>
+        <SolvoxBackButton className="profile-screen-nav profile-screen-back" onClick={()=>dismiss()} label={t('back')} />
         <div className="profile-breadcrumb"><span>SOLVOX</span><i>/</i><b>{en?'PLAYER PROFILE':'PROFIL PEMAIN'}</b></div>
         <button className="profile-screen-nav profile-screen-close profile-close-btn" type="button" onClick={()=>dismiss()} aria-label={t('close')}><SolvoxUtilityArt name="close" size={18} className="profile-close-art"/></button>
       </header>

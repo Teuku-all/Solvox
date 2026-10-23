@@ -67,7 +67,11 @@
 .spx:not([data-phase='choice']) .spx-seam-glint { animation-play-state: paused; }
 .spx-back { position: absolute; z-index: 5; top: max(20px,env(safe-area-inset-top)); left: max(20px,env(safe-area-inset-left)); width: 142px; height: 54px; border: 0; background: transparent; }
 .spx-back img { position: absolute; left: 0; top: -8px; width: 204px; height: auto; pointer-events: none; }
+<<<<<<< Updated upstream
 .spx-back span { position: relative; display: block; margin-left: 26px; font-size: var(--text-caption); font-weight: 750; letter-spacing: .1em; color: #f2ebd8; text-shadow: 0 1px 4px #05150d,0 0 6px #05150d; }
+=======
+.spx-back span { position: relative; display: block; margin-left: 26px; font-family: var(--font-display-solvox, monospace); font-size: 10px; font-weight: 400; letter-spacing: .1em; color: #fff; text-shadow: 0 1px 4px #05150d,0 0 6px #05150d; }
+>>>>>>> Stashed changes
 .spx-back img { transition: filter 300ms; }
 .spx-back:hover:not(:disabled) img { filter: brightness(1.15) drop-shadow(0 3px 7px #79c7b033); }
 .spx-back:disabled { opacity: .5; }

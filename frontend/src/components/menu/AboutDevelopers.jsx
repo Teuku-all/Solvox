@@ -1,7 +1,11 @@
 import React from 'react';
+<<<<<<< Updated upstream
 import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 import DeferredBackdrop from '../shared/DeferredBackdrop';
 import { responsiveAsset } from '../../services/optimizedAssets';
+=======
+import SolvoxBackButton from '../shared/SolvoxBackButton';
+>>>>>>> Stashed changes
 
 const DEVS = [
   { name: 'Teuku Al Jumanatul Ali', roleKey: 'developerRoleEngineering', copyKey: 'developerTeuku' },
@@ -17,10 +21,7 @@ export default function AboutDevelopers({ t, lang, onBack }) {
         <div className="about-bg-shade" />
       </div>
 
-      <button className="about-back" type="button" onClick={onBack}>
-        <SolvoxUtilityArt name="back" size={22} className="about-back-art" />
-        <span>{t('back')}</span>
-      </button>
+      <SolvoxBackButton className="about-back" onClick={onBack} label={t('back')} />
 
       <section className="about-shell" aria-labelledby="about-title">
         <div className="about-team-brand" aria-label="Zero to One Game Development Team">

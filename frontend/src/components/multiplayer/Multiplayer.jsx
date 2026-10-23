@@ -7,7 +7,7 @@ import MultiplayerFighter from '../battle/MultiplayerFighter';
 import ArenaBackground from '../battle/ArenaBackground';
 import BattleQuestionPanel from '../battle/BattleQuestionPanel';
 import HitEffect from '../battle/HitEffect';
-import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
+import SolvoxBackButton from '../shared/SolvoxBackButton';
 import {GAME_META} from '../../config/game';
 import {LEVELS} from '../../data/levels';
 import { playCharacterAttack, playSound, setMultiplayerLobbyMusicActive } from '../../services/sound';
@@ -336,7 +336,7 @@ useEffect(()=>{
     </div>
     <div className="multi-ambient" aria-hidden="true"><span/><i/><b/></div>
     <div className="multi-header">
-      <button className="multi-back-btn" type="button" onClick={dashboardOnly?onBack:leaveMultiplayer} aria-label={t('back')} title={t('back')}><SolvoxUtilityArt name="back" size={20} className="solvox-back-art" /><span className="solvox-back-label">{t('back')}</span></button>
+      <SolvoxBackButton className="multi-back-btn" labelClassName="solvox-back-label" onClick={dashboardOnly?onBack:leaveMultiplayer} label={t('back')} />
       <div className="multi-header-copy"><div className="eyebrow">{GAME_META.title.toUpperCase()}</div><h1>{dashboardOnly?(lang==='en'?'Multiplayer Leaderboard':'Papan Peringkat Multiplayer'):t('battleWithFriend')}</h1><p>{dashboardOnly?t('dashboardHint'):t('arenaTip')}</p></div>
       {!dashboardOnly&&<div className={socketConnected?"multi-connection-status status-dot":"multi-connection-status status-dot is-connecting"} aria-live="polite"><i/> {socketConnected ? t('online') : (lang==='en' ? 'Connecting...' : 'Menghubungkan...')}</div>}
     </div>
@@ -451,7 +451,7 @@ useEffect(()=>{
     <ArenaBackground levelId={room.levelId||level}/>
     <div className="battle-ui multiplayer-battle-ui">
       <header className="battle-top-rail">
-        <button className="battle-home-back" type="button" onClick={leaveMultiplayer} aria-label={t('back')} title={t('back')}><SolvoxUtilityArt name="back" size={26} className="solvox-back-art"/></button>
+        <SolvoxBackButton className="battle-home-back solvox-back-button--compact" onClick={leaveMultiplayer} ariaLabel={t('back')} title={t('back')} />
         <div className="hp-card hp-player">
           <div className="hp-card-head"><span className="hp-avatar"><img src={battlePlayerCharacter.portrait} alt=""/></span><span className="hp-copy"><small>{t('player1')} / {battlePlayers.player?.name||name}</small><b>{playerVital.score?`${playerVital.value} ${t('score')}`:`${battlePlayers.player?.hp??100} / 100`}</b></span><span className="hp-percent">{playerVital.score?`${Math.round(playerVital.progress)}%`:`${Math.max(0,battlePlayers.player?.hp??100)}%`}</span></div>
           <div className="hp-track"><span style={{width:`${playerVital.progress}%`}}/></div><div className="hp-footer"><span>{room.mode==='score'?(playerSubmitted?t('waiting'):t('scoreDuelBadge')):(current?t('turnYour'):t('turnOpponent'))}</span><span>{playerVital.score?t('score'):'HP'}</span></div>
@@ -517,7 +517,7 @@ useEffect(()=>{
   </section>
   <div className="match-result-actions">
     <button className="secondary-btn result-review-btn" onClick={()=>setShowMatchReview(v=>!v)}><PixelIcon name="book" size={15}/><span>{showMatchReview?t('close'):t('viewSolution')}</span></button>
-    {room.players?.length===2?<button className="primary-btn result-rematch-btn" onClick={()=>runWhenConnected(()=>socket.emit('rematch'))}><PixelIcon name="retry" size={16}/><span>{t('rematch')}</span></button>:<button className="primary-btn result-rematch-btn" onClick={leaveMultiplayer}><SolvoxUtilityArt name="back" size={18}/><span>{t('back')}</span></button>}
+    {room.players?.length===2?<button className="primary-btn result-rematch-btn" onClick={()=>runWhenConnected(()=>socket.emit('rematch'))}><PixelIcon name="retry" size={16}/><span>{t('rematch')}</span></button>:<SolvoxBackButton className="primary-btn result-rematch-btn" onClick={leaveMultiplayer} label={t('back')} />}
   </div>
   {showMatchReview&&room.decisiveQuestion&&<div className="match-review"><span>{t('questionReview')}</span><h3>{room.decisiveQuestion.text}</h3><b>{t('expected')}: {room.decisiveQuestion.answer}</b><p>{room.decisiveQuestion.explanation}</p><small>{room.decisiveQuestion.concept}</small></div>}
 </div>}

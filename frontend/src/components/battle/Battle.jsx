@@ -13,7 +13,7 @@ import { PLAYER } from '../../data/player';
 import { getBoss } from '../../data/bosses';
 import { getBossImpactMs, getBossPreviewSrc, getBossSequenceDurationMs } from '../../data/bossAssets';
 import PixelIcon from '../shared/PixelIcon';
-import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
+import SolvoxBackButton from '../shared/SolvoxBackButton';
 import { playBossAttack, playSound } from '../../services/sound';
 
 export default function Battle({ levelId, playerId = 'traveler', lang, t, onComplete, onBack }) {
@@ -473,7 +473,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   }
 
   if (loadError || !q) {
-    return <div className="loading-screen battle-load-error"><PixelIcon name="warning" size={24}/><h2>{t('questionFallback')}</h2><p>{loadError}</p><div><button type="button" onClick={()=>{setLoadError('');setQuestionRequest(value=>value+1);}}>{lang==='en'?'Try again':'Coba lagi'}</button><button type="button" onClick={onBack}>{t('backToMap')}</button></div></div>;
+    return <div className="loading-screen battle-load-error"><PixelIcon name="warning" size={24}/><h2>{t('questionFallback')}</h2><p>{loadError}</p><div><button type="button" onClick={()=>{setLoadError('');setQuestionRequest(value=>value+1);}}>{lang==='en'?'Try again':'Coba lagi'}</button><SolvoxBackButton onClick={onBack} label={t('backToMap')} /></div></div>;
   }
 
   return (
@@ -485,14 +485,11 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
           {autoResolveChapter && <ArenaBackground levelId={levelId} paused={isBalanceQuestion && !hideBalancePopup} />}
           {/* Top HUD */}
           <div className="battle-top-rail">
-            <button
-              className="battle-home-back"
+            <SolvoxBackButton
+              className="battle-home-back solvox-back-button--compact"
               onClick={onBack}
-              aria-label={t('backToMap')}
-              title={t('backToMap')}
-            >
-              <SolvoxUtilityArt name="back" size={28} className="solvox-back-art" />
-            </button>
+              ariaLabel={t('backToMap')}
+            />
 
             <div className="hp-card hp-player">
               <div className="hp-card-head">

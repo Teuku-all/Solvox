@@ -320,7 +320,7 @@ must(main.includes("import './styles/visual-cohesion.css';") && exists('frontend
   must(main.includes("import './styles/typography-modals.css';") && exists('frontend/src/styles/typography-modals.css'), 'V96 polish stylesheet is not wired');
 must(exists('frontend/src/styles/responsive.css') && !exists('frontend/src/styles/responsive-v102.css') && !exists('frontend/src/styles/responsive-v101.css') && !exists('frontend/src/styles/responsive-v94.css') && !exists('frontend/src/styles/responsive-v93.css'), 'Responsive source cleanup is incomplete');
 must(multi.includes('home-background-v83.mp4') && multi.includes('multi-home-bg'), 'Multiplayer Home background video is not wired');
-must(profile.includes('profile-screen-back" type="button" onClick={()=>dismiss()}') && profile.includes('profile-screen-close profile-close-btn" type="button" onClick={()=>dismiss()}') && profile.includes("if(e.key==='Escape')dismiss()"), 'Profile back, close, or Escape dismissal is missing');
+must(profile.includes('className="profile-screen-nav profile-screen-back" onClick={()=>dismiss()}') && profile.includes('profile-screen-close profile-close-btn" type="button" onClick={()=>dismiss()}') && profile.includes("if(e.key==='Escape')dismiss()"), 'Profile back, close, or Escape dismissal is missing');
 must(settings.includes('settings-about-row') && settings.includes('settings-close-btn') && !settings.includes('success'), 'Settings V96 about/close cleanup is incomplete');
 must(battlePanel.includes('is-story-chapter'), 'Story chapter class is missing');
 const storySource = read('frontend/src/data/story.js');
@@ -383,8 +383,8 @@ must(simulationMismatches.length === 0, 'Simulation end results must agree with 
 must(battle.includes('<MathSimulation key={q.id}') && simulationSource.includes('const STORY_MODELS =') && Array.from({ length: 10 }, (_, index) => 41 + index).every((id) => new RegExp(`^\\s*${id}:`, 'm').test(simulationSource.slice(simulationSource.indexOf('const models ='), simulationSource.indexOf('export const STORY_MODELS')))), 'Every question must use the shared math panel and Chapter 5 must build a story model');
 must(exists('frontend/src/components/menu/AboutDevelopers.jsx') && main.includes("import './styles/typography-modals.css';"), 'About Us page/style is not wired');
 must(app.includes("screen==='about'&&<AboutDevelopers") && app.includes('onAboutUs'), 'About Us navigation is not wired through App');
-must(utilityArt.includes("back: '/assets/ui/utility/icons/back-v82.webp'") && utilityArt.includes("close: '/assets/ui/utility/icons/close-v96.png'"), 'Back/close icon routing is incorrect');
-must(exists('frontend/public/assets/ui/utility/icons/back-v82.webp') && exists('frontend/public/assets/ui/utility/icons/close-v96.png') && !exists('frontend/public/assets/ui/utility/icons/back-v94.png') && !exists('frontend/public/assets/ui/utility/icons/close-v94.png'), 'Back/close assets are not cleaned correctly');
+must(utilityArt.includes("back: '/assets/ui/character-select/buttons/back.webp'") && utilityArt.includes("close: '/assets/ui/utility/icons/close-v96.png'"), 'Back/close icon routing is incorrect');
+must(exists('frontend/public/assets/ui/character-select/buttons/back.webp') && exists('frontend/public/assets/ui/utility/icons/close-v96.png') && !exists('frontend/public/assets/ui/utility/icons/back-v94.png') && !exists('frontend/public/assets/ui/utility/icons/close-v94.png'), 'Back/close assets are not cleaned correctly');
 must(!settings.includes('developer-team-v94') && !settings.includes('success'), 'Legacy developer/success block remains in Settings');
 must(i18n.includes("homeMain:'Main'") && i18n.includes("homeMain:'Play'"), 'Home Main/Play bilingual labels are not configured');
   must(settings.includes('openAboutUs') && app.includes('onAboutUs'), 'About Us action is not wired');

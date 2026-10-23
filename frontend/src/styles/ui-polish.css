@@ -109,14 +109,11 @@
   .mode-card-copy h2 { font-size: clamp(1.35rem, 6vw, 1.7rem) !important; line-height: 1.1 !important; }
   .mode-card-copy p { font-size: .78rem !important; }
   .chapter-select-top {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    padding: max(12px, env(safe-area-inset-top)) 14px 14px;
+    display: block;
+    min-height: 0;
+    padding: max(76px, calc(env(safe-area-inset-top) + 64px)) 14px 14px;
   }
-  .chapter-select-back { align-self: flex-start; }
-  .chapter-select-title { text-align: left; }
+  .chapter-select-title { width: 100%; text-align: center; }
   .chapter-select-title h1 { font-size: clamp(1.9rem, 8vw, 2.35rem) !important; }
   .chapter-select-title p { max-width: 38ch; line-height: 1.5; }
   .chapter-card-copy strong { font-size: clamp(1.4rem, 6vw, 1.75rem) !important; }

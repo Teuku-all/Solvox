@@ -1,8 +1,12 @@
 import React from 'react';
 import PixelIcon from '../shared/PixelIcon';
+<<<<<<< Updated upstream
 import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 import DeferredBackdrop from '../shared/DeferredBackdrop';
 import { responsiveAsset } from '../../services/optimizedAssets';
+=======
+import SolvoxBackButton from '../shared/SolvoxBackButton';
+>>>>>>> Stashed changes
 
 const MODE_ART = {
   single: '/assets/ui/modes/single-mode-v94.webp',
@@ -39,10 +43,7 @@ export default function ModeSelect({lang,t,onBack,onSingle,onMulti}){
       <div />
     </div>
 
-    <button className="mode-select-back" onClick={onBack}>
-      <SolvoxUtilityArt name="back" size={28} className="solvox-back-art" />
-      <span className="solvox-back-label">{t('back')}</span>
-    </button>
+    <SolvoxBackButton className="mode-select-back" labelClassName="solvox-back-label" onClick={onBack} label={t('back')} />
 
     <main className="mode-select-shell">
       <header className="mode-select-header">
