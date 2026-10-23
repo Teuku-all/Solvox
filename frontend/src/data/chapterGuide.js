@@ -8,8 +8,7 @@ export const CHAPTER_GUIDE = {
         'Pilih ubin yang sesuai untuk menambah atau menyeimbangkan ruas. Gunakan operasi kebalikan untuk menghilangkan bilangan di samping variabel.',
         'Seret ubin ke ruas yang diperlukan. Ubin bernilai berlawanan pada ruas yang sama saling menghapus, misalnya +1 dan −1.',
         'Jaga tanda dan nilai ubin. Jangan mengubah tanda suku tanpa melakukan langkah yang setara pada persamaan.',
-        'Pada soal desimal p − 6,5 = 3,5, ruas kiri memuat enam ubin −1 dan satu −0,5; ruas kanan memuat tiga +1 dan satu +0,5. Pada soal pecahan, gunakan ubin pecahan yang tersedia.',
-        'Jika langkah merusak kesetaraan atau ubin yang dipilih keliru, monster dapat menyerang dan mengurangi HP. Gunakan tombol langkah sebelumnya bila tersedia. Setelah variabel terisolasi, simulasi menyelesaikan soal dan petarung menyerang otomatis.',
+        'Kalau salah memilih atau memindahkan ubin, monster bisa menyerang dan HP-mu berkurang. Gunakan tombol Langkah Sebelumnya untuk membatalkan jika tersedia. Setelah variabel berdiri sendiri, simulasi selesai dan karaktermu menyerang otomatis.',
       ],
     },
     2: {
@@ -65,8 +64,7 @@ export const CHAPTER_GUIDE = {
         'Choose the tile needed to change or balance a side. Use inverse operations to remove numbers next to the variable.',
         'Drag tiles to the needed side. Opposite values on the same side cancel, such as +1 and −1.',
         'Keep each tile’s sign and value correct. Do not change a term’s sign without making an equivalent change to the equation.',
-        'For p − 6.5 = 3.5, the left side contains six −1 tiles and one −0.5; the right contains three +1 tiles and one +0.5. Use the available fraction tile on fraction questions.',
-        'A move that breaks equality or uses the wrong tile can trigger a monster attack and cost HP. Use Previous Step when available. Once the variable is isolated, the simulation resolves the question and your fighter attacks automatically.',
+        'If you choose or move the wrong tile, the monster may attack and reduce your HP. Use Previous Step to undo it when available. Once the variable stands alone, the simulation ends and your fighter attacks automatically.',
       ],
     },
     2: {
