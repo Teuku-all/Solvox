@@ -943,7 +943,6 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
     setBalanceOperation('');
     setOperationSides([]);
     setOperationAnimation(null);
-    setDivisionReady(false);
     setBalancePhase('active');
   }, [questionId, config, lang]);
   useEffect(() => {
@@ -1183,7 +1182,6 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
   const operationOptions = next?.operation === 'expand' || next?.operation === 'simplify' ? [next.operation] : ['+', '-', '*', '/'];
   const selectBalanceOperationNumber = (value) => {
     setBalanceOperationNumber(value);
-    setDivisionReady(false);
     if (/^[+\-*/]/.test(balanceOperation)) setBalanceOperation(`${balanceOperation[0]} ${value}`);
   };
   const chooseBalanceOperation = (operation) => {
@@ -1193,7 +1191,6 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
     }
     setBalanceOperation(['expand', 'simplify'].includes(operation) ? operation : `${operation} ${operationAmount}`);
     setSelectedMove(null);
-    setDivisionReady(false);
     setOperationSides([]);
     setBalanceDelta(0);
     setMessage('');
