@@ -201,7 +201,6 @@ function botSubmitTurn(room){
   const correct=isCorrect(q,value);
   bot.answered=(bot.answered||0)+1;
   if(correct)bot.correct=(bot.correct||0)+1;
-  if(correct)bot.score=(bot.score||0)+1;
   room.turnAnswers[bot.token]={submitted:true,correct,answer:value,timeout:false};
   if(correct)room.combatEvent={token:bot.token,target:room.players.find(p=>p.token!==bot.token)?.token,damage:DAMAGE_PER_CORRECT,seq:Date.now(),kind:'hit'};
   room.statusKey=correct?'TURN_CORRECT':'TURN_WRONG';
@@ -231,8 +230,8 @@ function resolveRound(room){
   const p1=room.players[0],p2=room.players[1];
   const a1=room.turnAnswers[p1.token],a2=room.turnAnswers[p2.token];
   const q=room.questions[room.questionIndex];
-  if(a1?.correct){p1.score=(p1.score||0)+1;p1.correct+=1;p2.hp=Math.max(0,p2.hp-DAMAGE_PER_CORRECT);room.decisiveQuestion=sanitizeReviewQuestion(q);room.combatEvent={token:p1.token,target:p2.token,damage:DAMAGE_PER_CORRECT,seq:Date.now(),kind:'hit'};}
-  if(a2?.correct){p2.score=(p2.score||0)+1;p2.correct+=1;p1.hp=Math.max(0,p1.hp-DAMAGE_PER_CORRECT);room.decisiveQuestion=sanitizeReviewQuestion(q);room.combatEvent={token:p2.token,target:p1.token,damage:DAMAGE_PER_CORRECT,seq:Date.now()+1,kind:'hit'};}
+  if(a1?.correct){p1.score=(p1.score||0)+1;p1.correct+=1;p2.hp=Math.max(0,p2.hp-DAMAGE_PER_CORRECT);room.decisiveQuestion=sanitizeReviewQuestion(q);}
+  if(a2?.correct){p2.score=(p2.score||0)+1;p2.correct+=1;p1.hp=Math.max(0,p1.hp-DAMAGE_PER_CORRECT);room.decisiveQuestion=sanitizeReviewQuestion(q);}
   if(!a1?.correct&&a1?.submitted){p1.lastMistake={questionIndex:room.questionIndex,concept:q?.concept||'—',answer:a1.answer,correctAnswer:q?.answer,explanation:q?.explanation};}
   if(!a2?.correct&&a2?.submitted){p2.lastMistake={questionIndex:room.questionIndex,concept:q?.concept||'—',answer:a2.answer,correctAnswer:q?.answer,explanation:q?.explanation};}
   room.statusKey=(!a1?.correct&&!a2?.correct)?'BOTH_WRONG':'ROUND_RESOLVED';
@@ -388,7 +387,7 @@ io.on('connection',socket=>{
     if(room.mode==='turn'){
       if(p.token!==room.turnToken)return socket.emit('answer:result',{correct:false,code:'NOT_YOUR_TURN'});
       if(room.turnAnswers[p.token]?.submitted)return;
-       const value=String(answer||'').trim();if(!value)return;const correct=isCorrect(q,value);p.answered=(p.answered||0)+1;if(!correct)p.lastMistake={questionIndex:room.questionIndex,concept:q.concept||'—',answer:value,correctAnswer:q.answer,explanation:q.explanation||q.feedback};if(correct)p.score=(p.score||0)+1;room.turnAnswers[p.token]={submitted:true,correct,answer:value,timeout:false};if(correct)room.combatEvent={token:p.token,target:room.players.find(x=>x.token!==p.token)?.token,damage:DAMAGE_PER_CORRECT,seq:Date.now(),kind:'hit'};room.statusKey=correct?'TURN_CORRECT':'TURN_WRONG';room.statusName=p.name;socket.emit('answer:result',{correct,feedback:correct?'':String(q.feedback||q.explanation||''),errorTag:q.errorTag||q.concept||''});broadcast(room,'turn:answer');
+       const value=String(answer||'').trim();if(!value)return;const correct=isCorrect(q,value);p.answered=(p.answered||0)+1;if(!correct)p.lastMistake={questionIndex:room.questionIndex,concept:q.concept||'—',answer:value,correctAnswer:q.answer,explanation:q.explanation||q.feedback};room.turnAnswers[p.token]={submitted:true,correct,answer:value,timeout:false};if(correct)room.combatEvent={token:p.token,target:room.players.find(x=>x.token!==p.token)?.token,damage:DAMAGE_PER_CORRECT,seq:Date.now(),kind:'hit'};room.statusKey=correct?'TURN_CORRECT':'TURN_WRONG';room.statusName=p.name;socket.emit('answer:result',{correct,feedback:correct?'':String(q.feedback||q.explanation||''),errorTag:q.errorTag||q.concept||''});broadcast(room,'turn:answer');
       setTimeout(()=>{if(rooms.has(room.code)&&room.status==='battle')advanceTurn(room,false);},700);
       return;
     }
