@@ -197,26 +197,25 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     setSimulation(progress);
     const previous = simulationErrorsRef.current;
     simulationErrorsRef.current = progress;
-    if (!previous || previous.questionId !== progress.questionId || simulationAttackRef.current || endedRef.current) return;
-    if (progress.modelErrors <= previous.modelErrors && progress.stepErrors <= previous.stepErrors) return;
+    if (simulationAttackRef.current || endedRef.current) return;
+    const baseline = previous?.questionId === progress.questionId ? previous : { modelErrors: 0, stepErrors: 0 };
+    if (progress.modelErrors <= baseline.modelErrors && progress.stepErrors <= baseline.stepErrors) return;
 
     simulationAttackRef.current = true;
     setBusy(true);
     setSimulationOpen(false);
+    combatRef.current?.bossAttack();
+    playBossAttack(levelId);
     later(() => {
-      combatRef.current?.bossAttack();
-      playBossAttack(levelId);
-      later(() => {
-        setHp((value) => Math.max(1, value - boss.damage));
-        showImpact('player', boss.damage, 'boss');
-        combatRef.current?.playerHurt();
-      }, bossAttackImpactMs);
-      later(() => {
-        simulationAttackRef.current = false;
-        setBusy(false);
-        setSimulationOpen(true);
-      }, Math.max(bossAttackDurationMs, bossAttackImpactMs + 500) + 200);
-    }, 80);
+      setHp((value) => Math.max(1, value - boss.damage));
+      showImpact('player', boss.damage, 'boss');
+      combatRef.current?.playerHurt();
+    }, bossAttackImpactMs);
+    later(() => {
+      simulationAttackRef.current = false;
+      setBusy(false);
+      setSimulationOpen(true);
+    }, Math.max(bossAttackDurationMs, bossAttackImpactMs + 500) + 200);
   }, [questions, idx, levelId, boss.damage, bossAttackImpactMs, bossAttackDurationMs]);
 
   /* ----------------------------- Answer flow ------------------------------ */
@@ -419,7 +418,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   }, [autoResolveChapter, q?.id, simulation.ready, simulation.questionId, busy, answer, lang, submit]);
 
   useEffect(() => {
-    if (!autoResolveChapter || !isBalanceQuestion || !q) return;
+    if (!autoResolveChapter || !isBalanceQuestion || !q || simulationAttackRef.current) return;
     if (!simulation.ready || simulation.questionId !== q.id) setSimulationOpen(true);
   }, [autoResolveChapter, isBalanceQuestion, q?.id, simulation.ready, simulation.questionId]);
 

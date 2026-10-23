@@ -1,3 +1,5 @@
+import { getMathematicalReview } from './mathematicalReview';
+
 /**
  * SOLVOX chapter evaluation rules.
  *
@@ -137,6 +139,22 @@ export function evaluateSolvoxChapter(result = {}) {
   const accuracy = Math.round((correct / total) * 100);
   const wrongIds = idsOf(logs, (item) => !item.correct || Number(item.wrongAttempts) > 0 || Number(item.simulation?.stepErrors) > 0 || Number(item.simulation?.modelErrors) > 0);
   const modelErrors = logs.reduce((sum, item) => sum + (Number(item.simulation?.modelErrors) || 0), 0);
+
+  if (logs.some((item) => item.simulation)) {
+    const stepsTotal = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepsTotal) || 0), 0);
+    const stepsCompleted = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepsCompleted) || 0), 0);
+    const stepErrors = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepErrors) || 0), 0);
+    if (stepsTotal > 0 && stepsCompleted >= stepsTotal && stepErrors === 0 && modelErrors === 0 && correct >= total) {
+      return { category: 'master', title: CATEGORY_TITLES[lang].master, message: rules.master, source: 'Solvox learning rules' };
+    }
+    const hasErrors = stepErrors + modelErrors > 0;
+    return {
+      category: hasErrors ? 'mathematical-review' : 'simulation-progress',
+      title: lang === 'en' ? (hasErrors ? 'Mathematical skills to review' : 'Mathematical progress') : (hasErrors ? 'Kemampuan matematika yang perlu ditinjau' : 'Progres matematika'),
+      message: getMathematicalReview(result, lang).join(' '),
+      source: 'Solvox learning rules',
+    };
+  }
 
   if (chapterId === 1) {
     const stepsCompleted = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepsCompleted) || 0), 0);

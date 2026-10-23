@@ -10,7 +10,7 @@ export const CHAPTER_GUIDE = {
         { title: 'Tentukan operasi kebalikan', body: 'Untuk menghilangkan +7 di samping x, tambahkan −7. Untuk menghilangkan −9, tambahkan +9. Tujuannya membuat bilangan di samping variabel menjadi 0.' },
         { title: 'Tambahkan ubin ke kiri dan kanan', body: 'Di panel Seret ubin, pilih ubin bilangan dengan tanda dan nilai yang dibutuhkan. Seret ke piring kiri dan kanan, atau pilih ubin lalu gunakan tombol Tambah … kiri dan Tambah … kanan. Jika memakai ubin satuan, ulangi sampai total nilainya cukup. Nilai yang ditambahkan harus sama pada kedua ruas.' },
         { title: 'Amati pasangan yang saling menghapus', body: 'Ubin bernilai berlawanan pada ruas yang sama saling meniadakan: +1 dan −1 menghasilkan 0. Timbangan dapat miring sementara; selesaikan perubahan setara di kedua ruas. Aturan ini juga berlaku untuk desimal dan pecahan.' },
-        { title: 'Baca hasil dan lanjutkan pertarungan', body: 'Saat variabel sudah sendiri dan kedua ruas setara, simulasi selesai dan karaktermu menyerang otomatis. Gunakan Langkah sebelumnya untuk koreksi ketika tersedia. Kesalahan dapat memicu serangan monster dan mengurangi HP.' },
+        { title: 'Baca hasil dan lanjutkan pertarungan', body: 'Saat variabel sudah sendiri dan kedua ruas setara, simulasi selesai dan karaktermu menyerang otomatis. Gunakan Langkah sebelumnya untuk koreksi ketika tersedia. Ubin yang salah langsung memicu serangan monster; HP berkurang saat serangan mengenai karakter.' },
       ],
       example: {
         equation: 'x + 7 = 15',
@@ -49,7 +49,7 @@ export const CHAPTER_GUIDE = {
         { title: 'Terapkan ke kiri, kemudian kanan', body: 'Tekan Terapkan di ruas kiri. Setelah kiri berubah, terapkan operasi dan nilai yang sama ke kanan. Selesaikan pasangan kiri dan kanan sebelum memilih operasi berikutnya.' },
         { title: 'Hilangkan koefisien variabel', body: 'Setelah menjadi 2x = 12, pilih pembagi 2 dan operasi bagi, lalu terapkan ke kedua ruas agar x = 6. Koefisien negatif dibagi dengan bilangan negatif. Untuk koefisien pecahan, ikuti operasi kebalikan yang diminta.' },
         { title: 'Ikuti petunjuk untuk bentuk khusus', body: 'Pada (x + 4) / 3 = 5, kalikan kedua ruas dengan 3 dahulu sehingga x + 4 = 15, baru kurangi 4. Pada soal bertanda kurung, periksa setiap suku dan tandanya sebelum melanjutkan.' },
-        { title: 'Periksa hasil dan tuntaskan simulasi', body: 'Ganti variabel pada persamaan awal dengan nilai hasil untuk mengecek hitunganmu. Di arena, hasil simulasi dipakai otomatis untuk menyerang. Gunakan Langkah sebelumnya untuk koreksi jika tersedia; langkah keliru dapat mengurangi HP.' },
+        { title: 'Periksa hasil dan tuntaskan simulasi', body: 'Ganti variabel pada persamaan awal dengan nilai hasil untuk mengecek hitunganmu. Di arena, hasil simulasi dipakai otomatis untuk menyerang. Gunakan Langkah sebelumnya untuk koreksi jika tersedia. Ubin yang salah langsung memicu serangan monster dan mengurangi HP.' },
       ],
       example: {
         equation: '2x + 5 = 17',
@@ -108,7 +108,7 @@ export const CHAPTER_GUIDE = {
         { title: 'Choose the inverse operation', body: 'To remove +7 beside x, add −7. To remove −9, add +9. The aim is to turn the number beside the variable into 0.' },
         { title: 'Add tiles to both sides', body: 'In Drag a tile, choose the number tile with the required sign and value. Drag it onto each pan, or select it and use Add … left and Add … right. Repeat as needed for unit tiles. Add the same total value to each side.' },
         { title: 'Watch opposite tiles cancel', body: 'Opposite values on the same side cancel: +1 and −1 make 0. The scale may tilt temporarily; finish equivalent changes on both sides. The same rule works for decimals and fractions.' },
-        { title: 'Read the result and continue the battle', body: 'When the variable is alone and both sides are equal, the simulation ends and your fighter attacks automatically. Use Previous step for corrections when available. Mistakes can trigger a monster attack and cost HP.' },
+        { title: 'Read the result and continue the battle', body: 'When the variable is alone and both sides are equal, the simulation ends and your fighter attacks automatically. Use Previous step for corrections when available. An incorrect tile drop immediately triggers a monster attack; HP decreases when the attack hits.' },
       ],
       example: {
         equation: 'x + 7 = 15',
@@ -147,7 +147,7 @@ export const CHAPTER_GUIDE = {
         { title: 'Apply to the left, then the right', body: 'Press Apply to left side. Once it updates, apply the same operation and value to the right. Finish both sides before choosing the next operation.' },
         { title: 'Remove the variable’s coefficient', body: 'From 2x = 12, choose divisor 2 and division, then apply to both sides to get x = 6. Divide negative coefficients by the matching negative number. For fractions, follow the requested inverse operation.' },
         { title: 'Follow instructions for special forms', body: 'For (x + 4) / 3 = 5, multiply both sides by 3 first to get x + 4 = 15, then subtract 4. For parentheses, check every term and sign before continuing.' },
-        { title: 'Check and finish the simulation', body: 'Substitute the value into the original equation to check your work. In battle, the result triggers an automatic attack. Use Previous step for corrections when available; incorrect steps can cost HP.' },
+        { title: 'Check and finish the simulation', body: 'Substitute the value into the original equation to check your work. In battle, the result triggers an automatic attack. Use Previous step for corrections when available. An incorrect tile drop immediately triggers a monster attack and costs HP.' },
       ],
       example: {
         equation: '2x + 5 = 17',

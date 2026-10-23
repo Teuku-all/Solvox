@@ -2409,6 +2409,7 @@
 .math-sim-distributive > *,
 .math-sim-distributive button { min-width: 0; max-width: 100%; box-sizing: border-box; }
 .math-sim-distributive > header > :is(strong, p) { overflow-wrap: anywhere; }
+.math-sim-distributive { overflow-y: auto; overscroll-behavior: contain; }
 .math-sim-distributive > footer { display: grid; grid-template-columns: minmax(0, 1fr); align-items: stretch; }
 .math-sim-distributive-actions { display: grid; width: 100%; min-width: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .math-sim-distributive > footer button,
@@ -2420,8 +2421,17 @@
   word-break: normal;
   text-align: center;
   line-height: 1.25;
+  height: auto;
+  align-self: stretch;
+  padding: 10px 12px;
 }
-.math-sim-distributive > footer button { min-height: 40px; }
+.math-sim-distributive button :is(span, b, strong) { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+.math-sim-distributive .math-sim-distributive-term { height: auto; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+.math-sim-distributive .math-sim-distributive-term > b { font-size: inherit; line-height: 1.4; }
+.math-sim-distributive .math-sim-distributive-prelude { width: 100%; white-space: normal; overflow-wrap: anywhere; text-align: left; }
+.math-sim-distributive > footer > span { min-width: 0; overflow-wrap: anywhere; line-height: 1.5; }
+.math-sim-distributive > footer button { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; }
+.math-sim-distributive > footer button > :is(svg, b) { flex: none; }
 @media (max-width: 760px) {
   .math-sim-distributive-actions { grid-template-columns: minmax(0, 1fr); }
   .math-sim-distributive > footer { gap: 5px; }
