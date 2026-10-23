@@ -1174,6 +1174,7 @@
 }
 .math-sim-balance-item.is-lifting { opacity: .2; transform: translateY(-9px) scale(.84) rotate(3deg); filter: brightness(1.28) drop-shadow(0 0 9px rgba(255, 231, 157, .88)); transition: opacity .2s ease, transform .2s cubic-bezier(.2, .8, .25, 1), filter .2s ease; }
 .math-sim-balance-item.is-new { animation: balance-tile-land .5s cubic-bezier(.16, .84, .25, 1.2) both; }
+.math-sim-balance-reference.chapter-4 .math-sim-balance-item.is-canceling { animation: balance-zero-pair .42s ease-in both; pointer-events: none; }
 .math-sim-drag-ghost {
   will-change: transform;
   animation: balance-ghost-lift .18s cubic-bezier(.2, .8, .2, 1) both;
@@ -1183,6 +1184,11 @@
   0% { opacity: 0; transform: translateY(-25px) scale(1.22) rotate(-7deg); filter: brightness(1.8) drop-shadow(0 0 15px rgba(255, 235, 155, .9)); }
   55% { opacity: 1; transform: translateY(3px) scale(.94) rotate(2deg); filter: brightness(1.28) drop-shadow(0 0 10px rgba(255, 235, 155, .72)); }
   100% { opacity: 1; transform: translateY(0) scale(1) rotate(0); filter: none; }
+}
+@keyframes balance-zero-pair {
+  0% { opacity: 1; transform: scale(1); filter: brightness(1); }
+  35% { opacity: 1; transform: scale(1.14); filter: brightness(1.8) drop-shadow(0 0 10px rgba(255, 229, 159, .9)); }
+  100% { opacity: 0; transform: scale(.25) rotate(14deg); filter: brightness(2); }
 }
 @keyframes balance-ghost-lift { from { opacity: .45; } to { opacity: 1; } }
 .math-sim-balance-reference .math-sim-scale-pan.is-drop-target .math-sim-balance-pan-content { animation: balance-target-ready .62s ease-in-out infinite alternate; }
@@ -1197,6 +1203,7 @@
   .math-sim-tile-grid .math-sim-picker-tile.is-lifting,
   .math-sim-balance-item.is-lifting { transition: none; }
   .math-sim-balance-item.is-new,
+  .math-sim-balance-item.is-canceling,
   .math-sim-drag-ghost,
   .math-sim-balance-reference .math-sim-scale-pan.is-drop-target .math-sim-balance-pan-content { animation: none; }
 }

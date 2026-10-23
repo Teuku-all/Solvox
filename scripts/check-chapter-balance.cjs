@@ -9,7 +9,7 @@ const code = esbuild.buildSync({
 
 function mount(questionId, lang = 'id') {
   const slots = [], dependencies = [], listeners = {}, timers = new Map();
-  let cursor = 0, dirty = false, tree, effects = [], progress, target = 'left';
+  let cursor = 0, dirty = false, tree, effects = [], progress, target = 'left', nextTimerId = 0;
   const react = {
     createElement: (type, props, ...children) => ({ type, props: { ...props, children: children.flat(Infinity) } }),
     Fragment: 'fragment',
@@ -36,13 +36,19 @@ function mount(questionId, lang = 'id') {
     module: mod, exports: mod.exports,
     require: (name) => name === 'react' ? react : { createPortal: (node) => node },
     window: {
-      setTimeout: (callback, delay) => { const id = timers.size + 1; timers.set(id, { callback, delay }); return id; },
+      setTimeout: (callback, delay) => { const id = ++nextTimerId; timers.set(id, { callback, delay }); return id; },
       clearTimeout: (id) => timers.delete(id),
       requestAnimationFrame: () => 1, cancelAnimationFrame() {},
       addEventListener: (name, fn) => { listeners[name] = fn; },
       removeEventListener: (name) => { delete listeners[name]; },
     },
-    document: { elementFromPoint: () => ({ closest: () => ({ classList: { contains: (name) => name === `is-${target}` } }) }) },
+    document: {
+      elementsFromPoint: () => [
+        { closest: () => null }, // A visual overlay may be above the pan.
+        { closest: () => ({ dataset: { balanceSide: target } }) },
+      ],
+      elementFromPoint: () => ({ closest: () => ({ classList: { contains: (name) => name === `is-${target}` } }) }),
+    },
   });
   const props = { questionId, lang, busy: false, onProgress: (value) => { progress = value; } };
   function render() {
@@ -84,9 +90,17 @@ function mount(questionId, lang = 'id') {
     listeners.pointerup({ pointerId: 1, clientX: 40, clientY: 40 });
     render();
   }
+  function finishZeroPairs() {
+    for (const [id, timer] of timers) {
+      if (timer.delay !== 420) continue;
+      timers.delete(id);
+      timer.callback();
+      render();
+    }
+  }
   const scale = () => find((node) => node.type?.name === 'BalanceScale')[0].props;
   render();
-  return { render, find, has, click, text, operation, apply, dragTile, scale, progress: () => progress };
+  return { render, find, has, click, text, operation, apply, dragTile, finishZeroPairs, scale, progress: () => progress };
 }
 
 for (const lang of ['id', 'en']) {
@@ -159,5 +173,29 @@ for (const lang of ['id', 'en']) {
     last.operation(expected); last.apply(0); last.apply(1);
   }
   assert.equal(last.scale().equation, 'x = 1');
-  console.log(`PASS (${lang}): independent pan updates, immediate wrong-drop errors, fraction tiles, and arithmetic-only question 10`);
+
+  const chapter4 = mount(31, lang);
+  const variableTab = chapter4.find((node) => node.props.role === 'tab' && node.props['aria-selected'] === false)[0];
+  chapter4.click(variableTab);
+  const negativeX = String.fromCharCode(8722) + 'x';
+  chapter4.dragTile(negativeX, 'left');
+  assert.equal(chapter4.progress().stepErrors, 0, 'Correct Chapter 4 tile must not count as an error');
+  assert.ok(chapter4.scale().left.some((tile) => tile.isCanceling), 'Opposite tiles should visibly form a zero pair');
+  chapter4.finishZeroPairs();
+  assert.equal(chapter4.scale().left.filter((tile) => tile.type === 'variable').length, 4, 'One x disappears as soon as the zero-pair animation completes');
+  chapter4.dragTile(negativeX, 'left'); chapter4.finishZeroPairs();
+  for (let i = 0; i < 2; i++) { chapter4.dragTile(negativeX, 'right'); chapter4.finishZeroPairs(); }
+  assert.equal(chapter4.scale().equation.replace(/\u2212/g, '-'), '3x - 3 = 9');
+  assert.equal(chapter4.progress().stepsCompleted, 1);
+  chapter4.click(chapter4.find((node) => node.props.role === 'tab' && node.props['aria-selected'] === false)[0]);
+  for (const side of ['left', 'right']) for (let i = 0; i < 3; i++) {
+    chapter4.dragTile('+1', side);
+    chapter4.finishZeroPairs();
+  }
+  assert.equal(chapter4.scale().equation, '3x = 12');
+  assert.equal(chapter4.progress().stepsCompleted, 2);
+  assert.equal(chapter4.progress().stepErrors, 0);
+  chapter4.operation(String.fromCharCode(247)); chapter4.apply(0); chapter4.apply(1);
+  assert.equal(chapter4.scale().equation, 'x = 4');
+  console.log(`PASS (${lang}): independent pan updates, wrong-drop errors, fraction tiles, Chapter 4 tile interaction, and arithmetic-only question 10`);
 }

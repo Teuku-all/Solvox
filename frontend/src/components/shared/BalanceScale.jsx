@@ -35,7 +35,7 @@ export function formatBalanceSide(items, lang = 'id') {
 
 function BalanceTile({ item, side, onMoveTile, onSelectMoveTile, selectedForMove = false, draggingSource, interactive = true }) {
   const label = item.label || (item.value < 0 ? '−1' : '+1');
-  const tileClass = `math-sim-balance-item ${item.expression ? 'is-expression' : ''} ${item.type === 'variable' ? 'is-variable' : item.value < 0 ? 'is-negative' : 'is-positive'} shape-${item.shape || 'square'} ${item.parts ? 'is-divided' : ''} ${item.id.startsWith('added-') ? 'is-new' : ''} ${selectedForMove ? 'is-selected-for-move' : ''} ${draggingSource === `pan-${side}-${item.id}` ? 'is-lifting' : ''}`;
+  const tileClass = `math-sim-balance-item ${item.expression ? 'is-expression' : ''} ${item.type === 'variable' ? 'is-variable' : item.value < 0 ? 'is-negative' : 'is-positive'} shape-${item.shape || 'square'} ${item.parts ? 'is-divided' : ''} ${item.id.startsWith('added-') ? 'is-new' : ''} ${item.isCanceling ? 'is-canceling' : ''} ${selectedForMove ? 'is-selected-for-move' : ''} ${draggingSource === `pan-${side}-${item.id}` ? 'is-lifting' : ''}`;
   if (!interactive) return <span className={tileClass}><span>{label}</span></span>;
   return <button type="button" draggable="false" className={tileClass} aria-pressed={selectedForMove} aria-label={`${label}, ${side === 'left' ? 'ruas kiri' : 'ruas kanan'}; seret ke ruas lain atau pilih lalu ketuk ruas tujuan`} onPointerDown={(event) => onMoveTile(event, side, item)} onClick={(event) => { if (event.detail === 0) onSelectMoveTile(side, item); }}><span>{label}</span></button>;
 }

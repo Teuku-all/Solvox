@@ -201,6 +201,14 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     const baseline = previous?.questionId === progress.questionId ? previous : { modelErrors: 0, stepErrors: 0 };
     if (progress.modelErrors <= baseline.modelErrors && progress.stepErrors <= baseline.stepErrors) return;
 
+    const newStepErrors = progress.stepErrorHistory?.slice(baseline.stepErrorHistory?.length || 0) || [];
+    const chapter4TilePlacementError = Number(levelId) === 4
+      && progress.modelErrors <= baseline.modelErrors
+      && progress.stepErrors > baseline.stepErrors
+      && newStepErrors.length > 0
+      && newStepErrors.every((error) => ['incorrect-tile-transfer', 'unbalanced-tile-operation'].includes(error.kind));
+    if (chapter4TilePlacementError) return;
+
     simulationAttackRef.current = true;
     setBusy(true);
     setSimulationOpen(false);

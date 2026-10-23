@@ -120,3 +120,51 @@ export function operationLabel(operation, lang = 'id') {
     : { '+': 'Tambah', '-': 'Kurangi', '*': 'Kalikan dengan', '/': 'Bagi dengan' };
   return `${names[symbol]} ${value} ${lang === 'en' ? 'on both sides' : 'pada kedua ruas'}`;
 }
+
+// Chapter 4 accepts mathematically equivalent ways to apply the same
+// operation, so a valid inverse form is not misreported as a player mistake.
+export function equivalentBalanceOperations(actual, expected) {
+  const canonical = (operation) => {
+    if (operation === 'expand' || operation === 'simplify') return operation;
+    const match = String(operation).replace(/âˆ’|−/g, '-').replace(/Ã—|×/g, '*').replace(/Ã·|÷/g, '/').match(/^([+\-*/])\s*(.+)$/);
+    if (!match) return null;
+    const [, operator, raw] = match;
+    const term = raw.replace(/\s/g, '').match(/^([+-]?)(?:\((\d+)\/(\d+)\)|(\d+)\/(\d+)|(\d+(?:[.,]\d+)?))?([a-z])?$/i);
+    if (!term || !term.slice(2).some(Boolean)) return null;
+    const [, sign, numerator, denominator, numerator2, denominator2, number, variable] = term;
+    const magnitude = denominator ? Number(numerator) / Number(denominator)
+      : denominator2 ? Number(numerator2) / Number(denominator2)
+        : Number((number || '1').replace(',', '.'));
+    const value = (sign === '-' ? -1 : 1) * magnitude;
+    if (!Number.isFinite(value)) return null;
+    if (operator === '+' || operator === '-') {
+      return { kind: 'add', variable: variable || '', value: (operator === '-' ? -1 : 1) * value };
+    }
+    if (variable || value === 0) return null;
+    return { kind: 'scale', variable: '', value: operator === '/' ? 1 / value : value };
+  };
+  const left = canonical(actual);
+  const right = canonical(expected);
+  if (typeof left === 'string' || typeof right === 'string') return left === right;
+  return Boolean(left && right && left.kind === right.kind && left.variable === right.variable && Math.abs(left.value - right.value) < 1e-9);
+}
+
+export function getChapter4OperationValues(config, stepIndex = 0) {
+  const operation = config?.steps[stepIndex]?.operation || '';
+  const value = operation.match(/^[+\-*/]\s+(.+)$/)?.[1];
+  if (!value) return [];
+  const magnitude = value.replace(/^[+\-−]/, '');
+  const values = [magnitude, `-${magnitude}`];
+  const fractionCoefficient = magnitude.match(/^\((\d+\/\d+)\)[a-z]$/i)?.[1];
+  if (fractionCoefficient) values.push(fractionCoefficient, `-${fractionCoefficient}`);
+  if (operation.startsWith('* ') || operation.startsWith('/ ')) {
+    const numeric = Number(value.replace(',', '.'));
+    if (Number.isFinite(numeric) && numeric !== 0) {
+      const reciprocal = Number.isInteger(Math.abs(numeric))
+        ? `${numeric < 0 ? '-' : ''}1/${Math.abs(numeric)}`
+        : String(1 / numeric);
+      values.push(reciprocal);
+    }
+  }
+  return [...new Set(values)];
+}
