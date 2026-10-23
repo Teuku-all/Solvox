@@ -126,7 +126,9 @@ async function startBattle(room){
   if(room.generating)return;
   room.generating=true;room.status='generating';room.statusKey='GENERATING_QUESTIONS';room.statusName=null;broadcast(room,'game:generating');
   const pack=freshQuestions(room.levelId,room.lang);
-  room.questions=pack.questions;room.questionSource=pack.source;room.generating=false;room.status='battle';room.started=true;room.startedAt=Date.now();room.recorded=false;room.questionIndex=0;room.round=1;room.turnAnswers={};room.turnToken=room.mode==='score'?null:room.players[0].token;room.turnStartedAt=Date.now();room.winner=null;room.winnerName=null;room.players.forEach(p=>{p.hp=100;p.score=0;p.correct=0;p.answered=0;p.hintsUsed=0;p.ready=true;p.lastMistake=null;p.hintLevels=[];});room.mode==='score'?scheduleScoreRound(room):scheduleTurn(room);broadcast(room,'game:start');
+  room.questions=pack.questions;room.questionSource=pack.source;
+  if(room.isBot&&room.mode==='score')prepareScoreBotMatch(room);
+  room.generating=false;room.status='battle';room.started=true;room.startedAt=Date.now();room.recorded=false;room.questionIndex=0;room.round=1;room.turnAnswers={};room.turnToken=room.mode==='score'?null:room.players[0].token;room.turnStartedAt=Date.now();room.winner=null;room.winnerName=null;room.players.forEach(p=>{p.hp=100;p.score=0;p.correct=0;p.answered=0;p.hintsUsed=0;p.ready=true;p.lastMistake=null;p.hintLevels=[];});room.mode==='score'?scheduleScoreRound(room):scheduleTurn(room);broadcast(room,'game:start');
 }
 function scheduleTurn(room){
   clearTimer(room);
@@ -174,6 +176,22 @@ function botAnswerFor(room){
   }
   return '__BOT_MISS__';
 }
+function questionKey(question){return String(question?.id??question?.text??'');}
+function prepareScoreBotMatch(room){
+  room.botMatchCount=Number(room.botMatchCount)||0;
+  room.botLastMatchWrongQuestionIds=Array.isArray(room.botLastMatchWrongQuestionIds)?room.botLastMatchWrongQuestionIds:[];
+  const previousMatchWrong=Array.isArray(room.botWrongQuestionIdsThisMatch)?room.botWrongQuestionIdsThisMatch:[];
+  if(room.botMatchCount>0)room.botLastMatchWrongQuestionIds=[...previousMatchWrong];
+  const previousWrong=new Set(room.botLastMatchWrongQuestionIds);
+  room.botWrongQuestionIdsThisMatch=[];
+  const candidates=room.questions.filter(question=>!previousWrong.has(questionKey(question)));
+  const maxMistakes=Math.min(4,candidates.length,Math.max(0,room.questions.length-1));
+  const minMistakes=Math.min(2,maxMistakes);
+  const mistakeCount=minMistakes+Math.floor(Math.random()*(maxMistakes-minMistakes+1));
+  for(let index=candidates.length-1;index>0;index--){const swapIndex=Math.floor(Math.random()*(index+1));[candidates[index],candidates[swapIndex]]=[candidates[swapIndex],candidates[index]];}
+  room.botPlannedWrongQuestionIds=candidates.slice(0,mistakeCount).map(questionKey);
+  room.botMatchCount+=1;
+}
 function botSubmitTurn(room){
   if(!rooms.has(room.code)||room.status!=='battle'||room.mode!=='turn')return;
   const bot=room.players.find(p=>p.isBot);
@@ -196,10 +214,12 @@ function botSubmitScore(room){
   const bot=room.players.find(p=>p.isBot);
   const q=room.questions[room.questionIndex];
   if(!bot||!q||room.turnAnswers[bot.token]?.submitted)return;
-  const value=botAnswerFor(room);
+  const isPlannedMiss=(room.botPlannedWrongQuestionIds||[]).includes(questionKey(q));
+  const value=isPlannedMiss?'__BOT_MISS__':(Array.isArray(q?.acceptedAnswers)?q.acceptedAnswers[0]:(Array.isArray(q?.answer)?q.answer[0]:q?.answer));
   const correct=isCorrect(q,value);
   bot.answered=(bot.answered||0)+1;
   if(correct){bot.correct=(bot.correct||0)+1;bot.score=(bot.score||0)+100;room.combatEvent={token:bot.token,target:room.players.find(p=>p.token!==bot.token)?.token,damage:10,seq:Date.now(),kind:'hit'};}
+  else room.botWrongQuestionIdsThisMatch=[...new Set([...(room.botWrongQuestionIdsThisMatch||[]),questionKey(q)])];
   room.turnAnswers[bot.token]={submitted:true,correct,answer:value,timeout:false};
   room.statusKey=correct?'SCORE_CORRECT':'SCORE_WRONG';
   room.statusName=bot.name;
