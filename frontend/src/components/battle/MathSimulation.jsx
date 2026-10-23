@@ -806,7 +806,7 @@ function Chapter5ModelBuilder({ story, equation, alternative, variableMeaning, v
   </section>;
 }
 
-export default function MathSimulation({ questionId, lang, hintsUsed, busy, onProgress, onBalanceSolved, story, visible = true, onClose }) {
+export default function MathSimulation({ questionId, lang, busy, onProgress, onBalanceSolved, story, visible = true, onClose }) {
   const config = SIMULATIONS[Number(questionId)];
   const questionNumber = Number(questionId);
   const chapter2Symbolic = questionNumber >= 11 && questionNumber <= 20;
@@ -1474,7 +1474,6 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
         <div className="math-sim-choices">
           {stepOptions.map((choice) => <button key={choice.key} type="button" disabled={busy} onClick={() => selectStep(choice.key)}>{choice.label}</button>)}
         </div>
-        {hintsUsed > 0 && <p className="math-sim-hint">{c.hint}: {operationLabel(localizeEquation(next.operation, lang), lang)}</p>}
       </> : <p className="math-sim-ready">{c.ready}</p>}
     </>}
     {!chapter2Symbolic && message && !(ready && message === c.ready) && <p className="math-sim-message" role="status">{message}</p>}

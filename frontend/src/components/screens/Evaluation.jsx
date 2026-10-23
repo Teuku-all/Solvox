@@ -11,6 +11,7 @@ function buildErrorSummary(summary, t, automaticChapter, lang) {
   const findings = [];
   if (automaticChapter) {
     if (summary.simulationStepErrors > 0) findings.push(lang === 'en' ? `${summary.simulationStepErrors} equation step correction(s) were needed.` : `Ada ${summary.simulationStepErrors} koreksi langkah persamaan.`);
+    if (summary.simulationModelErrors > 0) findings.push(lang === 'en' ? `${summary.simulationModelErrors} story model correction(s) were needed.` : `Ada ${summary.simulationModelErrors} koreksi model soal cerita.`);
     if (summary.unansweredQuestions > 0) findings.push(lang === 'en' ? `${summary.unansweredQuestions} question(s) were left unanswered.` : `Ada ${summary.unansweredQuestions} soal yang belum dijawab.`);
     if (!findings.length) findings.push(lang === 'en' ? 'No incorrect equation steps were recorded.' : 'Tidak ada langkah persamaan yang tercatat keliru.');
     return findings.slice(0, 3);
@@ -24,6 +25,7 @@ function buildErrorSummary(summary, t, automaticChapter, lang) {
 
 function buildAdvice(summary, t, automaticChapter, lang) {
   if (automaticChapter) {
+    if (summary.simulationModelErrors > 0) return [lang === 'en' ? 'Review how the story becomes an equation before balancing both sides.' : 'Tinjau kembali cara mengubah cerita menjadi persamaan sebelum menyeimbangkan kedua ruas.'];
     if (summary.simulationStepErrors > 0) return [lang === 'en' ? `${summary.simulationStepErrors} equation step correction(s) were needed. Review how the same operation is applied to both sides.` : `Ada ${summary.simulationStepErrors} koreksi langkah. Tinjau kembali cara menerapkan operasi yang sama pada kedua ruas.`];
     if (summary.unansweredQuestions > 0) return [lang === 'en' ? 'Review the unanswered equation steps before moving on.' : 'Periksa kembali langkah persamaan yang belum diselesaikan.'];
     return [lang === 'en' ? 'No incorrect equation steps need review.' : 'Tidak ada langkah persamaan yang keliru untuk diperbaiki.'];
@@ -38,7 +40,7 @@ export default function Evaluation({ result, onClose, onRematch, onNext, nextLev
   const { closing, dismiss } = useAnimatedDismiss(onClose);
   const dialogRef = useDialogKeyboard(dismiss);
   const summary = useMemo(() => summarizePerformance(result), [result]);
-  const automaticChapter = [1, 2, 3].includes(Number(result.chapterId));
+  const automaticChapter = [1, 2, 3, 4, 5].includes(Number(result.chapterId));
   const solvoxEvaluation = useMemo(() => result.chapterEvaluation || evaluateSolvoxChapter({ ...result, ...summary }), [result, summary]);
   const cls = classifyMastery(summary.mastery).key;
   const [expanded, setExpanded] = useState(null);
@@ -102,6 +104,7 @@ export default function Evaluation({ result, onClose, onRematch, onNext, nextLev
             [lang === 'en' ? 'Equation steps' : 'Langkah persamaan', `${summary.simulationStepsCompleted}/${summary.simulationStepsTotal}`],
             [lang === 'en' ? 'Step completion' : 'Penyelesaian langkah', `${summary.simulationStepCompletionRate}%`],
             [lang === 'en' ? 'Step corrections' : 'Koreksi langkah', summary.simulationStepErrors],
+            ...(Number(result.chapterId) === 5 ? [[lang === 'en' ? 'Story corrections' : 'Koreksi model cerita', summary.simulationModelErrors]] : []),
             [t('time'), `${summary.totalTime}s`],
             [lang === 'en' ? 'Questions completed' : 'Soal diselesaikan', `${summary.answeredQuestions}/${summary.totalQuestions}`],
             [t('hpRemaining'), `${summary.hpRemaining}/${summary.maxHp}`],
@@ -164,8 +167,8 @@ export default function Evaluation({ result, onClose, onRematch, onNext, nextLev
         </section>
 
         <p className="eval-note">{lang === 'en'
-          ? 'This evaluation focuses on incorrect answers, repeated attempts, and corrections made during play.'
-          : 'Evaluasi ini berfokus pada jawaban yang salah, percobaan ulang, dan koreksi yang dilakukan selama bermain.'}</p>
+          ? 'This evaluation follows completed simulation steps and corrections made during play.'
+          : 'Evaluasi ini mengikuti langkah simulasi yang selesai dan koreksi selama bermain.'}</p>
         <div className="eval-actions">
           <SolvoxBackButton className="secondary-btn" onClick={() => dismiss()} label={lang === 'en' ? 'Back to home' : 'Kembali ke beranda'} />
           <button className="secondary-btn rematch-btn" onClick={() => dismiss(onRematch)}><PixelIcon name="retry" size={15} /><span>{t('rematch')}</span></button>

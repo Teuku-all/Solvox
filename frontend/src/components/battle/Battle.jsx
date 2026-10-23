@@ -17,7 +17,7 @@ import SolvoxBackButton from '../shared/SolvoxBackButton';
 import { playBossAttack, playSound } from '../../services/sound';
 
 export default function Battle({ levelId, playerId = 'traveler', lang, t, onComplete, onBack }) {
-  const autoResolveChapter = [1, 2, 3].includes(Number(levelId));
+  const autoResolveChapter = [1, 2, 3, 4, 5].includes(Number(levelId));
   const boss = getBoss(levelId);
   const bossAttackImpactMs = getBossImpactMs(boss.spriteId, 'attack', 360);
   const bossAttackDurationMs = getBossSequenceDurationMs(boss.spriteId, 'attack');
@@ -38,10 +38,8 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   const [busy, setBusy] = useState(false);
   const [hp, setHp] = useState(PLAYER.stats.hp);
   const [enemyHp, setEnemyHp] = useState(boss.hp);
-    const [currentHints, setCurrentHints] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [correct, setCorrect] = useState(0);
-  const [feedback, setFeedback] = useState(null);
   const [round, setRound] = useState(1);
   const [impact, setImpact] = useState(null);
   const [impactAmount, setImpactAmount] = useState(0);
@@ -52,15 +50,6 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   const [simulation, setSimulation] = useState({ ready: false, modelCorrect: false, modelErrors: 0, stepErrors: 0, stepsCompleted: 0, stepsTotal: 0 });
   const [balanceSolvedQuestionId, setBalanceSolvedQuestionId] = useState(null);
   const [simulationOpen, setSimulationOpen] = useState(false);
-  const [keypadVisible, setKeypadVisible] = useState(() => {
-    const value = localStorage.getItem('solvox.keypad');
-    const legacy = localStorage.getItem('numericore.keypad');
-    return value !== null
-      ? value !== '0'
-      : legacy !== null
-        ? legacy !== '0'
-        : localStorage.getItem('aljabarmaster.keypad') !== '0';
-  });
 
   const combatRef = useRef(null);
   const endedRef = useRef(false);
@@ -113,7 +102,6 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     if (!import.meta.env.DEV || busy) return;
     const targetIndex = Number(devQuestionIndex);
     if (!Number.isInteger(targetIndex) || targetIndex < 0 || targetIndex >= questions.length || targetIndex === idx) return;
-    setFeedback(null);
     setAnswer('');
     setSimulation({ ready: false, modelCorrect: false, modelErrors: 0, stepErrors: 0, stepsCompleted: 0, stepsTotal: 0 });
     simulationErrorsRef.current = null;
@@ -137,10 +125,8 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     setBusy(false);
     setHp(PLAYER.stats.hp);
     setEnemyHp(boss.hp);
-        setCurrentHints(0);
     setAttempts(0);
     setCorrect(0);
-    setFeedback(null);
     setRound(1);
     setImpact(null);
     setImpactAmount(0);
@@ -180,10 +166,6 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   }, [levelId, lang, questionRequest]);
 
   /* ---------------------------- Persistence / UI -------------------------- */
-  useEffect(() => {
-    localStorage.setItem('solvox.keypad', keypadVisible ? '1' : '0');
-  }, [keypadVisible]);
-
   useEffect(
     () => () => {
       timersRef.current.forEach(clearTimeout);
@@ -197,10 +179,8 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
 
     autoSubmittedQuestionRef.current = null;
     setAnswer('');
-    setFeedback(null);
     setBusy(false);
     setAttempts(0);
-    setCurrentHints(0);
     setSimulationOpen(false);
     setQuestionStartedAt(now);
     questionAttemptRef.current = {
@@ -239,32 +219,6 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     }, 80);
   }, [questions, idx, levelId, boss.damage, bossAttackImpactMs, bossAttackDurationMs]);
 
-  useEffect(() => {
-    if (!autoResolveChapter && simulation.ready && simulation.questionId === questions[idx]?.id) {
-      window.requestAnimationFrame(() => document.querySelector('.battle-answer-input')?.focus());
-    }
-  }, [autoResolveChapter, simulation.ready, simulation.questionId, questions, idx]);
-
-  /* ------------------------------- Hint ----------------------------------- */
-  const useHint = () => {
-    const hintCost = [5, 10, 15][currentHints] ?? 15;
-    if (busy || currentHints >= 3 || hp <= hintCost) return;
-
-    setBusy(true);
-    setCurrentHints((value) => value + 1);
-    setHp((value) => Math.max(1, value - hintCost));
-    playSound('hint');
-    combatRef.current?.bossAttack();
-    playBossAttack(levelId);
-    later(() => {
-      showImpact('player', hintCost, 'boss');
-      combatRef.current?.playerHurt();
-      setBusy(false);
-    }, bossAttackImpactMs);
-
-    // A hint retains its existing HP cost; unsuccessful steps and answers do not.
-  };
-
   /* ----------------------------- Answer flow ------------------------------ */
   const submit = async () => {
     if (busy || !simulation.ready || simulation.questionId !== q?.id || !answer.trim() || endedRef.current) return;
@@ -285,7 +239,6 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
       return;
     }
     const isCorrect = Boolean(verdict.correct);
-    const correctAnswer = verdict.correctAnswer || '';
     const bankMatch = verdict.feedbackBankMatched ? { id: verdict.feedbackBankRow, code: verdict.feedbackBankCode, errorType: verdict.errorType, feedback: verdict.feedback } : null;
 
     tracker.answers = history;
@@ -307,20 +260,6 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
       ];
     }
 
-    const baseFeedback = {
-      type: isCorrect ? 'correct' : 'wrong',
-      title: isCorrect ? t('correct') : t('wrong'),
-      message: isCorrect ? t('attackReady') : bankAwareFeedback,
-      errorTag: isCorrect ? null : (bankMatch?.errorType || verdict.errorType || q.errorTag),
-      explanation: bankAwareFeedback || `${correctAnswer}`,
-      nextStep: isCorrect
-        ? t('feedbackNextStep')
-        : t('feedbackRetryPrompt'),
-      feedbackBankMatched: !!bankMatch,
-      feedbackBankCode: bankMatch?.code || null,
-      feedbackBankRow: bankMatch?.id || null,
-    };
-    setFeedback(autoResolveChapter ? null : baseFeedback);
     playSound(isCorrect ? 'correct' : 'wrong');
 
     if (isCorrect) {
@@ -347,20 +286,20 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
         text: q.text,
         concept: q.concept,
         errorTag: q.errorTag,
-        feedback: autoResolveChapter ? null : q.feedback,
+        feedback: null,
         correct: true,
         answer,
         correctAnswer: verdict.correctAnswer,
         attempts: attemptNow,
         wrongAttempts: tracker.wrongAttempts,
         timeSec: elapsed,
-        hintsUsed: currentHints,
-        hintMaxUsed: currentHints,
+        hintsUsed: 0,
+        hintMaxUsed: 0,
         answerHistory: history,
         feedbackBankHistory: [...(tracker.feedbackBankHistory || [])],
         feedbackBankMatched: (tracker.feedbackBankHistory || []).some((entry) => entry.matched),
         firstAttemptCorrect: tracker.wrongAttempts === 0,
-        explanation: autoResolveChapter ? null : q.feedback,
+        explanation: null,
         simulation: { ...simulation },
       };
       const logs = [...questionLogs, log];
@@ -382,7 +321,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
               ? Math.round((correctNow / questions.length) * 100)
               : 0,
             attempts: logs.reduce((sum, item) => sum + item.attempts, 0),
-            hints: logs.reduce((sum, item) => sum + item.hintsUsed, 0),
+            hints: 0,
             timeSec: Math.round((Date.now() - startedAt) / 1000),
             correct: correctNow,
             won,
@@ -417,7 +356,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
       if (nextHp > 0) {
         later(() => {
           setBusy(false);
-          window.requestAnimationFrame(() => document.querySelector('.battle-answer-input')?.focus());
+          setActionError(lang === 'en' ? 'The solved value did not match this question. Please restart the stage.' : 'Hasil simulasi tidak cocok dengan soal ini. Ulangi stage untuk mencoba kembali.');
         }, Math.max(0, bossAttackDurationMs - bossAttackImpactMs) + 150);
         return;
       }
@@ -434,8 +373,8 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
         attempts: attemptNow,
         wrongAttempts: tracker.wrongAttempts,
         timeSec: elapsed,
-        hintsUsed: currentHints,
-        hintMaxUsed: currentHints,
+        hintsUsed: 0,
+        hintMaxUsed: 0,
         answerHistory: history,
         feedbackBankHistory: [...(tracker.feedbackBankHistory || [])],
         feedbackBankMatched: (tracker.feedbackBankHistory || []).some((entry) => entry.matched),
@@ -449,7 +388,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
       later(() => finish({
         accuracy: questions.length ? Math.round((correct / questions.length) * 100) : 0,
         attempts: logs.reduce((sum, item) => sum + item.attempts, 0),
-        hints: logs.reduce((sum, item) => sum + item.hintsUsed, 0),
+        hints: 0,
         timeSec: Math.round((Date.now() - startedAt) / 1000),
         correct,
         won: false,
@@ -488,7 +427,6 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     !simulationOpen
     || balanceSolvedQuestionId === Number(q?.id)
     || (simulation.ready && simulation.questionId === Number(q?.id))
-    || feedback?.type === 'correct'
   );
 
   if (loading) {
@@ -510,7 +448,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
     <div className={`battle-world${autoResolveChapter ? ' is-auto-resolve' : ''}`}>
         {!autoResolveChapter && <ArenaBackground levelId={levelId} paused={isBalanceQuestion && !hideBalancePopup} />}
 
-        <div className={`battle-ui${feedback?.type === 'wrong' ? ' has-feedback' : ''}${autoResolveChapter ? ' is-auto-resolve' : ''}`}>
+        <div className={`battle-ui theme-level-${levelId}${autoResolveChapter ? ' is-auto-resolve' : ''}`}>
           {autoResolveChapter && <ArenaBackground levelId={levelId} paused={isBalanceQuestion && !hideBalancePopup} />}
           {/* Top HUD */}
           <div className="battle-top-rail">
@@ -597,22 +535,6 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
             <button type="button" onClick={devJumpToQuestion} disabled={busy || Number(devQuestionIndex) === idx}>{lang === 'en' ? 'Jump' : 'Lompat'}</button>
           </div>}
 
-          {!autoResolveChapter && feedback?.type === 'wrong' && (
-            <aside className="battle-mistake-banner" role="alert" aria-live="polite">
-              <span className="battle-mistake-icon" aria-hidden="true">
-                <PixelIcon name="warning" size={15} />
-              </span>
-              <div className="battle-mistake-copy">
-                <div className="battle-mistake-heading">
-                  <b>{feedback.title}</b>
-                  <span>{t('questionNumber')} {q.id ?? idx + 1}</span>
-                </div>
-                <p>{feedback.message}</p>
-              </div>
-              {feedback.errorTag && <em className="battle-mistake-tag">{feedback.errorTag}</em>}
-            </aside>
-          )}
-
           {/* The arena stays separate so fighter animations never affect the deck layout. */}
           <div className={`battle-reference-arena ${isBalanceQuestion && !hideBalancePopup ? 'is-balance-open' : ''}`}>
             <CombatStage
@@ -622,11 +544,11 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
               paused={isBalanceQuestion && !hideBalancePopup}
               onHit={() => showImpact('boss', damagePerQuestion, 'player')}
             />
-            {isBalanceQuestion && balanceSolvedQuestionId !== Number(q.id) && <MathSimulation key={q.id} questionId={q.id} lang={lang} story={q.text} hintsUsed={currentHints} busy={busy} visible={simulationOpen} onClose={() => setSimulationOpen(false)} onProgress={handleSimulationProgress} onBalanceSolved={(result) => { setBalanceSolvedQuestionId(result.questionId); setSimulationOpen(false); setSimulation(result); }} />}
+            {isBalanceQuestion && balanceSolvedQuestionId !== Number(q.id) && <MathSimulation key={q.id} questionId={q.id} lang={lang} story={q.text} busy={busy} visible={simulationOpen} onClose={() => setSimulationOpen(false)} onProgress={handleSimulationProgress} onBalanceSolved={(result) => { setBalanceSolvedQuestionId(result.questionId); setSimulationOpen(false); setSimulation(result); }} />}
           </div>
 
           <BattleQuestionPanel
-            q={{ ...q, attempts }}
+            q={q}
             levelId={levelId}
             meta={meta}
             lang={lang}
@@ -641,13 +563,6 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
             onOpenSimulation={() => { if (!simulationAttackRef.current) setSimulationOpen(true); }}
             submit={submit}
             autoResolve={autoResolveChapter}
-            hintsUsed={currentHints}
-            hintsLeft={Math.max(0, 3 - currentHints)}
-            hintCost={[5, 10, 15][currentHints] ?? 15}
-            currentHp={hp}
-            useHint={useHint}
-            keypadVisible={keypadVisible}
-            onToggleKeypad={() => setKeypadVisible((value) => !value)}
           />
 
           <div className="battle-reference-footer" aria-hidden="true" />

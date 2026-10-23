@@ -63,8 +63,9 @@ export const SIMULATIONS = Object.fromEntries(Object.entries(raw).map(([id, [mod
 
 export function getSimulationAnswer(questionId){
   const result=SIMULATIONS[Number(questionId)]?.steps.at(-1)?.after;
-  const match=String(result||'').match(/=\s*(.+)$/);
-  return match?.[1]?.trim()||'';
+  const equation=String(result||'').trim();
+  const match=equation.match(/^([a-z])\s*=\s*(.+)$|^(.+)\s*=\s*([a-z])$/i);
+  return (match?.[2]||match?.[3]||'').trim();
 }
 
 // Each story has the same three checks: what x means, how quantities relate,

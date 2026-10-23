@@ -32,12 +32,9 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
   const [level,setLevel]=useState(1);
   const [code,setCode]=useState('');
   const [room,setRoom]=useState(null);
-  const [keypadVisible,setKeypadVisible]=useState(false);
   const [error,setError]=useState('');
   const [answer,setAnswer]=useState('');
   const [seconds,setSeconds]=useState(45);
-  const [answerInfo,setAnswerInfo]=useState(null);
-  const [hintInfo,setHintInfo]=useState(null);
   const [battleImpacts,setBattleImpacts]=useState([]);
   const [attackingSide,setAttackingSide]=useState('');
   const [showMatchReview,setShowMatchReview]=useState(false);
@@ -58,7 +55,7 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
   useEffect(()=>{loadDashboard();},[]);
   useEffect(()=>{
     if(dashboardOnly)return;
-    const events=['room:created','room:update','game:start','game:generating','turn:next','turn:answer','turn:hint-used','round:resolved','round:next','score:answer','game:finished','rematch:ready','player:left','player:disconnected','room:reconnected'];
+    const events=['room:created','room:update','game:start','game:generating','turn:next','turn:answer','round:resolved','round:next','score:answer','game:finished','rematch:ready','player:left','player:disconnected','room:reconnected'];
     const storedToken=()=>localStorage.getItem('solvox.mpToken')||localStorage.getItem('numericore.mpToken')||localStorage.getItem('aljabarmaster.mpToken')||'';
     const handler=r=>{
       roomRef.current=r||null;
@@ -94,8 +91,7 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
     };
     const onDisconnect=()=>setSocketConnected(false);
     const onConnectError=()=>{setSocketConnected(false);setError('SOCKET_CONNECTION')};
-    const onAnswerResult=x=>{setAnswerInfo(x);setAnswer('');playSound(x?.correct?'correct':'wrong')};
-    const onHintResult=x=>{if(x?.ok){setHintInfo(x);playSound('hint')}else if(x?.code==='HINT_NOT_ENOUGH_HP'){setAnswerInfo({correct:false,explanation:t('hintNotEnoughHp')});}};
+    const onAnswerResult=x=>{setAnswer('');playSound(x?.correct?'correct':'wrong')};
     const onRoomError=x=>{
       setError(x?.code||'ROOM_ERROR');
       if(x?.code==='ROOM_NOT_FOUND'){
@@ -112,21 +108,18 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
     socket.on('disconnect',onDisconnect);
     socket.on('connect_error',onConnectError);
     socket.on('answer:result',onAnswerResult);
-    socket.on('hint:result',onHintResult);
     socket.on('room:error',onRoomError);
     socket.connect();
     return()=>{
       events.forEach(e=>socket.off(e,handler));
       socket.off('connect',onConnect);socket.off('disconnect',onDisconnect);socket.off('connect_error',onConnectError);
-      socket.off('answer:result',onAnswerResult);socket.off('hint:result',onHintResult);socket.off('room:error',onRoomError);
+      socket.off('answer:result',onAnswerResult);socket.off('room:error',onRoomError);
       onBattleStateChange?.(false);
       socket.disconnect();
     };
   },[socket,onBattleStateChange,dashboardOnly]);
   useEffect(()=>{
     if(!room)return;
-    setAnswerInfo(null);
-    setHintInfo(null);
     setAnswer('');
   },[room?.questionIndex]);
   useEffect(()=>{
@@ -279,7 +272,7 @@ useEffect(()=>{
   };
   const create=(bot=false)=>{
     const token=prepareRoomToken();
-    runWhenConnected(()=>{setError('');setAnswerInfo(null);socket.emit('room:create',{name,character:char,levelId:level,lang,mode:battleMode,bot,token})});
+    runWhenConnected(()=>{setError('');socket.emit('room:create',{name,character:char,levelId:level,lang,mode:battleMode,bot,token})});
   };
   const join=()=>{
     const roomCode=code.trim().toUpperCase();
@@ -292,7 +285,6 @@ useEffect(()=>{
     socket.emit('player:ready',{ready:true});
   });
   const submit=()=>{if(!answer.trim()||(room?.mode==='turn'&&!current)||(room?.mode==='score'&&playerSubmitted))return;const submittedAnswer=answer;runWhenConnected(()=>socket.emit('answer:submit',{answer:submittedAnswer}))};
-  const useTurnHint=()=>{const nextHintCost=5*((me?.hintsUsed||0)+1);if(!room||room.status!=='battle'||room.mode!=='turn'||!current||!room.question?.hints?.length||Number(me?.hintsUsed||0)>=2)return;if(Number(me?.hp||0)<=nextHintCost){setAnswerInfo({correct:false,explanation:t('hintNotEnoughHp')});return;}socket.emit('turn:hint')};
   const changeMyCharacter=(next)=>{
     setChar(next);
     localStorage.setItem('solvox.mpCharacter',next);
@@ -351,7 +343,7 @@ useEffect(()=>{
           <input value={name} onChange={e=>setName(e.target.value)} placeholder={t('name')}/>
           <select value={level} onChange={e=>setLevel(Number(e.target.value))}>{[1,2,3,4,5].map(x=><option key={x} value={x}>Chapter {x}{x===5?' • '+t('finalBoss'):''}</option>)}</select>
           <div className="mode-choice"><button className={battleMode==='turn'?'active':''} onClick={()=>setBattleMode('turn')}>{t('turnBased')}</button><button className={battleMode==='score'?'active':''} onClick={()=>setBattleMode('score')}>{t('scoreDuel')}</button></div>
-          <p className="mode-desc">{battleMode==='turn'?(lang==='en'?`Players answer in turns. Chapter ${level} gives each player ${turnSecondsForLevel(level)} seconds per turn.`:`Pemain menjawab bergiliran. Chapter ${level} memberi setiap pemain ${turnSecondsForLevel(level)} detik per giliran.`):t('scoreDuelDesc')}</p><div className="tiebreak-note"><PixelIcon name="hint" size={14}/><span>{t('tieBreakHintRule')}</span></div>
+          <p className="mode-desc">{battleMode==='turn'?(lang==='en'?`Players answer in turns. Chapter ${level} gives each player ${turnSecondsForLevel(level)} seconds per turn.`:`Pemain menjawab bergiliran. Chapter ${level} memberi setiap pemain ${turnSecondsForLevel(level)} detik per giliran.`):t('scoreDuelDesc')}</p>
           <div className="multi-actions"><button className="primary-btn" onClick={()=>create(false)}>{t('create')}</button><button className="primary-btn multi-bot-btn" onClick={()=>create(true)}>{t('playVsBot')}</button></div>
         </div>
 
@@ -440,16 +432,12 @@ useEffect(()=>{
         <CharacterPicker value={char} onChange={changeMyCharacter} levelId={room.levelId||level} t={t}/>
       </section>}
       <div className="room-status">{statusText()}</div>
-       {answerInfo&&<div className={`mp-feedback-banner ${answerInfo.correct?'ok':'bad'}`} role="alert" aria-live="polite">
-         <strong>{answerInfo.correct ? `${t('correct')}` : `${t('wrong')}`}</strong>
-         <span>{answerInfo.explanation}</span>
-       </div>}
       {room.status==='waiting'&&<button className="primary-btn wide-action" onClick={ready}><PixelIcon name="check" size={16}/><span>{t('ready')}</span></button>}
       {room.status==='generating'&&<div className="match-loading"><PixelIcon name="spark" size={16}/> {t('generatingMatch')}</div>}
 {room.status==='battle'&&room.question&&<div className="battle-page battle-reference multiplayer-battle-page">
   <div className="battle-world">
-    <ArenaBackground levelId={room.levelId||level}/>
     <div className="battle-ui multiplayer-battle-ui">
+      <ArenaBackground levelId={room.levelId||level}/>
       <header className="battle-top-rail">
         <SolvoxBackButton className="battle-home-back solvox-back-button--compact" onClick={leaveMultiplayer} ariaLabel={t('back')} title={t('back')} />
         <div className="hp-card hp-player">
@@ -462,7 +450,6 @@ useEffect(()=>{
           <div className="hp-track"><span style={{width:`${opponentVital.progress}%`}}/></div><div className="hp-footer"><span>{room.mode==='score'?(opponentSubmitted?t('waiting'):t('scoreDuelBadge')):t('opponent')}</span><span>{opponentVital.score?t('score'):'HP'}</span></div>
         </div>
       </header>
-      {answerInfo&&!answerInfo.correct&&<aside className="battle-mistake-banner" role="alert" aria-live="polite"><span className="battle-mistake-icon"><PixelIcon name="warning" size={15}/></span><div className="battle-mistake-copy"><div className="battle-mistake-heading"><b>{t('wrong')}</b><span>{t('questionNumber')} {room.questionIndex+1}</span></div><p>{answerInfo.explanation}</p></div></aside>}
       <div ref={arenaRef} className="battle-reference-arena multiplayer-arena" data-combat-seq={room.combatEvent?.seq||''} data-attacking-side={attackingSide||undefined}>
         <div className="combat-stage multiplayer-combat-stage" data-level={room.levelId||level}>
           <div className="fighter-slot fighter-player-slot"><div className="fighter-player player-lane-shift"><div className="fighter-shadow-anchor" aria-hidden="true"/><MultiplayerFighter ref={playerBattleRef} characterId={battlePlayerCharacter.id} levelId={room.levelId||level} size={278} mirrored={battlePlayerCharacter.kind==='boss'} attackDirection={1} onImpact={playerBattleImpact}/></div></div>
@@ -483,15 +470,6 @@ useEffect(()=>{
         setAnswer={setAnswer}
         busy={room.mode==='turn'?!current:playerSubmitted}
         submit={submit}
-        hintsUsed={Number(me?.hintsUsed||0)}
-        hintsLeft={Math.max(0,2-Number(me?.hintsUsed||0))}
-        hintCost={5*(Number(me?.hintsUsed||0)+1)}
-        currentHp={Number(me?.hp||0)}
-        useHint={useTurnHint}
-        keypadVisible={keypadVisible}
-        onToggleKeypad={()=>setKeypadVisible(value=>!value)}
-        showHintRail={room.mode==='turn'}
-        showAttemptCounter={false}
       />
       {battleImpacts.map(impact=><HitEffect key={impact.seq} side={impact.side} amount={impact.amount} theme={impact.side==='boss'?'boss':'player'}/>)}
     </div>
@@ -502,7 +480,7 @@ useEffect(()=>{
   <div className="result-emblem"><PixelIcon name={winnerName?'trophy':'star'} size={42}/></div>
   <h2>{winnerName?(didWin?(lang==='en'?'Victory!':'Kamu Menang!'):`${winnerName} — ${t('matchFinished')}`):t('draw')}</h2>
   <p className="result-subtitle">{lang==='en'?'Match results and player performance':'Hasil pertandingan dan performa pemain'}</p>
-  <div className="result-score-strip">{room.players?.map(p=><div className={p.id===me?.id?'is-self':''} key={p.id}><span>{p.name}{p.id===me?.id&&<small>{lang==='en'?'YOU':'KAMU'}</small>}</span><b>{room.mode==='turn'?`${p.hp} HP`:`${p.score} ${t('score')}`}</b><small>{p.hintsUsed||0} {t('hints')}</small></div>)}</div>
+  <div className="result-score-strip">{room.players?.map(p=><div className={p.id===me?.id?'is-self':''} key={p.id}><span>{p.name}{p.id===me?.id&&<small>{lang==='en'?'YOU':'KAMU'}</small>}</span><b>{room.mode==='turn'?`${p.hp} HP`:`${p.score} ${t('score')}`}</b></div>)}</div>
   <div className="match-pedagogy"><span className="result-pedagogy-icon"><PixelIcon name="spark" size={15}/></span><span>{room.finishSummary?.[me?.id]||statusText()}</span></div>
   <section className="match-evaluation" aria-label={t('matchEvaluation')}>
     <div className="result-section-heading"><span><small>{lang==='en'?'PERFORMANCE':'RINGKASAN'}</small><h3>{t('matchEvaluation')}</h3></span><PixelIcon name="chart" size={19}/></div>
@@ -511,7 +489,7 @@ useEffect(()=>{
       return <article className={`${p.id===me?.id?'is-self':''} ${p.id===room.winner?'is-winner':''}`} key={p.id}>
         <div className="result-eval-player"><span><img src={portrait} alt=""/></span><b>{p.name}</b>{p.id===room.winner&&<i><PixelIcon name="crown" size={13}/></i>}</div>
         <div className="result-eval-stats"><span><b>{correct}<small>/{answered}</small></b><small>{t('correct')}</small></span><span><b>{accuracy}%</b><small>{t('accuracy')}</small></span></div>
-        <div className="result-eval-footer"><span>{room.mode==='turn'?`${p.hp} HP`:`${p.score} ${t('score')}`}</span><span>{p.hintsUsed||0} {t('hints')}</span></div>
+        <div className="result-eval-footer"><span>{room.mode==='turn'?`${p.hp} HP`:`${p.score} ${t('score')}`}</span></div>
       </article>;
     })}</div>
   </section>

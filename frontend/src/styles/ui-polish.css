@@ -494,6 +494,14 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
   letter-spacing: 0;
   text-wrap: pretty;
 }
+@media (min-width: 761px) and (min-height: 650px) {
+  .battle-ui.is-auto-resolve.theme-level-5 {
+    grid-template-rows: 74px minmax(0, 1fr) clamp(300px, 42vh, 350px);
+  }
+  .battle-ui.is-auto-resolve.theme-level-5 > .arena-background {
+    inset: 0 0 calc(clamp(300px, 42vh, 350px) + 16px);
+  }
+}
 @media (max-width: 640px) {
   .battle-question-panel.theme-level-5 .question-text {
     font-size: 1rem !important;
@@ -541,7 +549,55 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
     font-weight: 700 !important;
     letter-spacing: 0 !important;
   }
-  .battle-question-panel .question-tools { min-height: 40px !important; }
-  .battle-question-panel .keypad-toggle { min-height: 32px !important; font-size: .6875rem !important; }
-  .battle-question-panel .attempts { font-size: .6875rem !important; }
+}
+
+/* Multiplayer still accepts a typed answer, but shares the single-column
+   learning dock now that keypad and hint rails are gone. */
+.multiplayer-battle-ui { isolation: isolate; }
+.multiplayer-battle-ui > .arena-background {
+  position: relative;
+  inset: auto !important;
+  grid-column: 1;
+  grid-row: 1 / 3;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  align-self: stretch;
+  pointer-events: none;
+  z-index: 0;
+}
+.multiplayer-battle-ui > .arena-background .arena-background-media {
+  width: 100%;
+  height: 100%;
+  object-position: center bottom;
+}
+.battle-question-panel.is-compact-answer {
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+}
+.battle-question-panel.is-compact-answer .battle-question-main {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  grid-template-rows: 48px minmax(0, 1fr) auto !important;
+  border-right: 0 !important;
+}
+@media (max-width: 760px) {
+  .multiplayer-battle-page .multiplayer-battle-ui {
+    grid-template-rows: 84px minmax(clamp(195px, 27dvh, 285px), 1fr) auto !important;
+    align-content: stretch !important;
+  }
+  .multiplayer-battle-ui .battle-question-panel.is-compact-answer {
+    grid-template-rows: minmax(0, 1fr) !important;
+    min-height: 0 !important;
+  }
+  .multiplayer-battle-ui .battle-question-panel.is-compact-answer .battle-question-main {
+    min-height: 0 !important;
+    height: auto !important;
+    grid-template-rows: 48px auto auto !important;
+  }
+  .multiplayer-battle-ui .battle-question-panel.is-compact-answer .question-content {
+    min-height: 0 !important;
+    max-height: min(42dvh, 380px);
+    overflow-y: auto !important;
+  }
 }

@@ -15,11 +15,11 @@ export const CHAPTER_GUIDE = {
     },
     4: {
       brief: 'Kumpulkan variabel pada satu ruas, lalu sederhanakan dan bagi kedua ruas.',
-      steps: ['Buka kurung jika ada, lalu gabungkan suku sejenis.', 'Pindahkan variabel dan bilangan dengan operasi setara di kedua ruas.', 'Gunakan kelompok pembagian bila muncul, lalu isi jawaban untuk menyerang.'],
+      steps: ['Buka kurung jika ada, lalu gabungkan suku sejenis.', 'Pindahkan variabel dan bilangan dengan operasi setara di kedua ruas.', 'Selesaikan pembagian di simulasi; karakter menyerang otomatis.'],
     },
     5: {
       brief: 'Ubah cerita menjadi persamaan dengan kepingan, lalu selesaikan di timbangan.',
-      steps: ['Baca cerita: tentukan apa yang diwakili x dan hubungan jumlahnya.', 'Seret kepingan ke slot persamaan sesuai urutan cerita.', 'Selesaikan persamaan pada kedua ruas, lalu isi nilai x untuk menyerang.'],
+      steps: ['Baca cerita: tentukan apa yang diwakili x dan hubungan jumlahnya.', 'Seret kepingan ke slot persamaan sesuai urutan cerita.', 'Selesaikan persamaan di simulasi; karakter menyerang otomatis.'],
     },
   },
   en: {
@@ -37,11 +37,11 @@ export const CHAPTER_GUIDE = {
     },
     4: {
       brief: 'Collect variables on one side, simplify, and divide both sides.',
-      steps: ['Expand brackets if needed, then combine like terms.', 'Move variables and numbers using equal operations on both sides.', 'Complete any division groups, then enter your answer to attack.'],
+      steps: ['Expand brackets if needed, then combine like terms.', 'Move variables and numbers using equal operations on both sides.', 'Complete the division in the simulation; your fighter attacks automatically.'],
     },
     5: {
       brief: 'Turn the story into an equation with tiles, then solve it on the balance.',
-      steps: ['Read the story: decide what x means and how the quantities relate.', 'Drag tiles into equation slots in story order.', 'Solve both sides of the equation, then enter x to attack.'],
+      steps: ['Read the story: decide what x means and how the quantities relate.', 'Drag tiles into equation slots in story order.', 'Finish the equation in the simulation; your fighter attacks automatically.'],
     },
   },
 };

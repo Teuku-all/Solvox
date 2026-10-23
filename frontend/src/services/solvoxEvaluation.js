@@ -24,27 +24,27 @@ const CHAPTER_RULES = {
   },
   2: {
     title: 'Perkalian dan Pembagian',
-    master: 'Tidak ada jawaban salah atau percobaan ulang yang tercatat untuk konsep perkalian dan pembagian.',
+    master: 'Semua langkah perkalian dan pembagian selesai tanpa koreksi.',
     inverse: 'Perhatikan bentuk perkalian dan pembagian! Jika variabel dibagi oleh suatu angka (misal x/a), maka untuk memindahkannya kamu harus mengalikannya, bukan menguranginya.',
     signs: 'Perhitungannya sudah hampir benar, tapi tandanya keliru! Ingat: Pembagian/perkalian dengan tanda sama menghasilkan positif (+ × + = +, - × - = +), sedangkan tanda berbeda menghasilkan negatif (+ × - = -, - × + = -).',
     remedial: 'Kamu perlu melatih kembali konsep perkalian/pembagian aljabar. Coba ingat kembali bahwa 4x artinya 4 × x, sehingga untuk mencari x angkanya harus dibagi!',
   },
   3: {
     title: 'Operasi Campuran',
-    master: 'Tidak ada jawaban salah atau percobaan ulang yang tercatat pada operasi campuran.',
+    master: 'Semua langkah operasi campuran selesai tanpa koreksi.',
     order: 'Urutan langkahmu kurang tepat! Aturan Operasi Campuran: Selesaikan penjumlahan/pengurangan di luar kurung terlebih dahulu, baru lakukan perkalian/pembagian untuk melepaskan variabel.',
     distributive: 'Hati-hati saat membuka tanda kurung! Angka di depan kurung harus dikalikan ke semua suku di dalam kurung. Contoh: -2(x + 3) menjadi -2x - 6 (bukan +6).',
   },
   4: {
     title: 'Variabel di Kedua Ruas',
-    master: 'Tidak ada jawaban salah atau percobaan ulang yang tercatat pada persamaan dua ruas.',
+    master: 'Semua langkah persamaan dua ruas selesai tanpa koreksi.',
     grouping: 'Ingat, kamu hanya bisa mengoperasikan suku sejenis! Kumpulkan semua yang punya variabel x di ruas kiri, dan semua angka tanpa x di ruas kanan sebelum dihitung.',
     minusParentheses: 'Waspada dengan tanda negatif di depan kurung! Tanda minus sebelum kurung akan membalikkan semua tanda suku di dalam kurung: -(2x + 5) berubah menjadi -2x - 5.',
     fractions: 'Saat menghadapi variabel berbentuk pecahan di kedua ruas, samakan penyebutnya terlebih dahulu sebelum dikurangkan, atau kalikan seluruh ruas dengan KPK penyebutnya!',
   },
   5: {
     title: 'Soal Cerita Etnomatematika',
-    master: 'Tidak ada jawaban salah atau percobaan ulang yang tercatat pada soal cerita.',
+    master: 'Model cerita dan langkah persamaan selesai tanpa koreksi.',
     modeling: 'Kemampuan aljabarmu bagus, tapi kamu perlu mengasah pemodelan soal cerita. Tentukan dulu apa yang menjadi variabel x (hal yang ditanyakan), lalu susun persamaannya kalimat demi kalimat!',
     context: 'Jangan fokus pada panjang cerita indahnya, fokuslah pada hubungan angka-angkanya! Cari kata kunci seperti \'lebih mahal\' (+), \'potongan/diskon\' (-), \'dua kali\' (2x), atau \'diberikan\' (-/+).',
     special: 'Ingat kembali rumus dasar pendukungnya! Untuk keliling persegipanjang rumusnya adalah 2(p+l), dan untuk piring cadangan gabungkan pecahan 1/4 x + x = 5/4 x.',
@@ -61,27 +61,27 @@ const CHAPTER_RULES_EN = {
   },
   2: {
     title: 'Multiplication and Division',
-    master: 'No incorrect answers or repeated attempts were recorded for multiplication and division.',
+    master: 'All multiplication and division steps were completed without corrections.',
     inverse: 'Watch the multiplication and division forms. If a variable is divided by a number (for example x/a), moving it requires multiplication, not subtraction.',
     signs: 'Your calculation is close, but the sign is wrong. Remember: matching signs give a positive result, while different signs give a negative result.',
     remedial: 'Practice algebraic multiplication and division again. Remember that 4x means 4 × x, so finding x requires division.',
   },
   3: {
     title: 'Mixed Operations',
-    master: 'No incorrect answers or repeated attempts were recorded for mixed operations.',
+    master: 'All mixed-operation steps were completed without corrections.',
     order: 'Your step order needs attention. Solve addition/subtraction around the variable first, then use multiplication/division to isolate it.',
     distributive: 'Be careful when opening parentheses! The number in front must be multiplied by every term inside. Example: -2(x + 3) becomes -2x - 6.',
   },
   4: {
     title: 'Variables on Both Sides',
-    master: 'No incorrect answers or repeated attempts were recorded for equations with variables on both sides.',
+    master: 'All equation steps with variables on both sides were completed without corrections.',
     grouping: 'Remember to combine like terms only. Put all x-terms on one side and constants on the other before calculating.',
     minusParentheses: 'Watch the negative sign before parentheses. A minus sign flips every sign inside: -(2x + 5) becomes -2x - 5.',
     fractions: 'When variables appear as fractions on both sides, use a common denominator first or multiply the whole equation by the least common multiple.',
   },
   5: {
     title: 'Ethnomathematics Story Problems',
-    master: 'No incorrect answers or repeated attempts were recorded for story problems.',
+    master: 'The story model and equation steps were completed without corrections.',
     modeling: 'Your algebra is good, but strengthen your story-problem modeling. First identify what x represents, then build the equation step by step.',
     context: 'Do not get distracted by the length of the story. Focus on the relationships between the numbers. Look for clues such as “more expensive,” “discount,” “twice,” or “given away.”',
     special: 'Review the supporting formulas. For a rectangle, the perimeter formula is 2(p+l), and for the spare-plate problem combine 1/4x + x = 5/4x.',
@@ -136,6 +136,7 @@ export function evaluateSolvoxChapter(result = {}) {
   const correct = logs.filter((item) => item.correct).length;
   const accuracy = Math.round((correct / total) * 100);
   const wrongIds = idsOf(logs, (item) => !item.correct || Number(item.wrongAttempts) > 0 || Number(item.simulation?.stepErrors) > 0 || Number(item.simulation?.modelErrors) > 0);
+  const modelErrors = logs.reduce((sum, item) => sum + (Number(item.simulation?.modelErrors) || 0), 0);
 
   if (chapterId === 1) {
     const stepsCompleted = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepsCompleted) || 0), 0);
@@ -154,12 +155,12 @@ export function evaluateSolvoxChapter(result = {}) {
     return { category: stepErrors > 0 ? 'simulation-review' : 'simulation-progress', title: lang === 'en' ? (stepErrors > 0 ? 'Review equation steps' : 'Simulation progress') : (stepErrors > 0 ? 'Tinjau langkah persamaan' : 'Progres simulasi'), message, source: 'Solvox learning rules' };
   }
 
-  if (wrongIds.length === 0 && ((chapterId === 1 && accuracy === 100) ||
-      (chapterId === 2 && accuracy === 100) ||
-      (chapterId === 3 && accuracy === 100) ||
-      (chapterId === 4 && accuracy === 100) ||
-      (chapterId === 5 && accuracy === 100))) {
+  if (wrongIds.length === 0 && accuracy === 100) {
     return { category: 'master', title: CATEGORY_TITLES[lang].master, message: rules.master, source: 'Solvox learning rules' };
+  }
+
+  if (chapterId === 5 && modelErrors > 0) {
+    return { category: 'mathematical-modeling', title: CATEGORY_TITLES[lang].modeling, message: rules.modeling, source: 'Solvox learning rules' };
   }
 
   if (chapterId === 1 && hits(wrongIds, SIGN_SWITCH)) {
@@ -202,7 +203,7 @@ export function evaluateSolvoxChapter(result = {}) {
   return {
     category: result.won ? 'progress' : 'review',
     title: result.won ? (lang === 'en' ? 'Keep Improving' : 'Terus Berkembang') : (lang === 'en' ? 'Review Needed' : 'Perlu Ditinjau'),
-    message: result.won ? (lang === 'en' ? 'Use the error patterns you found to strengthen your next steps.' : 'Gunakan pola kesalahan yang muncul untuk memperkuat langkah berikutnya.') : (lang === 'en' ? 'Review the questions you answered incorrectly and identify which step or operation caused each mistake.' : 'Tinjau soal yang dijawab salah dan cari langkah atau operasi yang menyebabkan tiap kesalahan.'),
+    message: result.won ? (lang === 'en' ? 'Review any corrected simulation steps before the next chapter.' : 'Tinjau langkah simulasi yang sempat dikoreksi sebelum melanjutkan chapter.') : (lang === 'en' ? 'Review the unfinished simulation steps and check each operation on both sides.' : 'Tinjau langkah simulasi yang belum selesai dan periksa operasi pada kedua ruas.'),
     source: 'Solvox learning rules'
   };
 }

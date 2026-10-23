@@ -22,7 +22,6 @@ const combatStage = read('frontend/src/components/battle/CombatStage.jsx');
 const server = read('server.js');
 const apiServer = read('backend/server.js');
 const icon = read('frontend/src/components/shared/PixelIcon.jsx');
-const keypad = read('frontend/src/components/battle/Keypad.jsx');
 const multi = read('frontend/src/components/multiplayer/Multiplayer.jsx');
 const evaluation = read('frontend/src/components/screens/Evaluation.jsx');
 const feedback = read('frontend/src/components/menu/Feedback.jsx');
@@ -105,11 +104,10 @@ must(server.includes("require('./backend/server')") && apiServer.includes("app.g
 must(!battle.includes('setPaused') && !battle.includes('rpg-pause-v29'), 'Battle pause control should be removed');
 must(battle.includes('battle-home-back') && !battle.includes('battle-feedback-top-v36'), 'Battle back/feedback controls are inconsistent');
 must(JSON.parse(read('backend/solvoxQuestions.json')).length === 50 && singlePlayerGame.includes('getChapterQuestions'), 'Backend must own the complete single-player question pack');
-must(battle.includes('verdict.feedback') && singlePlayerGame.includes('FALLBACK_FEEDBACK'), 'Server-provided answer feedback must resolve for single-player Battle');
-must(battle.includes('{feedback.message}') && battle.includes('battle-mistake-copy'), 'Question-specific feedback must render inside the V41 mistake banner');
-must(battlePanel.includes('hint-rail') && battlePanel.includes('hint-reveal-btn'), 'Contextual hint rail is missing');
-must(!battlePanel.includes('hint-btn-v23') && !battlePanel.includes('hint-panel-v23'), 'Hint must not render inside the question panel');
-must(battlePanel.includes('keypad-toggle') && battlePanel.includes('attempts'), 'Question panel controls missing');
+must(battle.includes('getSimulationAnswer') && battle.includes('validateChapterAnswer'), 'Completed simulations must submit the chapter answer automatically');
+must(battle.includes('[1, 2, 3, 4, 5].includes') && battlePanel.includes('autoResolve ?'), 'All campaign chapters must use the automatic question dock');
+must(!battle.includes('battle-mistake-banner') && !battlePanel.includes('hint-rail') && !battlePanel.includes('keypad-toggle'), 'Campaign feedback, hints, or keypad remain visible');
+must(!battlePanel.includes('<Keypad') && !exists('frontend/src/components/battle/Keypad.jsx'), 'Legacy battle keypad remains in use');
 must(battlePanel.includes('QUESTION_PANEL_THEME_BY_LEVEL') && battlePanel.includes('style={panelTheme}'), 'Chapter-aware question panel theme wiring is missing');
 must(!battlePanel.includes('feedback-panel'), 'Learning feedback must not expand inside the question panel');
 must(battle.includes('battle-top-rail') && battle.includes('hp-card') && battle.includes('hp-track'), 'Battle HUD missing');
@@ -202,9 +200,8 @@ must(!exists('frontend/public/assets/characters/wanderer_BACKUP_V24.2'), 'Unused
 must(!exists('frontend/public/assets/ui/reference/pause.png'), 'Unused pause raster should be removed');
 must(pkg.version === '4.3.0', 'Root package version changed unexpectedly');
 must(exists('frontend/src/styles/battle.css'), 'Dedicated Battle stylesheet missing');
-must(keypad.includes("'²'") && keypad.includes("'fraction'") && keypad.includes("'a'") && keypad.includes("'z'"), 'Math keypad revision missing');
-must(multi.includes('turn:hint') && multi.includes('viewSolution') && multi.includes('tieBreakHintRule'), 'Multiplayer hint support missing');
-must(apiServer.includes("socket.on('turn:hint'") && apiServer.includes('hintsUsed') && apiServer.includes('finishSummary'), 'Multiplayer hint/tie-break tracking missing');
+must(!multi.includes('turn:hint') && !multi.includes('mp-feedback-banner') && multi.includes('viewSolution'), 'Multiplayer battle still shows hint or answer feedback controls');
+must(!apiServer.includes("socket.on('turn:hint'") && apiServer.includes('finishSummary'), 'Multiplayer still accepts battle hints');
 must(feedback.includes('PixelIcon'), 'Feedback icon import missing');
 must(evaluation.includes('eval-detail') && evaluation.includes('eval-question-full') && evaluation.includes('buildErrorSummary') && evaluation.includes('buildAdvice'), 'Evaluation learning layer missing');
 must(gameMeta.includes("title: 'Solvox'") && gameMeta.includes("shortTitle: 'Solvox'"), 'Game branding config missing');
@@ -216,15 +213,14 @@ must(read('frontend/index.html').includes('/assets/ui/brand/solvox-logo-v89.png'
 /* -------------------------------------------------------------------------- */
 must(exists('frontend/src/services/sound.js') && read('frontend/src/services/sound.js').includes("playSound('correct'") || exists('frontend/src/services/sound.js'), 'Sound service missing');
 must(settings.includes("t('sound')") && settings.includes('setSoundEnabled'), 'Sound toggle is not wired into Settings');
-must(battle.includes('q.feedback') && !battle.includes('enhanceFeedback') && !exists('frontend/src/services/aiFeedback.js'), 'Gemini feedback integration should be removed; local question feedback remains active');
+must(!battle.includes('battle-mistake-banner') && !battle.includes('enhanceFeedback') && !exists('frontend/src/services/aiFeedback.js'), 'Battle feedback banner or AI feedback integration remains');
 must(exists('backend/feedbackBank.id.json') && exists('backend/feedbackBank.en.json') && singlePlayerGame.includes('feedbackMatch') && battle.includes('validateChapterAnswer'), 'Single-player answers and feedback must be resolved by the backend');
 must(evaluation.includes('eval-detail') && evaluation.includes('eval-question-full') && evaluation.includes('eval-summary-block'), 'V105 evaluation accordion/detail layout is missing');
 must(!read('frontend/src/services/solvoxEvaluation.js').includes("Keep Building"), 'Legacy English-only evaluation label remains');
 must(!evaluation.includes('EVALUASI SOAL SOLVOX.docx'), 'Evaluation UI leaks source filename');
 must(multi.includes('playVsBot') && multi.includes('create(true)') && multi.includes('isBot'), 'Multiplayer bot mode UI is missing');
 must(apiServer.includes('botSubmitTurn') && apiServer.includes('botSubmitScore') && apiServer.includes('isBot'), 'Multiplayer bot backend is missing');
-must(apiServer.includes('const cost=5*level') && apiServer.includes('HINT_NOT_ENOUGH_HP'), 'Multiplayer hint HP costs are missing');
-must(battle.includes('[5, 10, 15]') && battlePanel.includes('hintCost,') || battlePanel.includes('hintCost'), 'Single-player hint cost progression is missing');
+must(!apiServer.includes('HINT_NOT_ENOUGH_HP') && !battlePanel.includes('hintCost'), 'Retired hint costs remain in battle flows');
 must(main.includes("import './styles/evaluation.css';") && main.includes("import './styles/responsive.css';"), 'V105 style layers are not wired');
 must(!exists('frontend/src/styles/responsive-v102.css'), 'Retired responsive V102 stylesheet remains');
 
@@ -492,7 +488,7 @@ must(!main.includes("responsive-v96.css") && !exists('frontend/src/styles/respon
 must(responsive105.includes('overflow: visible !important') && responsive105.includes('touch-action: pan-y') && responsive105.includes('fighter-player .sprite-wrap'), 'V101 mobile conflict fixes are incomplete');
 must(responsive105.includes('bg-mobile-object-position') && responsive105.includes('object-fit: cover !important') && responsive105.includes('transform: none !important'), 'Responsive arena background contract is missing');
 must(!main.includes('responsive-v98.css') && !exists('frontend/src/styles/responsive-v98.css'), 'Legacy V98 responsive source remains active');
-must(battle.includes('battle-answer-input') && !battle.includes('battle-answer-input-v23'), 'Battle focus selector still points at retired V23 input');
+must(!battle.includes('battle-answer-input') && battlePanel.includes('battle-answer-input'), 'Campaign must resolve automatically while multiplayer retains its direct answer field');
 
 console.log('V61 QA STATIC + REGRESSION PASS');
 console.log('V62 QA MOTION + MULTIPLAYER PASS');
@@ -503,9 +499,9 @@ must(!profile.includes('PixelIcon name=\"pixelNinja\"') && !profile.includes('pi
 must(exists('frontend/public/assets/ui/utility/icons/settings-v101.webp'), 'V101 settings icon asset is missing');
 must(!exists('frontend/public/assets/ui/reference/avatar-medallion-clean.png'), 'Retired profile avatar asset still exists');
 console.log('V103: settings icon polish, Home tutorial guide, V91 mobile reference geometry, chapter-aware question themes, visible mobile feedback, icon-only language selector');
-console.log('Battle: one dedicated V43 stylesheet, full-width HUD, continuous question/hint/keypad dock, real attack-distance calculation');
+console.log('Battle: dedicated stylesheet, full-width HUD, automatic campaign dock, real attack-distance calculation');
 console.log('Cleanup: legacy V23/V24 layout roots removed from app/ui-v42, dead Battle helper/prop removed');
-console.log('Content: bilingual i18n, profile API, multiplayer hint tracking, Traveler player pack, Wolf + Wraith + Equation Drake WebP boss packs');
+console.log('Content: bilingual i18n, profile API, Traveler player pack, Wolf + Wraith + Equation Drake WebP boss packs');
 
 const v94StaleRefs=[['frontend/src/components/menu/ModeSelect.jsx',['single-player-hero.png','multiplayer-hero.png']],['frontend/src/components/multiplayer/Multiplayer.jsx',['AJM-XXXX']],['frontend/src/services/i18n.js',['AJM-XXXX']]];
 for(const [rel,badRefs] of v94StaleRefs){
@@ -513,10 +509,10 @@ for(const [rel,badRefs] of v94StaleRefs){
   for(const bad of badRefs){ must(!text.includes(bad), `V94 stale reference: ${rel} -> ${bad}`); }
 }
 for(const asset of ['single-mode-v94.webp','multi-mode-v94.webp']) must(exists(`frontend/public/assets/ui/modes/${asset}`), `V94 missing mode asset: ${asset}`);
-for(const asset of ['flag-id-v94.png','flag-en-v94.png','back-v82.webp','close-v96.png']) must(exists(`frontend/public/assets/ui/utility/icons/${asset}`), `V96 missing utility asset: ${asset}`);
+for(const asset of ['flag-id-v94.png','flag-en-v94.png','back.webp','close-v96.png']) must(exists(`frontend/public/assets/ui/utility/icons/${asset}`), `V96 missing utility asset: ${asset}`);
 must(exists('frontend/public/assets/ui/modes/single-mode-v94.webp') && exists('frontend/public/assets/ui/modes/multi-mode-v94.webp'), 'V94 mode artwork is missing');
 must(!exists('frontend/public/assets/ui/modes/single-player-hero.png') && !exists('frontend/public/assets/ui/modes/multiplayer-hero.png'), 'Old mode artwork assets remain');
-must(!exists('frontend/public/assets/ui/utility/icons/back.webp'), 'Old back icon asset remains');
+must(!exists('frontend/public/assets/ui/utility/icons/back-v82.webp'), 'Old back icon asset remains');
 must(battle.includes('bossDieDurationMs + 140') && battle.includes('bossAttackImpactMs') && battle.includes('playBossAttack(levelId)'), 'Battle animations must remain synchronized with boss assets');
 must(settings.includes('flag-id-v94.png') && settings.includes('flag-en-v94.png') && settings.includes('settings-about-row'), 'V96 Settings flags/about routing are missing');
 
@@ -576,8 +572,8 @@ must(appV117.includes("localStorage.setItem(PLAYER_LOCK_STORAGE,'1')") && appV11
 must(appV117.includes('save(next);') && appV117.includes('LEGACY_STORAGES.forEach') && appV117.includes('setSettings(false);') && appV117.includes("setScreen('home');"), 'Reset must clear legacy progress, close overlays, and return to a playable home screen');
 must(assetsV117.includes("idle: 'idle-asuka'") && assetsV117.includes("attack: 'attack-asuka'") && assetsV117.includes("hurt: 'hurt-asuka'") && assetsV117.includes("die: 'die-asuka'"), 'V117 Asuka supplied folder mappings are missing');
 must(spriteV117.includes('activeAsset.sequenceFolders?.[mode] || mode'), 'V117 sprite loader ignores character-specific animation folders');
-must(battleV117.includes('value - hintCost') && battleV117.includes('const handleWrongAnswer = ({ elapsed, attemptNow, history, tracker, bankAwareFeedback }) =>') && battleV117.includes('setBusy(false);') && multi.includes('match-evaluation'), 'Single-player retries, hint HP cost, or multiplayer evaluation is missing');
-must(battlePanelV117.includes(`{t('attempt')}: {attempts}`), 'Single-player attempt counter is missing');
+must(battleV117.includes('const handleWrongAnswer = ({ elapsed, attemptNow, history, tracker, bankAwareFeedback }) =>') && battleV117.includes('setBusy(false);') && multi.includes('match-evaluation'), 'Single-player retry handling or multiplayer evaluation is missing');
+must(!battlePanelV117.includes('keypad-toggle') && !battlePanelV117.includes('hint-rail'), 'Legacy battle controls remain');
 must(viteV117.includes("'/socket.io'") && viteV117.includes('ws: true') && viteV117.includes('http://127.0.0.1:3000'), 'V117 Vite Socket.IO proxy target is missing or may resolve to the wrong localhost interface');
 must(multiplayerV117.includes("socket.on('connect_error',onConnectError)") && multiplayerV117.includes('SOCKET_CONNECTION') && multiplayerV117.includes('socket.emit(\'room:join\'') && multiplayerV117.includes('pendingActionRef.current=action') && multiplayerV117.includes('pendingAction();'), 'V120 multiplayer connection/token recovery or queued click handling is incomplete');
 const multiplayerFighterV120 = read('frontend/src/components/battle/MultiplayerFighter.jsx');
@@ -598,6 +594,14 @@ must(!chapterCssV117.includes('single-character-modal-v114') && !chapterCssV117.
 console.log('V120: multiplayer player/boss roster, synchronized sprite selection, private reconnect tokens, room exit and reconnect PASS');
 
 const { evaluateAttempt } = require('./backend/singlePlayerGame');
+const simulationAnswer = new Function(`${read('frontend/src/data/algebraSimulation.js').replace(/^export /gm, '')}\nreturn getSimulationAnswer;`)();
+for (const lang of ['id', 'en']) {
+  for (let questionId = 1; questionId <= 50; questionId += 1) {
+    const answer = simulationAnswer(questionId);
+    must(answer && evaluateAttempt({ questionId, answer, lang }).correct, `Automatic simulation answer is invalid for ${lang} question ${questionId}`);
+  }
+}
+console.log('All 50 automatic chapter answers validate in both languages');
 must(evaluateAttempt({questionId:7,answer:'2.5',lang:'en'}).correct, 'Decimal form of a multi-answer question should be accepted');
 must(evaluateAttempt({questionId:7,answer:'5/2',lang:'en'}).correct, 'Fraction form of a multi-answer question should be accepted');
 must(!evaluateAttempt({questionId:7,answer:'2.5,5/2',lang:'en'}).correct, 'A joined list of acceptable answers must not count as one answer');

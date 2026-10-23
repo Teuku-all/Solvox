@@ -31,15 +31,16 @@ export function summarizePerformance(result = {}){
   const retryEfficiency = clamp(100 - retryQuestions * 8);
   const consistency = answeredQuestions ? Math.round(((correctQuestions + firstAttemptCorrect) / (answeredQuestions * 2)) * 100) : 0;
   const cts = Math.round((firstAttemptRate * .55) + (consistency * .45));
-  const automaticChapter = [1, 2, 3].includes(Number(result.chapterId));
+  const automaticChapter = [1, 2, 3, 4, 5].includes(Number(result.chapterId));
   const simulationStepsTotal = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepsTotal) || 0), 0);
   const simulationStepsCompleted = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepsCompleted) || 0), 0);
   const simulationStepErrors = logs.reduce((sum, item) => sum + (Number(item.simulation?.stepErrors) || 0), 0);
+  const simulationModelErrors = logs.reduce((sum, item) => sum + (Number(item.simulation?.modelErrors) || 0), 0);
   const simulationStepCompletionRate = simulationStepsTotal
     ? Math.round(simulationStepsCompleted / simulationStepsTotal * 100)
     : 0;
   const simulationStepAccuracy = simulationStepsCompleted
-    ? clamp(100 - simulationStepErrors * 8)
+    ? clamp(100 - (simulationStepErrors + simulationModelErrors) * 8)
     : 0;
   const simulationMastery = Math.round(simulationStepCompletionRate * .7 + simulationStepAccuracy * .3);
   const mastery = automaticChapter ? simulationMastery : Math.round(
@@ -89,6 +90,7 @@ export function summarizePerformance(result = {}){
     simulationStepsTotal,
     simulationStepsCompleted,
     simulationStepErrors,
+    simulationModelErrors,
     simulationStepCompletionRate,
     simulationStepAccuracy,
     maxHp,
