@@ -6,7 +6,7 @@ import SolvoxBackButton from '../shared/SolvoxBackButton';
 import {deriveProfile} from '../../services/profile';
 import {apiJson} from '../../services/api';
 import {getPlayerAsset} from '../../data/playerAssets';
-import {LEVELS} from '../../data/levels';
+import {LEVELS,isLocalDevelopment} from '../../data/levels';
 import useAnimatedDismiss from '../shared/useAnimatedDismiss';
 
 function fmtTime(seconds){
@@ -132,7 +132,8 @@ export default function ProfilePanel({progress,profile,playerId,onClose,onSave,o
               <div className="profile-chapter-list">{LEVELS.map(chapter=>{
                 const cleared=completed.has(chapter.id);
                 const current=chapter.id===nextChapter?.id;
-                return <div className={cleared?'is-cleared':current?'is-current':'is-locked'} key={chapter.id}><i>{cleared?'✓':String(chapter.id).padStart(2,'0')}</i><span><b>{en?chapter.titleEn:chapter.title}</b><small>{cleared?(en?'CLEARED':'SELESAI'):current?(en?'IN PROGRESS':'BERIKUTNYA'):(en?'LOCKED':'TERKUNCI')}</small></span>{cleared&&<PixelIcon name="check" size={14}/>}</div>;
+                const available=isLocalDevelopment();
+                return <div className={cleared?'is-cleared':current?'is-current':available?'is-available':'is-locked'} key={chapter.id}><i>{cleared?'✓':String(chapter.id).padStart(2,'0')}</i><span><b>{en?chapter.titleEn:chapter.title}</b><small>{cleared?(en?'CLEARED':'SELESAI'):current?(en?'IN PROGRESS':'BERIKUTNYA'):available?(en?'AVAILABLE':'TERSEDIA'):(en?'LOCKED':'TERKUNCI')}</small></span>{cleared&&<PixelIcon name="check" size={14}/>}</div>;
               })}</div>
             </section>
             <section className="profile-card profile-learning-card">

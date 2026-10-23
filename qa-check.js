@@ -206,7 +206,7 @@ must(keypad.includes("'²'") && keypad.includes("'fraction'") && keypad.includes
 must(multi.includes('turn:hint') && multi.includes('viewSolution') && multi.includes('tieBreakHintRule'), 'Multiplayer hint support missing');
 must(apiServer.includes("socket.on('turn:hint'") && apiServer.includes('hintsUsed') && apiServer.includes('finishSummary'), 'Multiplayer hint/tie-break tracking missing');
 must(feedback.includes('PixelIcon'), 'Feedback icon import missing');
-must(evaluation.includes('eval-detail') && evaluation.includes('eval-question-full') && evaluation.includes('evalStrengthsTitle'), 'V105 evaluation learning layer missing');
+must(evaluation.includes('eval-detail') && evaluation.includes('eval-question-full') && evaluation.includes('buildErrorSummary') && evaluation.includes('buildAdvice'), 'Evaluation learning layer missing');
 must(gameMeta.includes("title: 'Solvox'") && gameMeta.includes("shortTitle: 'Solvox'"), 'Game branding config missing');
 must(read('frontend/index.html').includes('/assets/ui/brand/solvox-logo-v89.png'), 'V89 favicon is not wired');
 
@@ -602,7 +602,7 @@ must(evaluateAttempt({questionId:7,answer:'2.5',lang:'en'}).correct, 'Decimal fo
 must(evaluateAttempt({questionId:7,answer:'5/2',lang:'en'}).correct, 'Fraction form of a multi-answer question should be accepted');
 must(!evaluateAttempt({questionId:7,answer:'2.5,5/2',lang:'en'}).correct, 'A joined list of acceptable answers must not count as one answer');
 must(!evaluateAttempt({questionId:1,answer:'wrong',attempt:3}).correctAnswer && !evaluateAttempt({questionId:1,answer:'wrong',attempt:20}).correctAnswer, 'Wrong answers must allow unlimited retries without revealing the answer');
-must(battle.includes('tracker.wrongAttempts % 3 === 0') && battle.includes('combatRef.current?.bossAttack();') && battle.includes('const nextHp = Math.max(0, hp - boss.damage);') && battle.includes('combatRef.current?.playerHurt();'), 'The boss must attack and damage the player after every three wrong answers');
+must(battle.includes('const handleWrongAnswer =') && !battle.includes('tracker.wrongAttempts % 3 === 0') && battle.includes('combatRef.current?.bossAttack();') && battle.includes('const nextHp = Math.max(0, hp - boss.damage);') && battle.includes('combatRef.current?.playerHurt();'), 'The boss must attack and damage the player after every wrong answer');
 const feedbackId = JSON.parse(read('backend/feedbackBank.id.json'));
 const feedbackEn = JSON.parse(read('backend/feedbackBank.en.json'));
 const bankId = feedbackId.find((row) => row.id === 1 && row.wrongAnswers === '22');

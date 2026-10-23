@@ -3,8 +3,12 @@ import SinglePlayerIdleSprite from './SinglePlayerIdleSprite';
 import { CharacterEmblem } from './CinematicCharacterChoice';
 import { SELECTION_ABILITIES } from '../../data/characterSelection';
 
-export default function SinglePlayerCharacterDetail({ character, reducedMotion, lang, busy, error, onStart, onReady, onLoadError, headingRef }) {
+export default function SinglePlayerCharacterDetail({ character, levelId, reducedMotion, lang, busy, error, onStart, onReady, onLoadError, headingRef }) {
   const locale = lang === 'en' ? 'en' : 'id';
+  const abilities = Number(levelId) === 1 ? [
+    { name: { id: 'Serangan', en: 'Attack' }, description: { id: 'Simulasi yang selesai memicu serangan otomatis.', en: 'Completing the simulation triggers an automatic attack.' } },
+    { name: { id: 'Simulasi', en: 'Simulation' }, description: { id: 'Seimbangkan kedua ruas untuk menemukan nilai variabel.', en: 'Balance both sides to find the variable value.' } },
+  ] : SELECTION_ABILITIES;
   return (
     <section className="spx-detail" aria-labelledby="spx-detail-name" data-character={character.id}>
       <div className="spx-detail-figure" aria-hidden="true">
@@ -22,7 +26,7 @@ export default function SinglePlayerCharacterDetail({ character, reducedMotion, 
           </div>
           <div className="spx-abilities" aria-label={locale === 'en' ? 'Role and abilities' : 'Peran dan kemampuan'}>
             <div className="spx-panel-row"><span aria-hidden="true">◇</span><p>{character.role[locale]}</p></div>
-            {SELECTION_ABILITIES.map((ability, index) => <div className="spx-panel-row" key={index}>
+            {abilities.map((ability, index) => <div className="spx-panel-row" key={index}>
               <span aria-hidden="true">{index === 0 ? '◇' : '+'}</span>
               <div><strong>{ability.name[locale]}</strong><p className="spx-ability-description">{ability.description[locale]}</p></div>
             </div>)}

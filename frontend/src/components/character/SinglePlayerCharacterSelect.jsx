@@ -114,7 +114,7 @@ export default function SinglePlayerCharacterSelect({ levelId, onStart, onBack, 
       </picture></div>
       <div className="spx-world-light" aria-hidden="true" />
       <div ref={detailLayerRef} className="spx-detail-layer" aria-hidden={!detailVisible}>
-        {character && phase !== 'choice' && <SinglePlayerCharacterDetail key={character.id} character={character} reducedMotion={reducedMotion} lang={lang}
+        {character && phase !== 'choice' && <SinglePlayerCharacterDetail key={character.id} character={character} levelId={levelId} reducedMotion={reducedMotion} lang={lang}
           busy={busy} error={error} onStart={start} onReady={markReady} onLoadError={spriteFailed} headingRef={headingRef} />}
       </div>
       <div ref={choiceLayerRef} className="spx-choice-layer" aria-hidden={detailVisible}>

@@ -441,3 +441,62 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
 @media (prefers-reduced-motion: reduce) {
   .eval-card--detailed .eval-actions > button { transition: none; }
 }
+
+/* Keep navigation and headings from occupying the same mobile pixels. */
+@media (max-width: 640px) {
+  .multiplayer .multi-header {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto;
+    align-items: center;
+    gap: 8px 12px;
+  }
+  .multiplayer .multi-header button.solvox-back-button.multi-back-btn {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+    display: inline-flex !important;
+    width: auto !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    align-items: center;
+    padding: 0 14px !important;
+    border: 1px solid rgba(183, 218, 198, .36) !important;
+    border-radius: 8px !important;
+    background: rgba(9, 35, 39, .88) !important;
+    transform: none !important;
+  }
+  .multiplayer .multi-header button.solvox-back-button.multi-back-btn::before { content: '←'; margin-right: 8px; font-size: 18px; line-height: 1; }
+  .multiplayer .multi-header button.solvox-back-button.multi-back-btn > img { display: none; }
+  .multiplayer .multi-header button.solvox-back-button.multi-back-btn > .solvox-back-button-label {
+    position: static !important;
+    display: inline !important;
+    height: auto !important;
+    margin: 0 !important;
+    font-family: var(--font-body-solvox);
+    font-size: .875rem !important;
+    line-height: 1 !important;
+  }
+  .multiplayer .multi-header-copy { grid-column: 1 / -1; grid-row: 2; min-width: 0; }
+  .multiplayer .multi-connection-status { grid-column: 2; grid-row: 1; justify-self: end; }
+  .multiplayer .multi-header-copy .eyebrow { display: block; margin-bottom: 4px; }
+  .multiplayer .multi-header-copy p { display: block; font-size: .8125rem; line-height: 1.5; }
+  .profile-screen-header .profile-breadcrumb { display: none; }
+}
+
+/* Story problems stay readable without pushing battle controls far below the fold. */
+.battle-question-panel.theme-level-5 .question-text {
+  max-width: 72ch;
+  font-family: var(--font-body-solvox), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  font-weight: 700;
+  line-height: 1.55;
+  letter-spacing: 0;
+  text-wrap: pretty;
+}
+@media (max-width: 640px) {
+  .battle-question-panel.theme-level-5 .question-text {
+    font-size: 1rem !important;
+    line-height: 1.55 !important;
+  }
+}

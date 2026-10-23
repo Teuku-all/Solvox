@@ -262,6 +262,7 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
         {renderSide('right')}
       </div>
       <div className="c2p-toolbar">
+        <button type="button" className="c2p-undo" onClick={undo} disabled={busy || !history.length}>{text.undo}</button>
         {!normalizationReady ? <button type="button" className="c2p-normalize" onClick={normalize} disabled={busy}>{text.normalize}</button> : allMatched && needsSignFlip ? <button type="button" className="c2p-flip-signs" onClick={flipSigns} disabled={busy}>{text.flipSigns}</button> : <>
         <button type="button" className="c2p-divider-tool" draggable={!busy} disabled={busy || progress.complete || progress.separators.left >= requiredDividers && progress.separators.right >= requiredDividers}
           onDragStart={(event) => { event.dataTransfer.setData('text/plain', 'divider'); event.dataTransfer.effectAllowed = 'copy'; }}

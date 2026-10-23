@@ -2374,3 +2374,73 @@
 .math-sim-balance-reference.chapter-5 .math-sim-tile-dock { border-color:#725192; background:radial-gradient(circle at 90% 0,rgba(181,92,255,.14),transparent 46%),linear-gradient(155deg,#332743,#211c38); }
 .math-sim-balance-reference.chapter-5 .math-sim-add-controls button,.math-sim-balance-reference.chapter-5 .math-sim-operation-options button,.math-sim-balance-reference.chapter-5 .math-sim-operation-sides button,.math-sim-balance-reference.chapter-5 .math-sim-balance-actions button { border-color:#78529d; background:linear-gradient(180deg,#573c78,#342b59); color:#f2e5ff; }
 .math-sim-balance-reference.chapter-5 .math-sim-operation-options button.is-selected { border-color:#c68cff; background:linear-gradient(180deg,#8051aa,#513b7a); }
+
+/* Chapter 2 grouping is one workspace inside the balance simulation. */
+.math-sim-ch2-reference.is-partition > .c2p-simulation {
+  gap: 9px;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  color: #e8f2ed;
+  font-family: var(--font-body-solvox), ui-sans-serif, system-ui, sans-serif;
+}
+.math-sim-ch2-reference.is-partition .c2p-scale {
+  min-width: 0;
+  min-height: 0;
+  padding: 10px;
+  border: 1px solid rgba(111, 205, 213, .32);
+  border-radius: 12px;
+  background: linear-gradient(140deg, rgba(15, 48, 74, .78), rgba(7, 37, 51, .76));
+  box-shadow: inset 0 1px rgba(255,255,255,.05);
+}
+.math-sim-ch2-reference.is-partition .c2p-side,
+.math-sim-ch2-reference.is-partition .c2p-side.is-right {
+  border: 0;
+  border-radius: 8px;
+  box-shadow: none;
+  background: rgba(4, 20, 35, .42);
+}
+.math-sim-ch2-reference.is-partition .c2p-side.is-right { background: rgba(5, 37, 38, .45); }
+.math-sim-ch2-reference.is-partition .c2p-scale-center { color: #dcebd4; }
+.math-sim-ch2-reference.is-partition .c2p-instruction,
+.math-sim-ch2-reference.is-partition .c2p-status { font-size: clamp(12px, 1vw, 14px); line-height: 1.45; }
+.math-sim-ch2-reference.is-partition .c2p-side > header,
+.math-sim-ch2-reference.is-partition .c2p-toolbar button { font-size: 12px; }
+.math-sim-ch2-reference.is-partition .c2p-side > header strong { font-size: 16px; }
+.math-sim-ch2-reference.is-partition .c2p-group > i,
+.math-sim-ch2-reference.is-partition .c2p-pool > small { font-size: 10px; line-height: 1.35; }
+.math-sim-ch2-reference.is-partition .c2p-group > span > em { font-size: 10px; }
+.math-sim-ch2-reference.is-partition .c2p-toolbar { display: flex; flex-wrap: wrap; overflow: visible; }
+.math-sim-ch2-reference.is-partition .c2p-toolbar > button { min-height: 40px; }
+.math-sim-ch2-reference.is-partition .c2p-undo { border: 1px solid rgba(127,196,178,.32); border-radius: 7px; background: rgba(10,34,37,.95); color: #d7ede4; padding: 6px 12px; font-weight: 800; }
+.math-sim-ch2-reference.is-partition .c2p-undo:disabled { opacity: .45; }
+.math-sim-ch2-reference.is-partition .c2p-group:focus-visible,
+.math-sim-ch2-reference.is-partition button:focus-visible { outline: 2px solid #ffe49b; outline-offset: 2px; }
+@media (max-width: 760px) {
+  .math-sim-ch2-reference.is-partition > .c2p-simulation { gap: 6px; }
+  .math-sim-ch2-reference.is-partition .c2p-scale { padding: 6px; gap: 4px; }
+  .math-sim-ch2-reference.is-partition .c2p-scale-center { display: grid; min-height: 24px; font-size: 18px; }
+  .math-sim-ch2-reference.is-partition .c2p-side { flex: none; }
+  .math-sim-ch2-reference.is-partition .c2p-toolbar { gap: 5px; }
+  .math-sim-ch2-reference.is-partition .c2p-toolbar > button { flex: 1 1 120px; }
+  .math-sim-ch2-reference.is-partition .c2p-toolbar .c2p-divider-tool { flex: 0 1 auto; }
+  .math-sim-ch2-reference.is-partition .c2p-group-counter { flex: 1 1 70px; }
+}
+
+/* Chapter 1 has no operation panel: give its mobile dock only the rows it uses. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .is-balance-open .math-sim-balance-reference.chapter-1 .math-sim-balance-workspace {
+    grid-template-rows: minmax(250px, 1fr) auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .is-balance-open .math-sim-balance-reference.chapter-1 .math-sim-tile-dock {
+    height: auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(5, auto);
+    grid-template-areas: 'heading' 'tabs' 'tiles' 'add' 'step';
+    align-content: start;
+    padding: 9px;
+  }
+  .is-balance-open .math-sim-balance-reference.chapter-1 .math-sim-tile-grid {
+    max-height: 105px;
+  }
+}
