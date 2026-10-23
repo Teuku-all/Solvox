@@ -2,13 +2,9 @@ import React, { useMemo } from 'react';
 import DeferredBackdrop from '../shared/DeferredBackdrop';
 import { LEVELS, isLocalDevelopment, isUnlocked } from '../../data/levels';
 import { getBoss } from '../../data/bosses';
-import PixelIcon from '../shared/PixelIcon';
-<<<<<<< Updated upstream
-import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 import { getChapterGuide } from '../../data/chapterGuide';
-=======
+import PixelIcon from '../shared/PixelIcon';
 import SolvoxBackButton from '../shared/SolvoxBackButton';
->>>>>>> Stashed changes
 
 function chapterProgress(id, progress) {
   if ((progress.completedLevels || []).map(Number).includes(Number(id))) return 100;

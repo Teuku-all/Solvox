@@ -1,12 +1,8 @@
 import React from 'react';
 import PixelIcon from '../shared/PixelIcon';
-<<<<<<< Updated upstream
-import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 import DeferredBackdrop from '../shared/DeferredBackdrop';
-import { responsiveAsset } from '../../services/optimizedAssets';
-=======
 import SolvoxBackButton from '../shared/SolvoxBackButton';
->>>>>>> Stashed changes
+import { responsiveAsset } from '../../services/optimizedAssets';
 
 const MODE_ART = {
   single: '/assets/ui/modes/single-mode-v94.webp',

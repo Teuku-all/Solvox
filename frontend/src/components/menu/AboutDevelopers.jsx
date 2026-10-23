@@ -1,11 +1,7 @@
 import React from 'react';
-<<<<<<< Updated upstream
-import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 import DeferredBackdrop from '../shared/DeferredBackdrop';
-import { responsiveAsset } from '../../services/optimizedAssets';
-=======
 import SolvoxBackButton from '../shared/SolvoxBackButton';
->>>>>>> Stashed changes
+import { responsiveAsset } from '../../services/optimizedAssets';
 
 const DEVS = [
   { name: 'Teuku Al Jumanatul Ali', roleKey: 'developerRoleEngineering', copyKey: 'developerTeuku' },
