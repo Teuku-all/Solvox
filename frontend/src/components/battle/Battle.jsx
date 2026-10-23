@@ -17,7 +17,7 @@ import { SolvoxUtilityArt } from '../shared/SolvoxUtilityArt';
 import { playBossAttack, playSound } from '../../services/sound';
 
 export default function Battle({ levelId, playerId = 'traveler', lang, t, onComplete, onBack }) {
-  const autoResolveChapter = Number(levelId) === 1;
+  const autoResolveChapter = [1, 3].includes(Number(levelId));
   const boss = getBoss(levelId);
   const bossAttackImpactMs = getBossImpactMs(boss.spriteId, 'attack', 360);
   const bossDieDurationMs = getBossSequenceDurationMs(boss.spriteId, 'die');
@@ -206,10 +206,10 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   }, [idx]);
 
   useEffect(() => {
-    if (simulation.ready && simulation.questionId === questions[idx]?.id) {
+    if (!autoResolveChapter && simulation.ready && simulation.questionId === questions[idx]?.id) {
       window.requestAnimationFrame(() => document.querySelector('.battle-answer-input')?.focus());
     }
-  }, [simulation.ready, simulation.questionId, questions, idx]);
+  }, [autoResolveChapter, simulation.ready, simulation.questionId, questions, idx]);
 
   /* ------------------------------- Hint ----------------------------------- */
   const useHint = () => {
@@ -479,9 +479,10 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
   return (
     <div className={`battle-page battle-reference ${isBalanceQuestion && !hideBalancePopup ? 'has-balance-overlay' : ''}`}>
     <div className={`battle-world${autoResolveChapter ? ' is-auto-resolve' : ''}`}>
-        <ArenaBackground levelId={levelId} paused={isBalanceQuestion && !hideBalancePopup} />
+        {!autoResolveChapter && <ArenaBackground levelId={levelId} paused={isBalanceQuestion && !hideBalancePopup} />}
 
         <div className={`battle-ui${feedback?.type === 'wrong' ? ' has-feedback' : ''}${autoResolveChapter ? ' is-auto-resolve' : ''}`}>
+          {autoResolveChapter && <ArenaBackground levelId={levelId} paused={isBalanceQuestion && !hideBalancePopup} />}
           {/* Top HUD */}
           <div className="battle-top-rail">
             <button

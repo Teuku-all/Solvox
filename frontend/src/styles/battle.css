@@ -1331,6 +1331,18 @@
   font-weight: 700;
   text-align: center;
 }
+.battle-question-panel.is-auto-resolve button.question-answer-auto {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--panel-border-soft, rgba(106,204,193,.08));
+  cursor: pointer;
+}
+.battle-question-panel.is-auto-resolve button.question-answer-auto:hover,
+.battle-question-panel.is-auto-resolve button.question-answer-auto:focus-visible {
+  background: color-mix(in srgb, var(--panel-accent-2, #6f94b3) 19%, rgba(4, 12, 18, .9));
+  outline: 2px solid var(--panel-accent, #b8d2e4);
+  outline-offset: -3px;
+}
 
 .battle-question-panel .question-header,
 .battle-question-panel .battle-keypad-side-head,
@@ -1423,9 +1435,18 @@
   background: linear-gradient(180deg, color-mix(in srgb, var(--panel-key-bg, rgba(41,78,77,.98)) 94%, #ffffff 6%), var(--panel-key-bg-strong, rgba(13,30,31,.99)));
 }
 
-/* Chapter 1 has no side tools, so give its question panel a calmer footprint. */
-.battle-world.is-auto-resolve > .arena-background {
+/* Simulation-led chapters have no side tools, so give the question panel room. */
+.battle-ui.is-auto-resolve > .arena-background {
   inset: 0 0 calc(clamp(230px, 30vh, 292px) + 16px);
+  pointer-events: none;
+}
+.battle-ui.is-auto-resolve > .arena-background .arena-background-media {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  filter: brightness(.80) saturate(.92) contrast(1.04);
 }
 .battle-ui.is-auto-resolve {
   grid-template-rows: 74px minmax(0, 1fr) clamp(230px, 30vh, 292px);

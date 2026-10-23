@@ -160,12 +160,13 @@ export default function BattleQuestionPanel({
           </div>
         </div>
 
-        {autoResolve ? <div className="question-answer-auto" role="status" aria-live="polite">
+        {autoResolve ? (simulationReady ? <div className="question-answer-auto" role="status" aria-live="polite">
           <PixelIcon name="spark" size={17} />
-          <span>{simulationReady
-            ? (lang === 'en' ? 'Equation solved. Attacking the monster…' : 'Persamaan selesai. Menyerang monster…')
-            : (lang === 'en' ? 'Complete the balance simulation to attack.' : 'Selesaikan simulasi keseimbangan untuk menyerang.')}</span>
-        </div> : <div className="question-answer">
+          <span>{lang === 'en' ? 'Equation solved. Attacking the monster…' : 'Persamaan selesai. Menyerang monster…'}</span>
+        </div> : <button className="question-answer-auto" type="button" onClick={onOpenSimulation} disabled={busy}>
+          <PixelIcon name="spark" size={17} />
+          <span>{lang === 'en' ? 'Open the balance simulation to attack' : 'Buka simulasi keseimbangan untuk menyerang'}</span>
+        </button>) : <div className="question-answer">
           <label className="answer-shell">
             <span className="answer-icon"><PixelIcon name="keyboard" size={16} /></span>
             <input

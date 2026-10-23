@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { SIMULATIONS, STORY_MODELS, STORY_MODELS_EN, operationLabel } from '../../data/algebraSimulation';
 import PixelIcon from '../shared/PixelIcon';
 import Chapter2Partition from './Chapter2Partition';
+import Chapter2FractionLab, { supportsChapter2FractionLab } from './Chapter2FractionLab';
 import Chapter4DivisionLab from './Chapter4DivisionLab';
 
 const copy = {
@@ -636,6 +637,8 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
   const config = SIMULATIONS[Number(questionId)];
   const questionNumber = Number(questionId);
   const chapter2Symbolic = questionNumber >= 11 && questionNumber <= 20;
+  const chapter2Fraction = chapter2Symbolic && supportsChapter2FractionLab(config);
+  const chapter2Partition = chapter2Symbolic && config?.steps[0]?.operation.startsWith('/ ');
   const chapter5Question = questionNumber >= 41 && questionNumber <= 50;
   const distributiveModel = DISTRIBUTIVE_MODELS[questionNumber];
   const model = (lang === 'en' ? STORY_MODELS_EN : STORY_MODELS)[Number(questionId)] || [];
@@ -1185,15 +1188,15 @@ export default function MathSimulation({ questionId, lang, hintsUsed, busy, onPr
       {modelIndex > 0 && <small className="math-sim-model-progress">{model.slice(0, modelIndex).map((stage) => stage.correct).join(' → ')}</small>}
     </div>}
 
-    {modelReady && chapter2Symbolic ? createPortal(<section className={`math-sim math-sim-balance math-sim-balance-reference chapter-2 math-sim-ch2-reference ${questionNumber === 11 ? 'is-partition' : 'is-balance'} ${balancePhase === 'active' ? '' : `is-${balancePhase}`} ${visible ? '' : 'is-closed'}`} aria-label={c.modes.balance}>
+    {modelReady && chapter2Symbolic ? createPortal(<section className={`math-sim math-sim-balance math-sim-balance-reference chapter-2 math-sim-ch2-reference ${chapter2Fraction ? 'is-fraction' : chapter2Partition ? 'is-partition' : 'is-balance'} ${balancePhase === 'active' ? '' : `is-${balancePhase}`} ${visible ? '' : 'is-closed'}`} aria-label={c.modes.balance}>
       <header className="math-sim-reference-question">
         <button type="button" className="math-sim-close" onClick={onClose} aria-label={lang === 'en' ? 'Close simulation' : 'Tutup simulasi'}><PixelIcon name="close" size={18} /></button>
         <div className="math-sim-reference-heading"><span className="math-sim-chapter-gem" aria-hidden="true"><img src="/assets/ui/character-select/icons/crystal-star.webp" alt="" /></span><strong>{c.chapter} 2</strong><i>&#8226;</i><b>{c.question} {((questionNumber - 1) % 10) + 1}/10</b></div>
-        <p>{questionNumber === 11 ? (lang === 'en' ? 'Make equal groups on both sides, place the tiles, then match corresponding groups.' : 'Buat kelompok sama besar di kedua ruas, susun ubinnya, lalu cocokkan kelompok pasangannya.') : (lang === 'en' ? 'Choose the inverse operation. Apply it to one side, then drag the same tile to the other side.' : 'Pilih operasi kebalikan, terapkan pada satu ruas, lalu seret ubin yang sama ke ruas sebelahnya.')}</p>
+        <p>{chapter2Fraction ? (lang === 'en' ? 'Drag the pieces to reveal equal parts, match them, and build one whole variable.' : 'Seret kepingan untuk melihat bagian sama besar, pasangkan, lalu susun satu variabel utuh.') : chapter2Partition ? (lang === 'en' ? 'Make equal groups on both sides, place the tiles, then match corresponding groups.' : 'Buat kelompok sama besar di kedua ruas, susun ubinnya, lalu cocokkan kelompok pasangannya.') : (lang === 'en' ? 'Choose the inverse operation. Apply it to one side, then drag the same tile to the other side.' : 'Pilih operasi kebalikan, terapkan pada satu ruas, lalu seret ubin yang sama ke ruas sebelahnya.')}</p>
         <strong className="math-sim-reference-equation">{equation}</strong>
         <div className="math-sim-reference-progress" aria-label={`${progress}%`}><span style={{ width: `${progress}%` }} /></div>
       </header>
-      {balancePhase !== 'active' ? <div className="math-sim-ch2-complete" role="status"><span aria-hidden="true">✦</span><small>{lang === 'en' ? 'EQUATION BALANCED' : 'PERSAMAAN SEIMBANG'}</small><strong>{lang === 'en' ? 'Challenge complete!' : 'Tantangan selesai!'}</strong><b>{equation}</b><p>{lang === 'en' ? 'Opening the next challenge…' : 'Membuka soal berikutnya…'}</p><i aria-hidden="true"><span /></i></div> : questionNumber === 11 ? <Chapter2Partition config={config} questionId={questionNumber} lang={lang} busy={busy} onSolved={() => setStepIndex(config.steps.length)} onUndo={() => setStepIndex(0)} onMistake={() => setStepErrors((count) => count + 1)} /> : <>
+      {balancePhase !== 'active' ? <div className="math-sim-ch2-complete" role="status"><span aria-hidden="true">✦</span><small>{lang === 'en' ? 'EQUATION BALANCED' : 'PERSAMAAN SEIMBANG'}</small><strong>{lang === 'en' ? 'Challenge complete!' : 'Tantangan selesai!'}</strong><b>{equation}</b><p>{lang === 'en' ? 'Opening the next challenge…' : 'Membuka soal berikutnya…'}</p><i aria-hidden="true"><span /></i></div> : chapter2Fraction ? <Chapter2FractionLab config={config} lang={lang} busy={busy} onSolved={() => setStepIndex(config.steps.length)} onUndo={() => setStepIndex(0)} onMistake={() => setStepErrors((count) => count + 1)} /> : chapter2Partition ? <Chapter2Partition config={config} questionId={questionNumber} lang={lang} busy={busy} onSolved={() => setStepIndex(config.steps.length)} onUndo={() => setStepIndex(0)} onMistake={() => setStepErrors((count) => count + 1)} /> : <>
       <div className="math-sim-balance-workspace math-sim-ch2-workspace">
         <div className={`math-sim-balance-stage ${operationSides.length === 1 ? (operationSides[0] === 0 ? 'is-left-heavy' : 'is-right-heavy') : 'is-level'}`}>
           <img className="math-sim-chapter-scene" src={chapterScenes[1]} alt="" aria-hidden="true" draggable="false" decoding="async" />
