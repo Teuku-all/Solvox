@@ -151,6 +151,9 @@ function DistributiveModel({ model, equation, lang, onComplete, onError }) {
     setDropMessage('');
   };
   const startTermDrag = (event, termKey) => {
+    // Desktop uses the browser's native drag/drop lifecycle; pointer tracking
+    // stays as the touch fallback because native HTML dragging is unreliable on phones.
+    if (event.pointerType === 'mouse') return;
     const [sourceType, sourceGroup, sourceTerm] = termKey.split(':');
     if (!opened || event.button !== 0 || (sourceType !== 'factor' && applied[Number(sourceGroup)]?.[Number(sourceTerm)])) return;
     event.preventDefault();
@@ -205,13 +208,13 @@ function DistributiveModel({ model, equation, lang, onComplete, onError }) {
     </div>}
     <div className={`math-sim-distributive-board ${model.dragDrop ? 'is-drop-board' : ''}`}>
       {model.groups.map((group, groupIndex) => <div className="math-sim-distributive-group" key={`${group.factor}-${groupIndex}`}>
-        {model.dragFactor ? <button type="button" className={`math-sim-distributive-factor ${selectedTerm === `factor:${groupIndex}:` ? 'is-selected' : ''}`} onPointerDown={(event) => startTermDrag(event, `factor:${groupIndex}:`)} onClick={() => setSelectedTerm(`factor:${groupIndex}:`)} aria-label={`${lang === 'en' ? 'Drag factor' : 'Seret faktor'} ${group.factor} ${lang === 'en' ? 'to each term slot' : 'ke setiap kotak suku'}`}>{group.negative ? '−' : '×'}{group.factor}</button> : <div className="math-sim-distributive-factor">{group.negative ? '−' : '×'}{group.factor}</div>}
+        {model.dragFactor ? <button type="button" draggable={opened} className={`math-sim-distributive-factor ${selectedTerm === `factor:${groupIndex}:` ? 'is-selected' : ''}`} onPointerDown={(event) => startTermDrag(event, `factor:${groupIndex}:`)} onDragStart={(event) => { event.dataTransfer.effectAllowed = 'copy'; event.dataTransfer.setData('text/plain', `factor:${groupIndex}:`); }} onDragEnd={() => setHoverTarget('')} onClick={() => setSelectedTerm(`factor:${groupIndex}:`)} aria-label={`${lang === 'en' ? 'Drag factor' : 'Seret faktor'} ${group.factor} ${lang === 'en' ? 'to each term slot' : 'ke setiap kotak suku'}`}>{group.negative ? '−' : '×'}{group.factor}</button> : <div className="math-sim-distributive-factor">{group.negative ? '−' : '×'}{group.factor}</div>}
         <div className="math-sim-distributive-copies" aria-label={`${group.copies} ${lang === 'en' ? 'equal groups' : 'kelompok sama'}`}>
           {model.dragDrop ? <div className={`math-sim-distributive-drop-column ${model.dragFactor ? 'is-factor-drop-column' : ''}`} aria-label={`${lang === 'en' ? 'Factor column' : 'Kolom faktor'} ${group.factor}`}>
             {group.terms.map(([term, product], termIndex) => {
               const targetKey = `${groupIndex}:${termIndex}`;
               const sourceTargetSelected = selectedTerm === `factor:${groupIndex}:` || selectedTerm === `term:${groupIndex}:${termIndex}`;
-              return <button key={targetKey} type="button" data-distributive-target={targetKey} className={`math-sim-distributive-term ${applied[groupIndex][termIndex] ? 'is-applied' : ''} ${hoverTarget === targetKey ? 'is-drop-hover' : ''} ${sourceTargetSelected ? 'is-selected' : ''}`} onClick={() => selectedTerm && placeTerm(selectedTerm, targetKey)} aria-label={`${lang === 'en' ? 'Drop factor on' : 'Letakkan faktor pada'} ${term} ${lang === 'en' ? 'to make' : 'untuk menjadi'} ${product}`}>
+              return <button key={targetKey} type="button" data-distributive-target={targetKey} className={`math-sim-distributive-term ${applied[groupIndex][termIndex] ? 'is-applied' : ''} ${hoverTarget === targetKey ? 'is-drop-hover' : ''} ${sourceTargetSelected ? 'is-selected' : ''}`} onDragOver={(event) => { if (model.dragFactor && !applied[groupIndex][termIndex]) { event.preventDefault(); event.dataTransfer.dropEffect = 'copy'; setHoverTarget(targetKey); } }} onDragLeave={() => setHoverTarget('')} onDrop={(event) => { if (!model.dragFactor) return; event.preventDefault(); const payload = event.dataTransfer.getData('text/plain') || selectedTerm; if (payload) placeTerm(payload, targetKey); setHoverTarget(''); }} onClick={() => selectedTerm && placeTerm(selectedTerm, targetKey)} aria-label={`${lang === 'en' ? 'Drop factor on' : 'Letakkan faktor pada'} ${term} ${lang === 'en' ? 'to make' : 'untuk menjadi'} ${product}`}>
                 {applied[groupIndex][termIndex] ? <><span>{term}</span><i>→</i><b>{product}</b></> : <><span>{term}</span><i>×</i><b>{lang === 'en' ? 'Drop factor' : 'Jatuhkan faktor'}</b></>}
               </button>;
             })}
