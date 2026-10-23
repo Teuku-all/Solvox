@@ -37,7 +37,7 @@ function cleanToken(v){return String(v||'').trim().slice(0,80);}
 function makeCode(){let code;do code='AJM-'+Math.random().toString(36).slice(2,6).toUpperCase();while(rooms.has(code));return code;}
 function makeToken(){return crypto.randomBytes(18).toString('hex');}
 function isCorrect(q,value){return isSameAnswer(value,q.acceptedAnswers||[q.answer]);}
-function sanitizeQuestion(q){if(!q)return null;return {id:q.id,context:q.context,text:q.text,concept:q.concept,difficulty:q.difficulty};}
+function sanitizeQuestion(q){if(!q)return null;return {id:q.id,context:q.context,text:q.text,concept:q.concept,difficulty:q.difficulty,hints:Array.isArray(q.hints)?q.hints.slice(0,3).map(hint=>String(hint)):[]};}
 function sanitizeReviewQuestion(q){if(!q)return null;return {id:q.id,context:q.context,text:q.text,answer:q.answer,explanation:q.explanation,concept:q.concept};}
 function publicRoom(room){
   const currentTurn=room.turnToken?room.players.find(p=>p.token===room.turnToken):null;
@@ -77,6 +77,7 @@ function publicRoom(room){
       correct:player.correct,
       answered:player.answered||0,
       hintsUsed:player.hintsUsed||0,
+      hintsUsedThisQuestion:player.hintLevels?.[room.questionIndex]||0,
       isBot:!!player.isBot,
       turnAnswer:room.turnAnswers?.[player.token]?.submitted||false,
     })),
@@ -364,16 +365,37 @@ io.on('connection',socket=>{
     if(room.mode==='turn'){
       if(p.token!==room.turnToken)return socket.emit('answer:result',{correct:false,code:'NOT_YOUR_TURN'});
       if(room.turnAnswers[p.token]?.submitted)return;
-      const value=String(answer||'').trim();if(!value)return;const correct=isCorrect(q,value);p.answered=(p.answered||0)+1;if(!correct)p.lastMistake={questionIndex:room.questionIndex,concept:q.concept||'—',answer:value,correctAnswer:q.answer,explanation:q.explanation};if(correct)p.score=(p.score||0)+1;room.turnAnswers[p.token]={submitted:true,correct,answer:value,timeout:false};if(correct)room.combatEvent={token:p.token,target:room.players.find(x=>x.token!==p.token)?.token,damage:DAMAGE_PER_CORRECT,seq:Date.now(),kind:'hit'};room.statusKey=correct?'TURN_CORRECT':'TURN_WRONG';room.statusName=p.name;socket.emit('answer:result',{correct});broadcast(room,'turn:answer');
+       const value=String(answer||'').trim();if(!value)return;const correct=isCorrect(q,value);p.answered=(p.answered||0)+1;if(!correct)p.lastMistake={questionIndex:room.questionIndex,concept:q.concept||'—',answer:value,correctAnswer:q.answer,explanation:q.explanation||q.feedback};if(correct)p.score=(p.score||0)+1;room.turnAnswers[p.token]={submitted:true,correct,answer:value,timeout:false};if(correct)room.combatEvent={token:p.token,target:room.players.find(x=>x.token!==p.token)?.token,damage:DAMAGE_PER_CORRECT,seq:Date.now(),kind:'hit'};room.statusKey=correct?'TURN_CORRECT':'TURN_WRONG';room.statusName=p.name;socket.emit('answer:result',{correct,feedback:correct?'':String(q.feedback||q.explanation||''),errorTag:q.errorTag||q.concept||''});broadcast(room,'turn:answer');
       setTimeout(()=>{if(rooms.has(room.code)&&room.status==='battle')advanceTurn(room,false);},700);
       return;
     }
     // Score Duel: both players get the same question and the full timer independently. No speed advantage.
     if(room.mode==='score'){
       if(room.turnAnswers[p.token]?.submitted)return;
-      const value=String(answer||'').trim();if(!value)return;const correct=isCorrect(q,value);p.answered=(p.answered||0)+1;if(!correct)p.lastMistake={questionIndex:room.questionIndex,concept:q.concept||'—',answer:value,correctAnswer:q.answer,explanation:q.explanation};room.turnAnswers[p.token]={submitted:true,correct,answer:value,timeout:false};if(correct){p.score+=100;p.correct+=1;room.combatEvent={token:p.token,target:room.players.find(x=>x.token!==p.token)?.token,damage:10,seq:Date.now(),kind:'hit'};}room.statusKey=correct?'SCORE_CORRECT':'SCORE_WRONG';room.statusName=p.name;socket.emit('answer:result',{correct});broadcast(room,'score:answer');
+      const value=String(answer||'').trim();if(!value)return;const correct=isCorrect(q,value);p.answered=(p.answered||0)+1;if(!correct)p.lastMistake={questionIndex:room.questionIndex,concept:q.concept||'—',answer:value,correctAnswer:q.answer,explanation:q.explanation||q.feedback};room.turnAnswers[p.token]={submitted:true,correct,answer:value,timeout:false};if(correct){p.score+=100;p.correct+=1;room.combatEvent={token:p.token,target:room.players.find(x=>x.token!==p.token)?.token,damage:10,seq:Date.now(),kind:'hit'};}room.statusKey=correct?'SCORE_CORRECT':'SCORE_WRONG';room.statusName=p.name;socket.emit('answer:result',{correct,feedback:correct?'':String(q.feedback||q.explanation||''),errorTag:q.errorTag||q.concept||''});broadcast(room,'score:answer');
       if(room.turnAnswers[room.players[0].token]?.submitted&&room.turnAnswers[room.players[1].token]?.submitted)advanceScoreRound(room,false);
     }
+  });
+  socket.on('hint:use',(ack)=>{
+    const respond=(result)=>{if(typeof ack==='function')ack(result)};
+    const room=rooms.get(socket.data.roomCode);
+    if(!room||room.status!=='battle')return respond({ok:false,code:'NOT_IN_BATTLE'});
+    const player=findPlayer(room,socket);
+    const question=room.questions[room.questionIndex];
+    if(!player||!player.connected||!question)return respond({ok:false,code:'NOT_IN_BATTLE'});
+    if(room.mode==='turn'&&player.token!==room.turnToken)return respond({ok:false,code:'NOT_YOUR_TURN'});
+    if(room.turnAnswers?.[player.token]?.submitted)return respond({ok:false,code:'ANSWER_SUBMITTED'});
+    const used=Math.max(0,Number(player.hintLevels?.[room.questionIndex])||0);
+    const hints=Array.isArray(question.hints)?question.hints:[];
+    if(used>=3||used>=hints.length)return respond({ok:false,code:'HINT_LIMIT'});
+    const cost=[5,10,15][used]??15;
+    if((Number(player.hp)||0)<=cost)return respond({ok:false,code:'HINT_HP'});
+    player.hp-=cost;
+    player.hintsUsed=(player.hintsUsed||0)+1;
+    player.hintLevels=Array.isArray(player.hintLevels)?player.hintLevels:[];
+    player.hintLevels[room.questionIndex]=used+1;
+    respond({ok:true,hintsUsed:used+1,hp:player.hp,cost});
+    broadcast(room);
   });
   socket.on('rematch',async()=>{const room=rooms.get(socket.data.roomCode);if(!room||room.players.length!==2)return;room.status='waiting';room.started=false;room.startedAt=null;room.questions=[];room.questionIndex=0;room.round=0;room.turnAnswers={};room.turnToken=null;room.turnStartedAt=null;room.winner=null;room.recorded=false;room.statusKey='REMATCH_READY';room.players.forEach(p=>{p.ready=!!p.isBot;p.hp=100;p.score=0;p.correct=0;p.answered=0;p.hintsUsed=0;p.hintLevels=[];p.lastMistake=null;});broadcast(room,'rematch:ready');});
   socket.on('room:leave',(ack)=>{leaveRoom(socket,true);ack?.({ok:true});});socket.on('disconnect',()=>leaveRoom(socket,false));

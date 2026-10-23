@@ -1,4 +1,5 @@
 import React from 'react';
+import Keypad from './Keypad';
 import PixelIcon from '../shared/PixelIcon';
 import { getChapterGuide } from '../../data/chapterGuide';
 
@@ -6,8 +7,8 @@ import { getChapterGuide } from '../../data/chapterGuide';
  * Solvox battle learning console.
  *
  * A focused question surface for the simulation campaign and multiplayer.
- * Campaign chapters resolve from the simulation; multiplayer keeps a direct
- * answer field without side rails.
+ * Campaign chapters resolve from the simulation; multiplayer can enable the
+ * hint rail and math keypad alongside its direct answer field.
  */
 const QUESTION_PANEL_THEME_BY_LEVEL = {
   1: {
@@ -107,10 +108,23 @@ export default function BattleQuestionPanel({
   simulationReady = true,
   onOpenSimulation,
   submit,
+  hintsUsed = 0,
+  hintsLeft = 0,
+  hintCost = 0,
+  currentHp = 100,
+  useHint,
+  hintMessage = '',
+  hintLoading = false,
+  keypadVisible = false,
+  onToggleKeypad,
+  showHintRail = false,
+  showKeypad = false,
+  showAttemptCounter = false,
   autoResolve = false,
 }) {
   const progress = Math.round(((idx + 1) / totalRounds) * 100);
   const stageTitle = lang === 'en' ? meta?.titleEn : meta?.title;
+  const attempts = Math.max(0, q?.attempts || 0);
 
   const panelTheme = QUESTION_PANEL_THEME_BY_LEVEL[Number(levelId)] || {};
 
@@ -119,7 +133,7 @@ export default function BattleQuestionPanel({
 
 
   return (
-    <section style={panelTheme} className={`battle-question-panel theme-level-${Number(levelId)} ${isStoryChapter ? 'is-story-chapter' : ''} ${autoResolve ? 'is-auto-resolve' : 'is-compact-answer'}`} aria-label={t('questionPanel')}>
+    <section style={panelTheme} className={`battle-question-panel theme-level-${Number(levelId)} ${isStoryChapter ? 'is-story-chapter' : ''} ${!showHintRail ? 'is-no-hint' : ''} ${!showHintRail && !showKeypad && !autoResolve ? 'is-compact-answer' : ''} ${autoResolve ? 'is-auto-resolve' : ''}`} aria-label={t('questionPanel')}>
       <div className={`battle-question-main ${isStoryChapter ? 'is-story-main' : ''} ${autoResolve ? 'is-auto-resolve' : ''}`}>
         <header className="question-header">
           <div className="question-meta">
@@ -189,7 +203,38 @@ export default function BattleQuestionPanel({
           </button>
         </div>}
 
+        {!autoResolve && (showKeypad || showAttemptCounter) && <div className="question-tools">
+          {showKeypad && <button className="keypad-toggle" type="button" onClick={onToggleKeypad} disabled={busy || !simulationReady} aria-pressed={keypadVisible}>
+            <PixelIcon name="keyboard" size={15} /><span>{keypadVisible ? t('hideKeyboard') : t('showKeyboard')}</span>
+          </button>}
+          {showAttemptCounter && <span className="attempts">{t('attempt')}: {attempts}</span>}
+        </div>}
       </div>
+
+      {!autoResolve && showHintRail && <aside className="hint-rail" aria-label={t('hint')}>
+        <div className="hint-rail-head">
+          <span className="hint-rail-icon"><PixelIcon name="hint" size={15} /></span>
+          <div><b>{t('hint')}</b><small>{t('hintUsage', { used: hintsUsed, left: hintsLeft })} · {currentHp} HP</small></div>
+        </div>
+        <div className="hint-rail-body" aria-live="polite" aria-atomic="false">
+          {hintsUsed > 0 ? (q?.hints || []).slice(0, hintsUsed).map((hint, index) => (
+            <div className="hint-reveal" key={`${index}-${hint}`}><span>{index + 1}</span><p>{hint}</p></div>
+          )) : <div className="hint-empty"><strong>{t('hintAvailable')}</strong><p>{t('hintCostDynamic', { cost: hintCost })}</p></div>}
+        </div>
+        {hintMessage && <p className="hint-feedback" role="status">{hintMessage}</p>}
+        <button className="hint-reveal-btn" type="button" disabled={busy || hintLoading || hintsLeft <= 0 || !q?.hints?.length || currentHp <= hintCost} onClick={useHint}>
+          <PixelIcon name="hint" size={14} /><span>{t('revealHint')}</span><em>−{hintCost} HP</em>
+        </button>
+      </aside>}
+
+      {!autoResolve && showKeypad && <aside className={`battle-keypad-side ${keypadVisible ? 'is-visible' : 'is-hidden'}`} aria-label={t('keyboardLabel')}>
+        <div className="battle-keypad-side-head">
+          <span><PixelIcon name="keyboard" size={15} /><b>{t('keyboardLabel')}</b></span>
+          <small className="keypad-status">{t('power')}</small>
+        </div>
+        {keypadVisible ? <Keypad value={answer} onChange={setAnswer} onEnter={submit} disabled={busy || !simulationReady} t={t} visible={keypadVisible} />
+          : <div className="battle-keypad-hidden"><PixelIcon name="keyboard" size={28} /><span>{t('showKeyboard')}</span></div>}
+      </aside>}
     </section>
   );
 }
