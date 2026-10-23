@@ -6,6 +6,7 @@ import {
   resolveBossSequence,
 } from '../../data/bossAssets';
 import { loadAssetImage } from '../../services/assetImageCache';
+import { attackTravelAtImpact } from './combatMotion';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
@@ -29,6 +30,7 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
     ready: false,
     impactFired: false,
     distance: 180,
+    contactAtImpact: false,
     pending: null,
   });
 
@@ -56,6 +58,7 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
     state.startedAt = performance.now();
     state.impactFired = false;
     if (Number.isFinite(options.distance)) state.distance = Math.max(110, options.distance);
+    state.contactAtImpact = Boolean(options.contactAtImpact);
     return true;
   };
 
@@ -236,11 +239,13 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
         motionY = Math.sin(elapsed / 1350) * 2;
         scale = 1 + Math.sin(elapsed / 1800) * 0.004;
       } else if (mode === 'attack') {
-        const f = p < 0.18
+        const defaultTravel = p < 0.18
           ? 0.04 * (p / 0.18)
           : p < 0.68
             ? 0.04 + 0.96 * easeOutCubic((p - 0.18) / 0.50)
             : Math.max(0, 1 - ((p - 0.68) / 0.32));
+        const impactProgress = getBossImpactMs(boss.spriteId, 'attack', 320) / attackTotal;
+        const f = state.contactAtImpact ? attackTravelAtImpact(p, impactProgress) : defaultTravel;
         motionX = direction * Math.max(0, f) * travel;
         motionY = -easeInOutSine(p) * 3.5;
         rotation = -easeInOutSine(p) * 0.024;

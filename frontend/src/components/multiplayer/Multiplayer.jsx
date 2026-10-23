@@ -12,6 +12,7 @@ import {GAME_META} from '../../config/game';
 import {LEVELS} from '../../data/levels';
 import { playCharacterAttack, playSound } from '../../services/sound';
 import {apiJson,SOCKET_URL} from '../../services/api';
+import { getContactLungeDistance } from '../battle/combatMotion';
 
 const turnSecondsForLevel=(levelId)=>45+15*(Math.min(5,Math.max(1,Number(levelId)||1))-1);
 
@@ -37,7 +38,8 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
   const [seconds,setSeconds]=useState(45);
   const [answerInfo,setAnswerInfo]=useState(null);
   const [hintInfo,setHintInfo]=useState(null);
-  const [battleImpact,setBattleImpact]=useState(null);
+  const [battleImpacts,setBattleImpacts]=useState([]);
+  const [attackingSide,setAttackingSide]=useState('');
   const [showMatchReview,setShowMatchReview]=useState(false);
   const [dashboard,setDashboard]=useState(null);
   const [dashboardLoading,setDashboardLoading]=useState(false);
@@ -144,9 +146,49 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
 const didWin=Boolean(me&&((room?.winner&&room.winner===me.id)||room?.winnerName===me.name));
 const playerBattleRef=useRef(null);
 const opponentBattleRef=useRef(null);
-const getArenaLungeDistance=()=>{const width=window.innerWidth||1280;return width<=380?68:width<=520?82:width<=760?96:112};
-const playerBattleImpact=()=>{opponentBattleRef.current?.play('hurt')};
-const opponentBattleImpact=()=>{playerBattleRef.current?.play('hurt')};
+const arenaRef=useRef(null);
+const activeAttacksRef=useRef({player:null,opponent:null});
+const combatTimersRef=useRef(new Set());
+const refreshAttackingSide=()=>{
+  const sides=Object.entries(activeAttacksRef.current).filter(([,attack])=>attack?.active).map(([side])=>side);
+  setAttackingSide(sides.length===2?'both':sides[0]||'');
+};
+const playHurt=(side)=>{
+  if(side==='player')playerBattleRef.current?.play('hurt');
+  else opponentBattleRef.current?.play('hurt');
+};
+const queueHurtAfterStrike=(side,attack)=>{
+  if(attack.hurtQueued)return;
+  attack.hurtQueued=true;
+  const timer=setTimeout(()=>{
+    combatTimersRef.current.delete(timer);
+    if(activeAttacksRef.current[side]?.seq===attack.seq)playHurt(side);
+  },220);
+  combatTimersRef.current.add(timer);
+};
+const showAttackImpact=(side)=>{
+  const attack=activeAttacksRef.current[side];
+  if(!attack||attack.impacted)return;
+  attack.impacted=true;
+  const targetSide=side==='player'?'opponent':'player';
+  const targetAttack=activeAttacksRef.current[targetSide];
+  if(targetAttack?.active){
+    if(targetAttack.impacted)queueHurtAfterStrike(targetSide,targetAttack);
+    else targetAttack.pendingHurt=true;
+  }else{
+    playHurt(targetSide);
+  }
+  if(attack.pendingHurt)queueHurtAfterStrike(side,attack);
+  const impact={side:side==='player'?'boss':'player',amount:attack.amount,seq:attack.seq};
+  setBattleImpacts(current=>[...current.filter(item=>item.seq!==attack.seq),impact]);
+  const timer=setTimeout(()=>{
+    combatTimersRef.current.delete(timer);
+    setBattleImpacts(current=>current.filter(item=>item.seq!==attack.seq));
+  },850);
+  combatTimersRef.current.add(timer);
+};
+const playerBattleImpact=()=>showAttackImpact('player');
+const opponentBattleImpact=()=>showAttackImpact('opponent');
 const battlePlayers=useMemo(()=>{
   const list=Array.isArray(room?.players)?room.players:[];
   if(!list.length)return {player:null,opponent:null};
@@ -176,25 +218,43 @@ const playerVital=getFighterVital(battlePlayers.player);
 const opponentVital=getFighterVital(battlePlayers.opponent);
 
 useEffect(()=>{
+  activeAttacksRef.current={player:null,opponent:null};
+  combatTimersRef.current.forEach(clearTimeout);
+  combatTimersRef.current.clear();
+  setBattleImpacts([]);
+  setAttackingSide('');
   if(room?.status!=='battle')return;
   playerBattleRef.current?.idle();
   opponentBattleRef.current?.idle();
-},[room?.status,room?.questionIndex]);
+},[room?.status,battlePlayerCharacter.id,battleOpponentCharacter.id]);
+
+useEffect(()=>()=>{
+  combatTimersRef.current.forEach(clearTimeout);
+  combatTimersRef.current.clear();
+},[]);
 
 useEffect(()=>{
   const event=room?.combatEvent;
   if(room?.status!=='battle'||!event||!event.seq)return;
-  const distance=getArenaLungeDistance();
-  if(event.playerId===battlePlayers.player?.id){
-    playerBattleRef.current?.play('attack',{distance});
+  const side=event.playerId===battlePlayers.player?.id?'player':'opponent';
+  const distance=getContactLungeDistance(arenaRef.current,side);
+  activeAttacksRef.current[side]={seq:event.seq,amount:room?.mode==='score'?100:(event.damage||10),impacted:false,active:true};
+  refreshAttackingSide();
+  const timer=setTimeout(()=>{
+    combatTimersRef.current.delete(timer);
+    if(activeAttacksRef.current[side]?.seq===event.seq){
+      activeAttacksRef.current[side].active=false;
+      refreshAttackingSide();
+    }
+  },1100);
+  combatTimersRef.current.add(timer);
+  if(side==='player'){
+    playerBattleRef.current?.play('attack',{distance,contactAtImpact:true});
     playCharacterAttack(battlePlayers.player?.character);
   }else{
-    opponentBattleRef.current?.play('attack',{distance});
+    opponentBattleRef.current?.play('attack',{distance,contactAtImpact:true});
     playCharacterAttack(battlePlayers.opponent?.character);
   }
-  setBattleImpact({side:event.playerId===battlePlayers.player?.id?'boss':'player',amount:room?.mode==='score'?100:(event.damage||10),seq:event.seq});
-  const impactTimer=setTimeout(()=>setBattleImpact(current=>current?.seq===event.seq?null:current),850);
-  return()=>clearTimeout(impactTimer);
 },[room?.status,room?.combatEvent?.seq,battlePlayers.player?.id]);
 
   const runWhenConnected=(action)=>{
@@ -399,7 +459,7 @@ useEffect(()=>{
         </div>
       </header>
       {answerInfo&&!answerInfo.correct&&<aside className="battle-mistake-banner" role="alert" aria-live="polite"><span className="battle-mistake-icon"><PixelIcon name="warning" size={15}/></span><div className="battle-mistake-copy"><div className="battle-mistake-heading"><b>{t('wrong')}</b><span>{t('questionNumber')} {room.questionIndex+1}</span></div><p>{answerInfo.explanation}</p></div></aside>}
-      <div className="battle-reference-arena multiplayer-arena" data-combat-seq={room.combatEvent?.seq||''}>
+      <div ref={arenaRef} className="battle-reference-arena multiplayer-arena" data-combat-seq={room.combatEvent?.seq||''} data-attacking-side={attackingSide||undefined}>
         <div className="combat-stage multiplayer-combat-stage" data-level={room.levelId||level}>
           <div className="fighter-slot fighter-player-slot"><div className="fighter-player player-lane-shift"><div className="fighter-shadow-anchor" aria-hidden="true"/><MultiplayerFighter ref={playerBattleRef} characterId={battlePlayerCharacter.id} levelId={room.levelId||level} size={278} mirrored={battlePlayerCharacter.kind==='boss'} attackDirection={1} onImpact={playerBattleImpact}/></div></div>
           <div className="multiplayer-stage-center"><span>VS</span><small>{room.mode==='turn'?`${t('turnBased')} / ${seconds}s`:`${t('scoreDuel')} / ${seconds}s`}</small></div>
@@ -429,7 +489,7 @@ useEffect(()=>{
         showHintRail={room.mode==='turn'}
         showAttemptCounter={false}
       />
-      <HitEffect side={battleImpact?.side} amount={battleImpact?.amount} theme={battleImpact?.side==='boss'?'boss':'player'}/>
+      {battleImpacts.map(impact=><HitEffect key={impact.seq} side={impact.side} amount={impact.amount} theme={impact.side==='boss'?'boss':'player'}/>)}
     </div>
   </div>
 </div>}

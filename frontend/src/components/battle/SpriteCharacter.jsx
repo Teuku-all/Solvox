@@ -1,6 +1,7 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { getPlayerAsset, resolvePlayerSequence } from '../../data/playerAssets';
 import { loadAssetImage } from '../../services/assetImageCache';
+import { attackTravelAtImpact } from './combatMotion';
 
 const ONE_SHOT_MODES = new Set(['attack', 'hurt', 'die']);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -42,6 +43,7 @@ const SpriteCharacter = forwardRef(function SpriteCharacter(
     ready: false,
     impactFired: false,
     distance: 180,
+    contactAtImpact: false,
     pending: null,
   });
 
@@ -52,6 +54,7 @@ const SpriteCharacter = forwardRef(function SpriteCharacter(
     state.startedAt = performance.now();
     state.impactFired = false;
     if (Number.isFinite(options.distance)) state.distance = options.distance;
+    state.contactAtImpact = Boolean(options.contactAtImpact);
     return true;
   };
 
@@ -208,11 +211,14 @@ const SpriteCharacter = forwardRef(function SpriteCharacter(
           const p = clamp(elapsed / attackTotal, 0, 1);
           const travelCss = Math.max(48, Number.isFinite(state.distance) ? state.distance : 180);
           const travel = clamp(travelCss / Math.max(visualScale, 0.2), 120, 1200);
-          const f = p < 0.16
+          const defaultTravel = p < 0.16
             ? 0.06 * (p / 0.16)
             : p < 0.66
               ? 0.06 + 0.94 * easeOutCubic((p - 0.16) / 0.50)
               : 1 - (p - 0.66) / 0.34;
+          const impactFrame = asset.sequences.attack?.impactFrame ?? Math.max(0, frames.length - 2);
+          const impactProgress = impactFrame * activeStep / attackTotal;
+          const f = state.contactAtImpact ? attackTravelAtImpact(p, impactProgress) : defaultTravel;
           motionX = Math.max(0, f) * travel * direction;
           motionY = -easeInOutSine(p) * 4.5;
           rotation = -easeInOutSine(p) * 0.03;
