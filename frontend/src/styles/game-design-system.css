@@ -32,7 +32,7 @@
   line-height: 1.15 !important;
 }
 
-:is(.mode-card-copy h2, .multi-character-selection-heading h2, .spx-detail h2, .tutorial-section-heading h3, .eval-section-title h3, .eval-summary-copy h2, .result-section-heading h3, .settings-card .settings-head h2, .feedback-card .feedback-head h2, .math-sim-dock-heading h2, .c2p-header h2) {
+:is(.mode-card-copy h2, .multi-character-selection-heading h2, .spx-detail h2, .eval-section-title h3, .eval-summary-copy h2, .result-section-heading h3, .settings-card .settings-head h2, .feedback-card .feedback-head h2, .math-sim-dock-heading h2, .c2p-header h2) {
   color: var(--game-text-primary) !important;
   font-family: var(--game-font-heading) !important;
   font-size: clamp(1.05rem, 1.5vw, 1.3rem) !important;
@@ -42,7 +42,8 @@
   text-wrap: balance;
 }
 
-:is(.tutorial-card, .eval-card, .settings-card, .feedback-card, .multiplayer, .math-sim, .profile-panel) :is(h2, h3) {
+/* The reading guide owns its readable heading styles in tutorial.css. */
+:is(.eval-card, .settings-card, .feedback-card, .multiplayer, .math-sim, .profile-panel) :is(h2, h3) {
   color: var(--game-text-primary) !important;
   font-family: var(--game-font-heading) !important;
   font-weight: 400 !important;
@@ -50,8 +51,8 @@
   letter-spacing: .01em !important;
   text-wrap: balance;
 }
-:is(.tutorial-card, .eval-card, .settings-card, .feedback-card, .multiplayer, .math-sim, .profile-panel) h2 { font-size: clamp(1.05rem, 1.5vw, 1.3rem) !important; }
-:is(.tutorial-card, .eval-card, .settings-card, .feedback-card, .multiplayer, .math-sim, .profile-panel) h3 { font-size: clamp(.92rem, 1.15vw, 1.08rem) !important; }
+:is(.eval-card, .settings-card, .feedback-card, .multiplayer, .math-sim, .profile-panel) h2 { font-size: clamp(1.05rem, 1.5vw, 1.3rem) !important; }
+:is(.eval-card, .settings-card, .feedback-card, .multiplayer, .math-sim, .profile-panel) h3 { font-size: clamp(.92rem, 1.15vw, 1.08rem) !important; }
 
 :is(.mode-select-header p, .chapter-select-title p, .multi-header p, .mode-card-copy p, .tutorial-card p, .eval-card p, .settings-card p, .feedback-card p) {
   color: var(--game-text-secondary);

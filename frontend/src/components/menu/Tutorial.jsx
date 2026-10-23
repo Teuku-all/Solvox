@@ -6,6 +6,7 @@ import BalanceScale from '../shared/BalanceScale';
 import useAnimatedDismiss from '../shared/useAnimatedDismiss';
 import { LEVELS } from '../../data/levels';
 import { getChapterGuide } from '../../data/chapterGuide';
+import ChapterGuide from './ChapterGuide';
 
 const GUIDE = {
   id: {
@@ -14,7 +15,7 @@ const GUIDE = {
     quickTitle: 'Baru pertama bermain?',
     quickBody: 'Coba latihan singkat untuk memahami timbangan. Bebas mencoba, tanpa kehilangan HP.',
     quickAction: 'Coba latihan sekarang',
-    chapterHint: 'Pilih chapter untuk melihat langkah bermainnya.',
+    chapterHint: 'Buka chapter untuk membaca tujuan, langkah bermain, contoh penyelesaian, dan tipsnya. Mulai dari Chapter 1 jika kamu baru bermain.',
     next: 'Berikutnya',
     practiceStatus: ['Kurangi 1 di kedua ruas', 'Lanjutkan sampai x sendiri', 'Masukkan nilai x', 'Latihan selesai'],
     tabLabel: 'Bagian panduan',
@@ -94,7 +95,7 @@ const GUIDE = {
     quickTitle: 'Your first time playing?',
     quickBody: 'Try a short practice to understand the balance. Experiment freely without losing HP.',
     quickAction: 'Try the practice',
-    chapterHint: 'Choose a chapter to see how to play it.',
+    chapterHint: 'Open a chapter for its goals, step-by-step instructions, a worked example, and tips. Start with Chapter 1 if you are new.',
     next: 'Up next',
     practiceStatus: ['Subtract 1 from both sides', 'Continue until x is alone', 'Enter the value of x', 'Practice complete'],
     tabLabel: 'Guide sections',
@@ -185,7 +186,7 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
   const { closing, dismiss } = useAnimatedDismiss(onClose);
   const c = GUIDE[lang === 'en' ? 'en' : 'id'];
   const [section, setSection] = useState('start');
-  const [openChapter, setOpenChapter] = useState(null);
+  const [openChapter, setOpenChapter] = useState(1);
   const [practiceStep, setPracticeStep] = useState(0);
   const [practiceAnswer, setPracticeAnswer] = useState('');
   const [practiceMessage, setPracticeMessage] = useState(null);
@@ -348,7 +349,18 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
             <div className="tutorial-section-heading"><span className="tutorial-section-symbol"><PixelIcon name="map" size={23}/></span><div><h3>{c.overviewTitle}</h3><p>{c.overviewIntro}</p></div></div>
             <div className="tutorial-route" aria-label={c.route.join(' → ')}>{c.route.map((label, index) => <React.Fragment key={label}><span>{label}</span>{index < c.route.length - 1 && <PixelIcon name="right" size={14}/>}</React.Fragment>)}</div>
             <GuideCards items={c.startSteps}/>
-            <div className="tutorial-chapters"><b>{c.chapterTitle}</b><p className="tutorial-chapter-hint">{c.chapterHint}</p><div>{LEVELS.map((level) => <article key={level.id} className={openChapter === level.id ? 'is-open' : ''}><button className="tutorial-chapter-toggle" type="button" aria-expanded={openChapter === level.id} aria-controls={`guide-chapter-${level.id}`} onClick={() => setOpenChapter(openChapter === level.id ? null : level.id)}><span>{String(level.id).padStart(2, '0')}</span><b>{lang === 'en' ? level.titleEn : level.title}</b><PixelIcon name={openChapter === level.id ? 'close' : 'right'} size={16}/></button>{openChapter === level.id && <div className="tutorial-chapter-detail" id={`guide-chapter-${level.id}`}><p>{getChapterGuide(level.id, lang).brief}</p><ol>{getChapterGuide(level.id, lang).steps.map((step) => <li key={step}>{step}</li>)}</ol></div>}</article>)}</div></div>
+            <section className="tutorial-chapters" aria-labelledby="tutorial-chapters-title">
+              <h3 id="tutorial-chapters-title">{c.chapterTitle}</h3>
+              <p className="tutorial-chapter-hint">{c.chapterHint}</p>
+              <div>{LEVELS.map((level) => <article key={level.id} className={openChapter === level.id ? 'is-open' : ''}>
+                <button className="tutorial-chapter-toggle" type="button" aria-expanded={openChapter === level.id} aria-controls={`guide-chapter-${level.id}`} onClick={() => setOpenChapter(openChapter === level.id ? null : level.id)}>
+                  <span className="tutorial-chapter-number" aria-hidden="true">{String(level.id).padStart(2, '0')}</span>
+                  <span className="tutorial-chapter-name"><b>Chapter {level.id} · {lang === 'en' ? level.titleEn : level.title}</b><small>{getChapterGuide(level.id, lang).brief}</small></span>
+                  <PixelIcon name={openChapter === level.id ? 'close' : 'right'} size={16}/>
+                </button>
+                {openChapter === level.id && <ChapterGuide levelId={level.id} lang={lang}/>}
+              </article>)}</div>
+            </section>
             <button className="tutorial-next-section" type="button" onClick={() => openSection('practice')}><span><small>{c.next}</small><b>{c.tabs.practice}</b></span><PixelIcon name="right" size={22}/></button>
           </section>}
 
