@@ -1024,7 +1024,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
   const chapter3DivisionStep = questionNumber >= 21 && questionNumber <= 30 && operationValueMatch?.[1] === '/';
   const operationValueChoices = chapter3DivisionStep
     ? [operationValueMatch?.[2], '2', '3', '4']
-    : [operationValueMatch?.[2], ...variableCoefficients, ...variableDivisors];
+    : [operationValueMatch?.[2], ...variableCoefficients, ...variableDivisors, ...(questionNumber === 31 ? ['3', '-3'] : [])];
   const operationValues = [...new Set(operationValueChoices.filter((value) => value && (Number.isNaN(Number(value.replace(',', '.'))) || Number(value.replace(',', '.')) !== 0)))];
   const operationAmount = operationValues.includes(balanceOperationNumber) ? balanceOperationNumber : operationValueMatch?.[2] || operationValues[0] || '1';
   const operationOptions = next?.operation === 'expand' || next?.operation === 'simplify' ? [next.operation] : ['+', '-', '*', '/'];
