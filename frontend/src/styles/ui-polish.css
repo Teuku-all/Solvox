@@ -646,6 +646,19 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
   background: rgba(104, 224, 176, .10);
   color: #9ef0c9;
 }
+/* Anchor both mobile fighters to the question panel when the arena row grows. */
+@media (max-width: 760px) {
+  .battle-ui.is-auto-resolve > .battle-reference-arena .combat-stage,
+  .multiplayer-battle-ui .multiplayer-arena .multiplayer-combat-stage {
+    inset: 0 !important;
+    height: auto !important;
+  }
+  .battle-ui.is-auto-resolve .fighter-boss .asset-boss-sprite,
+  .multiplayer-battle-ui .multiplayer-arena .asset-boss-sprite {
+    height: auto !important;
+    aspect-ratio: 5 / 6;
+  }
+}
 .battle-question-panel .hint-feedback {
   margin: 4px 2px 0;
   color: #f0c58e;
@@ -741,4 +754,73 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
 .multiplayer-battle-ui .battle-question-panel .question-tools,
 .multiplayer-battle-ui .battle-mistake-banner {
   display: none !important;
+}
+
+/* Short landscape phones need separate arena and question rows too. */
+@media (min-width: 761px) and (max-width: 900px) and (orientation: landscape) {
+  .battle-reference,
+  .multiplayer-battle-page {
+    height: auto !important;
+    min-height: 100dvh !important;
+    max-height: none !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+  .battle-world,
+  .multiplayer-battle-page .battle-world {
+    height: auto !important;
+    min-height: 100dvh !important;
+    overflow: visible !important;
+  }
+  .battle-ui.is-auto-resolve,
+  .multiplayer-battle-page .multiplayer-battle-ui {
+    height: auto !important;
+    min-height: 100dvh !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto 180px auto !important;
+    align-content: start !important;
+    overflow: visible !important;
+  }
+  .battle-ui.is-auto-resolve > .battle-reference-arena,
+  .multiplayer-battle-ui > .multiplayer-arena {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    height: 180px !important;
+    min-height: 180px !important;
+    max-height: none !important;
+  }
+  .battle-ui.is-auto-resolve > .battle-question-panel,
+  .multiplayer-battle-ui > .battle-question-panel {
+    grid-column: 1 !important;
+    grid-row: 3 !important;
+    height: auto !important;
+    min-height: 210px !important;
+  }
+  .battle-ui.is-auto-resolve .combat-stage,
+  .multiplayer-battle-ui .multiplayer-combat-stage {
+    inset: 0 !important;
+    height: auto !important;
+  }
+  .battle-ui.is-auto-resolve .fighter-slot,
+  .multiplayer-battle-ui .fighter-slot {
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+  .battle-ui.is-auto-resolve .fighter-player .sprite-wrap,
+  .multiplayer-battle-ui .fighter-player .sprite-wrap,
+  .multiplayer-battle-ui .fighter-boss .sprite-wrap {
+    width: clamp(90px, 16vw, 130px) !important;
+    min-height: 0 !important;
+  }
+  .battle-ui.is-auto-resolve .fighter-boss .asset-boss-sprite,
+  .multiplayer-battle-ui .fighter-player .asset-boss-sprite,
+  .multiplayer-battle-ui .fighter-boss .asset-boss-sprite {
+    width: clamp(100px, 18vw, 150px) !important;
+    height: auto !important;
+    aspect-ratio: 5 / 6;
+  }
+  .multiplayer-battle-ui .multiplayer-arena .asset-boss-sprite canvas {
+    width: 100% !important;
+    height: auto !important;
+  }
 }
