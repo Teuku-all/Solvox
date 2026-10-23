@@ -589,6 +589,53 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
   width: 100% !important;
   min-width: 0;
 }
+.multiplayer-battle-ui .battle-question-panel,
+.multiplayer-battle-ui .battle-question-panel.is-no-hint {
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+}
+.multiplayer-battle-ui .battle-question-panel .battle-question-main.is-story-main {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+  width: 100% !important;
+  min-width: 0;
+  border-right: 0 !important;
+}
+.multiplayer-battle-ui .battle-keypad-side.is-visible {
+  position: absolute !important;
+  z-index: 42;
+  top: 10px;
+  right: 10px;
+  bottom: 10px;
+  width: min(390px, 38%);
+  height: auto !important;
+  border: 1px solid rgba(110, 213, 201, .24);
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .52);
+}
+.multiplayer-battle-ui .battle-question-panel .hint-inline {
+  display: grid;
+  gap: 5px;
+  margin: 8px 0 0 9px;
+  padding-right: 8px;
+}
+.multiplayer-battle-ui .battle-question-panel .hint-inline p {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  margin: 0;
+  color: #c3d5d0;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.multiplayer-battle-ui .battle-question-panel .hint-inline b {
+  color: #e4d989;
+  white-space: nowrap;
+}
+.multiplayer-battle-ui .battle-question-panel .hint-inline-toggle {
+  border-color: rgba(214, 198, 110, .28);
+  color: #e8d99a;
+}
 .multiplayer-battle-ui .battle-mistake-banner.is-correct {
   border-color: rgba(104, 224, 176, .34);
   border-left-color: rgba(104, 224, 176, .78);
@@ -623,5 +670,17 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
     min-height: 0 !important;
     max-height: min(42dvh, 380px);
     overflow-y: auto !important;
+  }
+  .multiplayer-battle-ui .battle-question-panel,
+  .multiplayer-battle-ui .battle-question-panel.is-no-hint {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+  }
+  .multiplayer-battle-ui .battle-question-panel .battle-keypad-side.is-visible {
+    top: auto;
+    right: 8px;
+    bottom: 8px;
+    width: min(360px, calc(100% - 16px));
+    height: 260px !important;
   }
 }

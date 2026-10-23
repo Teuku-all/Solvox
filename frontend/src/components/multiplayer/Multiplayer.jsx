@@ -531,7 +531,7 @@ useEffect(()=>{
         useHint={useHint}
         hintMessage={hintMessage}
         hintLoading={hintLoading}
-        showHintRail
+        showHintControl
         showKeypad
         showAttemptCounter
         keypadVisible={keypadVisible}

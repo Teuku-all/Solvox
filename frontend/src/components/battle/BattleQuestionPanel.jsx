@@ -118,6 +118,7 @@ export default function BattleQuestionPanel({
   keypadVisible = false,
   onToggleKeypad,
   showHintRail = false,
+  showHintControl = false,
   showKeypad = false,
   showAttemptCounter = false,
   autoResolve = false,
@@ -163,6 +164,9 @@ export default function BattleQuestionPanel({
             <span>{t('concept')}</span>
             <b>{q?.concept || '-'}</b>
           </div>
+          {!autoResolve && !showHintRail && hintsUsed > 0 && <div className="hint-inline" aria-live="polite">
+            {(q?.hints || []).slice(0, hintsUsed).map((hint, index) => <p key={`${index}-${hint}`}><b>{t('hint')} {index + 1}</b><span>{hint}</span></p>)}
+          </div>}
           {chapterGuide && <p className="question-play-tip"><PixelIcon name="spark" size={14} /><span>{autoResolve ? chapterGuide.brief : lang === 'en' ? 'Enter your result, then choose Answer & Attack.' : 'Masukkan hasil perhitunganmu, lalu tekan Jawab & Serang.'}</span></p>}
         </div>
 
@@ -203,9 +207,12 @@ export default function BattleQuestionPanel({
           </button>
         </div>}
 
-        {!autoResolve && (showKeypad || showAttemptCounter) && <div className="question-tools">
+        {!autoResolve && (showKeypad || showHintControl || showAttemptCounter) && <div className="question-tools">
           {showKeypad && <button className="keypad-toggle" type="button" onClick={onToggleKeypad} disabled={busy || !simulationReady} aria-pressed={keypadVisible}>
             <PixelIcon name="keyboard" size={15} /><span>{keypadVisible ? t('hideKeyboard') : t('showKeyboard')}</span>
+          </button>}
+          {showHintControl && <button className="keypad-toggle hint-inline-toggle" type="button" onClick={useHint} disabled={busy || hintLoading || hintsLeft <= 0 || !q?.hints?.length || currentHp <= hintCost}>
+            <PixelIcon name="hint" size={15} /><span>{t('revealHint')} · −{hintCost} HP</span>
           </button>}
           {showAttemptCounter && <span className="attempts">{t('attempt')}: {attempts}</span>}
         </div>}
@@ -227,13 +234,12 @@ export default function BattleQuestionPanel({
         </button>
       </aside>}
 
-      {!autoResolve && showKeypad && <aside className={`battle-keypad-side ${keypadVisible ? 'is-visible' : 'is-hidden'}`} aria-label={t('keyboardLabel')}>
+      {!autoResolve && showKeypad && keypadVisible && <aside className="battle-keypad-side is-visible" aria-label={t('keyboardLabel')}>
         <div className="battle-keypad-side-head">
           <span><PixelIcon name="keyboard" size={15} /><b>{t('keyboardLabel')}</b></span>
           <small className="keypad-status">{t('power')}</small>
         </div>
-        {keypadVisible ? <Keypad value={answer} onChange={setAnswer} onEnter={submit} disabled={busy || !simulationReady} t={t} visible={keypadVisible} />
-          : <div className="battle-keypad-hidden"><PixelIcon name="keyboard" size={28} /><span>{t('showKeyboard')}</span></div>}
+        <Keypad value={answer} onChange={setAnswer} onEnter={submit} disabled={busy || !simulationReady} t={t} visible={keypadVisible} />
       </aside>}
     </section>
   );
