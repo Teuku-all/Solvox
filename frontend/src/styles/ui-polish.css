@@ -674,13 +674,62 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
   .multiplayer-battle-ui .battle-question-panel,
   .multiplayer-battle-ui .battle-question-panel.is-no-hint {
     grid-template-columns: minmax(0, 1fr) !important;
-    grid-template-rows: minmax(0, 1fr) !important;
+    grid-template-rows: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .multiplayer-battle-ui .battle-question-panel .battle-question-main.is-story-main {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    grid-template-rows: auto minmax(120px, auto) auto auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+  .multiplayer-battle-ui .battle-question-panel .question-content {
+    min-height: 120px !important;
+    max-height: min(42dvh, 380px);
+    overflow-y: auto !important;
+    overflow-wrap: anywhere !important;
+  }
+  .multiplayer-battle-ui .battle-question-panel .question-tools {
+    flex-wrap: wrap;
+    row-gap: 6px !important;
+  }
+  .multiplayer-battle-ui .battle-question-panel .keypad-toggle {
+    min-height: 36px !important;
+    flex: 0 1 auto;
   }
   .multiplayer-battle-ui .battle-question-panel .battle-keypad-side.is-visible {
-    top: auto;
-    right: 8px;
-    bottom: 8px;
-    width: min(360px, calc(100% - 16px));
-    height: 260px !important;
+    position: relative !important;
+    inset: auto !important;
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    height: clamp(250px, 40dvh, 340px) !important;
+    min-height: 250px !important;
+    margin-top: 8px;
+    padding: 9px !important;
+  }
+  .multiplayer-battle-ui .battle-question-panel .battle-keypad-side .keypad-grid {
+    gap: 5px !important;
+  }
+  .multiplayer-battle-ui .battle-question-panel .battle-keypad-side .keypad-key {
+    min-height: 40px !important;
+    font-size: clamp(11px, 3.4vw, 14px) !important;
+  }
+}
+@media (max-width: 380px) {
+  .multiplayer-battle-ui .battle-question-panel .question-header {
+    gap: 6px !important;
+    padding-inline: 8px !important;
+  }
+  .multiplayer-battle-ui .battle-question-panel .question-chip.is-title {
+    max-width: 38vw !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .multiplayer-battle-ui .battle-question-panel .question-tools .keypad-toggle span {
+    font-size: 8px;
   }
 }
