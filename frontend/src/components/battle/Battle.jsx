@@ -561,7 +561,7 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
               paused={isBalanceQuestion && !hideBalancePopup}
               onHit={() => showImpact('boss', damagePerQuestion, 'player')}
             />
-            {!hideBalancePopup && <MathSimulation key={q.id} questionId={q.id} lang={lang} hintsUsed={currentHints} busy={busy} onProgress={setSimulation} onBalanceSolved={(result) => { setBalanceSolvedQuestionId(result.questionId); setSimulation(result); }} />}
+            {!hideBalancePopup && <MathSimulation key={q.id} questionId={q.id} lang={lang} story={q.context} hintsUsed={currentHints} busy={busy} onProgress={setSimulation} onBalanceSolved={(result) => { setBalanceSolvedQuestionId(result.questionId); setSimulation(result); }} />}
           </div>
 
           <BattleQuestionPanel

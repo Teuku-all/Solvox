@@ -47,6 +47,7 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
   const isEnglish = lang === 'en';
   const text = isEnglish ? {
     title: 'Make equal groups', left: 'LEFT SIDE', right: 'RIGHT SIDE', instruction: 'Drag a divider into each side. Make the same number of groups on both sides.',
+    phaseDivide: 'Divide', phaseSort: 'Place tiles', phaseMatch: 'Pair groups',
     divider: 'Divider tool', dividerHelp: 'Drag the divider to a side, or select it and tap “Place divider”.',
     groups: 'Groups formed', place: 'Place divider', loose: 'Tiles to sort', drop: 'Drop tiles into groups', remove: 'Return tile',
     noGroup: 'Create the dividers on both sides before sorting tiles.', count: 'Group', each: 'tiles',
@@ -57,6 +58,7 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
     compressed: 'Large total shown as one compressed block per group.', reset: 'Reset',
   } : {
     title: 'Buat kelompok sama besar', left: 'RUAS KIRI', right: 'RUAS KANAN', instruction: 'Seret alat pembagi ke setiap ruas. Buat jumlah kelompok yang sama di kedua ruas.',
+    phaseDivide: 'Bagi ruas', phaseSort: 'Susun ubin', phaseMatch: 'Cocokkan',
     divider: 'Alat pembagi', dividerHelp: 'Seret pembatas ke ruas, atau pilih alat ini lalu tekan “Pasang pembatas”.',
     groups: 'Kelompok terbentuk', place: 'Pasang pembatas', loose: 'Ubin yang belum dibagi', drop: 'Pindahkan ubin ke kelompok', remove: 'Kembalikan ubin',
     noGroup: 'Buat garis pembatas pada kedua ruas sebelum menyusun ubin.', count: 'Kelompok', each: 'ubin',
@@ -212,6 +214,9 @@ export default function Chapter2Partition({ config, questionId, lang = 'id', bus
     <header className="c2p-header"><div><small>CHAPTER 2 · {isEnglish ? `QUESTION ${questionNumber}/10` : `SOAL ${questionNumber}/10`}</small><h2>{text.title}</h2></div><button type="button" onClick={undo} disabled={busy || !history.length}>{text.undo}</button></header>
     {progress.complete ? <div className="c2p-solved"><span>✓</span><strong>{text.finished}</strong><small>{text.final}: {localize(config.steps[0]?.after || config.equation, lang)}</small></div> : <>
       <p className="c2p-instruction">{partitionComplete ? allSorted ? text.matching : text.fill : text.instruction}</p>
+      <ol className="c2p-phase-track" aria-label={isEnglish ? 'Grouping steps' : 'Tahap membuat kelompok'}>
+        {[[text.phaseDivide, partitionComplete], [text.phaseSort, allSorted], [text.phaseMatch, progress.links.length === groupCount]].map(([label, complete], index) => <li key={label} className={`${complete ? 'is-complete' : ''} ${!complete && (index === 0 || index === 1 && partitionComplete || index === 2 && allSorted) ? 'is-active' : ''}`}><b>{complete ? '✓' : index + 1}</b><span>{label}</span></li>)}
+      </ol>
       <div className="c2p-scale">
         {renderSide('left')}
         <div className="c2p-scale-center" aria-hidden="true">⚖</div>

@@ -73,7 +73,7 @@ const GUIDE = {
     multiCards: [
       { icon: 'party', title: 'Buat atau gabung room', body: 'Pilih mode dan chapter saat membuat room. Bagikan kode room kepada teman; pemain yang bergabung memasukkan kode tersebut.' },
       { icon: 'check', title: 'Pilih karakter dan Ready', body: 'Setiap pemain memilih karakter sendiri. Pertandingan dimulai setelah kedua pemain menekan Ready. Melawan bot bisa dimulai tanpa menunggu teman.' },
-      { icon: 'heart', title: 'Turn-Based Battle', body: 'Jawab secara bergiliran. Saat giliranmu, kamu mendapat 45 detik untuk menyelesaikan soal. Petunjuk dapat dipakai dengan biaya HP.' },
+      { icon: 'heart', title: 'Turn-Based Battle', body: 'Jawab secara bergiliran. Waktu tiap giliran bertambah sesuai chapter: 45, 60, 75, 90, lalu 105 detik. Petunjuk dapat dipakai dengan biaya HP.' },
       { icon: 'chart', title: 'Score Duel', body: 'Kedua pemain menjawab soal yang sama dalam waktu yang sama. Pemenang ditentukan oleh skor jawaban, bukan siapa yang paling cepat mengetuk tombol.' },
     ],
     multiTip: 'Jika koneksi sempat terputus, kembali ke room yang sama untuk melanjutkan pertandingan selama sesi masih tersedia.',
@@ -147,7 +147,7 @@ const GUIDE = {
     multiCards: [
       { icon: 'party', title: 'Create or join a room', body: 'Choose a mode and chapter when creating a room. Share its code with a friend; the joining player enters that code.' },
       { icon: 'check', title: 'Choose a fighter and Ready', body: 'Each player chooses a fighter. The match begins once both players press Ready. A bot match does not require waiting for a friend.' },
-      { icon: 'heart', title: 'Turn-Based Battle', body: 'Players answer in turns. You get 45 seconds to solve the question on your turn. Hints are available at an HP cost.' },
+      { icon: 'heart', title: 'Turn-Based Battle', body: 'Players answer in turns. The time per turn increases by chapter: 45, 60, 75, 90, then 105 seconds. Hints are available at an HP cost.' },
       { icon: 'chart', title: 'Score Duel', body: 'Both players answer the same questions with the same time limit. The winner is decided by answer score, not who taps first.' },
     ],
     multiTip: 'If your connection drops, return to the same room to resume while the session is still available.',

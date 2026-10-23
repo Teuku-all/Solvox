@@ -16,6 +16,8 @@ const PORT=process.env.PORT||3000;
 const rooms=new Map();
 const ROOM_GRACE_MS=30000;
 const TURN_MS=45000;
+const TURN_MS_BY_CHAPTER=[45000,60000,75000,90000,105000];
+function turnDurationForChapter(levelId){return TURN_MS_BY_CHAPTER[Number(levelId)-1]||TURN_MS;}
 const TOTAL_QUESTIONS=10;
 const DAMAGE_PER_CORRECT=20;
 
@@ -60,7 +62,7 @@ function publicRoom(room){
     round:room.round,
     startedAt:room.startedAt||null,
     turnStartedAt:room.turnStartedAt,
-    turnDuration:TURN_MS,
+    turnDuration:room.mode==='turn'?turnDurationForChapter(room.levelId):TURN_MS,
     currentTurnPlayerId:playerIdByToken.get(room.turnToken)||null,
     currentTurnName:currentTurn?.name||null,
     winnerName:room.winner==='draw'?null:room.players.find((player)=>player.token===room.winner)?.name||room.winnerName||null,
@@ -130,7 +132,7 @@ function scheduleTurn(room){
     room.botTimer=setTimeout(()=>botSubmitTurn(room), 1800 + Math.random()*1500);
     return;
   }
-  room.timer=setTimeout(()=>advanceTurn(room,true),TURN_MS+250);
+  room.timer=setTimeout(()=>advanceTurn(room,true),turnDurationForChapter(room.levelId)+250);
 }
 function scheduleScoreRound(room){
   clearTimer(room);
@@ -322,7 +324,7 @@ app.get('/api/dashboard',(req,res)=>{
   }catch(e){res.status(500).json({ok:false,message:'Dashboard gagal dimuat'});}
 });
 
-app.get('/health',(req,res)=>res.json({ok:true,rooms:rooms.size,transport:'socket.io',storage:'writable',turnDuration:TURN_MS,questionsPerChapter:TOTAL_QUESTIONS,questionEngine:'local'}));
+app.get('/health',(req,res)=>res.json({ok:true,rooms:rooms.size,transport:'socket.io',storage:'writable',turnDuration:TURN_MS,turnDurationByChapter:TURN_MS_BY_CHAPTER,questionsPerChapter:TOTAL_QUESTIONS,questionEngine:'local'}));
 app.get('/api/characters',(req,res)=>res.json(Object.values(CHARACTERS)));
 app.get('/api/levels',(req,res)=>res.json(Object.entries(questions).filter(([id])=>/^\d+$/.test(id)).map(([id,q])=>({id:Number(id),title:q.title,titleEn:q.titleEn,icon:q.icon,difficulty:q.difficulty,totalQuestions:TOTAL_QUESTIONS}))));
 app.get('/api/lan',(req,res)=>res.json({port:PORT,hostnames:lanAddresses().map(ip=>`http://${ip}:${PORT}`)}));
@@ -330,7 +332,7 @@ app.get('/api/lan',(req,res)=>res.json({port:PORT,hostnames:lanAddresses().map(i
 io.on('connection',socket=>{
   socket.data.userId=null;
   socket.data.username='';
-  socket.emit('server:info',{turnMs:TURN_MS,roomGraceMs:ROOM_GRACE_MS,questionsPerChapter:TOTAL_QUESTIONS,protocol:'turn-based'});
+  socket.emit('server:info',{turnMs:TURN_MS,turnMsByChapter:TURN_MS_BY_CHAPTER,roomGraceMs:ROOM_GRACE_MS,questionsPerChapter:TOTAL_QUESTIONS,protocol:'turn-based'});
   socket.on('room:create',({name,character='traveler',levelId=1,token,lang='id',mode='turn',bot=false}={})=>{
     const playerToken=cleanToken(token)||makeToken();const code=makeCode();const level=cleanLevel(levelId);
     const room={code,hostToken:playerToken,isBot:!!bot,mode:mode==='score'?'score':'turn',status:'waiting',statusKey:'WAITING_PLAYER',levelId:level,lang:lang==='en'?'en':'id',questions:[],questionIndex:0,totalQuestions:TOTAL_QUESTIONS,round:0,turnAnswers:{},turnToken:null,turnStartedAt:null,winner:null,started:false,generating:false,questionSource:'fallback',timer:null,startedAt:null,recorded:false,players:[{id:socket.id,userId:socket.data.userId,token:playerToken,name:cleanName(name,'Player 1'),character:cleanCharacter(character),ready:false,hp:100,connected:true,score:0,correct:0,answered:0,hintsUsed:0,hintLevels:[],lastMistake:null,disconnectTimer:null}]};

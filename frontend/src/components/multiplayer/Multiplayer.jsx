@@ -13,6 +13,8 @@ import {LEVELS} from '../../data/levels';
 import { playCharacterAttack, playSound } from '../../services/sound';
 import {apiJson,SOCKET_URL} from '../../services/api';
 
+const turnSecondsForLevel=(levelId)=>45+15*(Math.min(5,Math.max(1,Number(levelId)||1))-1);
+
 export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattleStateChange,dashboardOnly=false}){
   const [socket]=useState(()=>io(SOCKET_URL || undefined,{
     autoConnect:false,
@@ -122,12 +124,12 @@ export default function Multiplayer({lang,onBack,onPlay,t,playerName='',onBattle
     setAnswer('');
   },[room?.questionIndex]);
   useEffect(()=>{
-    if(!room||room.status!=='battle')return setSeconds(45);
+    if(!room||room.status!=='battle')return setSeconds(room?.mode==='turn'?turnSecondsForLevel(room.levelId):45);
     const started=room.turnStartedAt||Date.now();
-    const duration=(room.turnDuration||45000);
+    const duration=room.turnDuration||(room.mode==='turn'?turnSecondsForLevel(room.levelId)*1000:45000);
     const tick=()=>setSeconds(Math.max(0,Math.ceil((duration-(Date.now()-started))/1000)));
     tick();const id=setInterval(tick,250);return()=>clearInterval(id);
-  },[room?.status,room?.turnStartedAt,room?.questionIndex,room?.turnToken]);
+  },[room?.status,room?.turnStartedAt,room?.questionIndex,room?.turnToken,room?.turnDuration,room?.levelId,room?.mode]);
 
   const me=useMemo(()=>room?.players?.find(p=>p.id===socket.id),[room,socket]);
   const current=room?.currentTurnPlayerId===me?.id;
@@ -285,7 +287,7 @@ useEffect(()=>{
           <input value={name} onChange={e=>setName(e.target.value)} placeholder={t('name')}/>
           <select value={level} onChange={e=>setLevel(Number(e.target.value))}>{[1,2,3,4,5].map(x=><option key={x} value={x}>Chapter {x}{x===5?' • '+t('finalBoss'):''}</option>)}</select>
           <div className="mode-choice"><button className={battleMode==='turn'?'active':''} onClick={()=>setBattleMode('turn')}>{t('turnBased')}</button><button className={battleMode==='score'?'active':''} onClick={()=>setBattleMode('score')}>{t('scoreDuel')}</button></div>
-          <p className="mode-desc">{battleMode==='turn'?t('turnBasedDesc'):t('scoreDuelDesc')}</p><div className="tiebreak-note"><PixelIcon name="hint" size={14}/><span>{t('tieBreakHintRule')}</span></div>
+          <p className="mode-desc">{battleMode==='turn'?(lang==='en'?`Players answer in turns. Chapter ${level} gives each player ${turnSecondsForLevel(level)} seconds per turn.`:`Pemain menjawab bergiliran. Chapter ${level} memberi setiap pemain ${turnSecondsForLevel(level)} detik per giliran.`):t('scoreDuelDesc')}</p><div className="tiebreak-note"><PixelIcon name="hint" size={14}/><span>{t('tieBreakHintRule')}</span></div>
           <div className="multi-actions"><button className="primary-btn" onClick={()=>create(false)}>{t('create')}</button><button className="primary-btn multi-bot-btn" onClick={()=>create(true)}>{t('playVsBot')}</button></div>
         </div>
 
