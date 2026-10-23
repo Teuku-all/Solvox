@@ -500,3 +500,48 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
     line-height: 1.55 !important;
   }
 }
+
+/* Fill the viewport after the simulation closes; the arena absorbs spare space. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .battle-ui.is-auto-resolve {
+    grid-template-rows: auto minmax(clamp(190px, 26dvh, 285px), 1fr) auto !important;
+    align-content: stretch !important;
+  }
+}
+
+/* A readable, touch-friendly question dock throughout the mobile campaign. */
+@media (max-width: 480px) {
+  .battle-question-panel .question-kicker,
+  .battle-question-panel.is-auto-resolve .question-kicker { font-size: .625rem !important; }
+  .battle-question-panel .question-context,
+  .battle-question-panel .question-concept,
+  .battle-question-panel.is-auto-resolve .question-context,
+  .battle-question-panel.is-auto-resolve .question-concept { font-size: .6875rem !important; line-height: 1.4 !important; }
+  .battle-question-panel .question-chip,
+  .battle-question-panel.is-auto-resolve .question-chip { font-size: .625rem !important; font-weight: 700 !important; }
+  .battle-question-panel .question-text { font-family: var(--font-heading-solvox) !important; font-weight: 700 !important; }
+  .battle-question-panel.theme-level-5 .question-text { font-family: var(--font-body-solvox) !important; font-size: 1rem !important; font-weight: 650 !important; line-height: 1.5 !important; }
+  .battle-question-panel:not(.is-auto-resolve) .battle-question-main {
+    grid-template-rows: 48px minmax(0, 1fr) auto auto !important;
+  }
+  .battle-question-panel:not(.is-auto-resolve) .question-answer {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 7px !important;
+    padding: 9px 11px !important;
+  }
+  .battle-question-panel:not(.is-auto-resolve) .answer-shell { width: 100%; min-height: 48px; }
+  .battle-question-panel:not(.is-auto-resolve) .answer-shell kbd { display: none; }
+  .battle-question-panel:not(.is-auto-resolve) .attack-btn {
+    width: 100% !important;
+    min-height: 44px !important;
+    flex: none !important;
+    font-family: var(--font-body-solvox) !important;
+    font-size: .8125rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0 !important;
+  }
+  .battle-question-panel .question-tools { min-height: 40px !important; }
+  .battle-question-panel .keypad-toggle { min-height: 32px !important; font-size: .6875rem !important; }
+  .battle-question-panel .attempts { font-size: .6875rem !important; }
+}
