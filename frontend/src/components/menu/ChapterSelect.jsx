@@ -75,7 +75,11 @@ export default function ChapterSelect({ progress, onSelectChapter, onBack, lang,
               className={`chapter-card ${open ? 'is-open' : 'is-locked'} ${clear ? 'is-clear' : ''}`}
               style={{ '--chapter-accent': level.accent }}
               onClick={() => onSelectChapter?.(level.id)}
+              aria-label={`${t('chapter')} ${level.id}: ${title}. ${clear ? '100%' : open ? (pct ? `${pct}%` : t('readyToPlay')) : t('locked')}`}
             >
+              <span className="chapter-card-difficulty">
+                {lang === 'en' ? level.difficultyEn : level.difficulty}
+              </span>
               <span className="chapter-card-art" aria-hidden="true">
                 <img src={level.art} alt="" loading="eager" />
               </span>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import SolvoxBrandLogo from '../shared/SolvoxBrandLogo';
 
 const NAV_ITEMS = [
@@ -10,9 +10,7 @@ const NAV_ITEMS = [
 ];
 
 export default function HomeMenu({ onMain, onTutorial, onSettings, onFeedback, onDashboard, onProfile, profileName, t }) {
-  const [activeNav, setActiveNav] = useState('play');
   const activate = (id) => {
-    setActiveNav(id);
     if (id === 'play') return onMain?.();
     if (id === 'tutorial') return onTutorial?.();
     if (id === 'dashboard') return onDashboard?.();
@@ -50,14 +48,14 @@ export default function HomeMenu({ onMain, onTutorial, onSettings, onFeedback, o
 
         <nav className="home-menu-menu">
           {NAV_ITEMS.map((item) => {
-            const active = activeNav === item.id;
+            const primary = item.id === 'play';
             return (
               <button
                 key={item.id}
                 type="button"
-                className={`home-menu-item${active ? ' is-active' : ''}`}
+                className={`home-menu-item${primary ? ' is-active' : ''}`}
                 onClick={() => activate(item.id)}
-                aria-current={active ? 'page' : undefined}
+                aria-haspopup={['tutorial', 'settings', 'feedback'].includes(item.id) ? 'dialog' : undefined}
               >
                 <span className="home-menu-marker" aria-hidden="true" />
                 <span>{t(item.labelKey)}</span>

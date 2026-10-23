@@ -223,3 +223,47 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
   .app-shell[data-screen] > .multi-page,
   .app-shell[data-screen] > .about-page { animation: none !important; }
 }
+
+/* Chapter selection becomes a readable illustrated list on narrow screens. */
+@media (max-width: 680px) {
+  .chapter-select-grid {
+    gap: 10px !important;
+    padding-top: 8px !important;
+  }
+  .chapter-card {
+    height: 166px !important;
+    min-height: 166px !important;
+    padding: 14px 14px 14px 138px !important;
+    justify-content: flex-end;
+    background: linear-gradient(90deg, #081519, #081318 55%, #040b0f);
+  }
+  .chapter-card-art {
+    left: 8px !important;
+    right: auto !important;
+    top: 13px !important;
+    width: 122px !important;
+    height: 136px !important;
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,.35)) !important;
+  }
+  .chapter-card-shade {
+    background: linear-gradient(90deg, transparent 15%, rgba(3,10,13,.16) 43%, rgba(3,10,13,.45));
+  }
+  .chapter-card-difficulty {
+    top: 10px;
+    right: 11px;
+    font-size: 9px;
+    padding: 4px 7px;
+  }
+  .chapter-card-copy { min-height: 0 !important; }
+  .chapter-card-copy small { font-size: 10px !important; }
+  .chapter-card-copy strong {
+    font-size: clamp(18px, 5vw, 22px) !important;
+    line-height: 1.08 !important;
+  }
+  .chapter-card-copy em { font-size: 11px !important; }
+  .chapter-card-progress {
+    margin-top: 9px !important;
+    font-size: 10px !important;
+  }
+  .chapter-card-meter { margin-top: 7px !important; }
+}
