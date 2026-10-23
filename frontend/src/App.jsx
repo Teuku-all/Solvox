@@ -198,7 +198,7 @@ export default function App(){
     {feedback&&<Feedback lang={lang} t={t} onClose={()=>setFeedback(false)}/>}
     {settings&&<Settings lang={lang} t={t} onClose={()=>setSettings(false)} onReset={reset} onChangeLang={changeLang} onAboutUs={()=>{setSettings(false);setScreen('about')}}/>}
     {screen==='about'&&<AboutDevelopers lang={lang} t={t} onBack={()=>setScreen('home')}/>}
-    {profileOpen&&<ProfilePanel progress={state} profile={state.profile} playerId={playerId} onClose={()=>setProfileOpen(false)} onSave={saveProfile} t={t} lang={lang}/>}
+    {profileOpen&&<ProfilePanel progress={state} profile={state.profile} playerId={playerId} onClose={()=>setProfileOpen(false)} onSave={saveProfile} onPlay={()=>{setProfileOpen(false);setScreen('chapters')}} onGuide={()=>{setProfileOpen(false);setTutorialOpen(true)}} t={t} lang={lang}/>}
     {tutorialOpen&&<Tutorial t={t} lang={lang} onClose={()=>setTutorialOpen(false)} onPlay={()=>{setTutorialOpen(false);setScreen('modes')}}/>}
     </Suspense>
   </div>

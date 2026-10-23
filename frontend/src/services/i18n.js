@@ -198,6 +198,9 @@ Object.assign(T.en,{
 });
 
 Object.assign(T.id,{
+  homeDashboard:'Leaderboard',
+  dashboard:'Leaderboard',
+  dashboardHint:'Leaderboard menampilkan peringkat pemain dari match multiplayer yang tersimpan di server.',
   characterRosterEyebrow:'ROSTER PETARUNG',
   characterRoster:'Daftar Karakter',
   characterTypePlayer:'Petualang',
@@ -212,6 +215,9 @@ Object.assign(T.id,{
   multiplayerCharacterHint:'Pilih karakter pemain atau boss untuk digunakan di arena multiplayer.',
 });
 Object.assign(T.en,{
+  homeDashboard:'Leaderboard',
+  dashboard:'Leaderboard',
+  dashboardHint:'The leaderboard ranks players using completed multiplayer matches saved by the server.',
   characterRosterEyebrow:'FIGHTER ROSTER',
   characterRoster:'Character Roster',
   characterTypePlayer:'Adventurer',

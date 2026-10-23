@@ -6,8 +6,8 @@ export const CHAPTER_GUIDE = {
       steps: ['Baca persamaan pada soal.', 'Tambah atau pindahkan ubin dengan operasi yang sama pada kedua ruas.', 'Saat variabel tinggal sendiri, serangan berjalan otomatis.'],
     },
     2: {
-      brief: 'Bentuk kelompok yang sama pada kedua ruas, termasuk untuk pecahan dan desimal.',
-      steps: ['Lihat berapa kelompok yang dibutuhkan.', 'Seret bagian bilangan dan variabel ke kelompok yang sesuai.', 'Selesaikan pembagian, lalu isi nilai variabel dan tekan Jawab & Serang.'],
+      brief: 'Bentuk kelompok yang sama pada kedua ruas, termasuk untuk pecahan dan desimal. Serangan berjalan otomatis setelah simulasi selesai.',
+      steps: ['Lihat berapa kelompok yang dibutuhkan.', 'Seret bagian bilangan dan variabel ke kelompok yang sesuai.', 'Selesaikan pembagian di simulasi; serangan berjalan otomatis.'],
     },
     3: {
       brief: 'Selesaikan persamaan dua langkah; terapkan setiap operasi pada kedua ruas.',
@@ -28,8 +28,8 @@ export const CHAPTER_GUIDE = {
       steps: ['Read the equation.', 'Add or move tiles using the same operation on both sides.', 'Once the variable is alone, your fighter attacks automatically.'],
     },
     2: {
-      brief: 'Make equal groups on both sides, including fractions and decimals.',
-      steps: ['Check how many groups are needed.', 'Drag number and variable parts into the matching groups.', 'Finish the division, enter the variable value, and press Answer & Attack.'],
+      brief: 'Make equal groups on both sides, including fractions and decimals. Your fighter attacks automatically when the simulation is complete.',
+      steps: ['Check how many groups are needed.', 'Drag number and variable parts into the matching groups.', 'Finish the division in the simulation; your fighter attacks automatically.'],
     },
     3: {
       brief: 'Solve the two-step equation by applying each operation to both sides.',

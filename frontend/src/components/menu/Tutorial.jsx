@@ -9,6 +9,13 @@ import { getChapterGuide } from '../../data/chapterGuide';
 const GUIDE = {
   id: {
     tabs: { start: 'Mulai', practice: 'Coba latihan', battle: 'Saat bertarung', multi: 'Multiplayer' },
+    tabNotes: { start: 'Kenali alur permainan', practice: 'Belajar lewat simulasi', battle: 'Pahami cara menyerang', multi: 'Tantang teman atau bot' },
+    quickTitle: 'Baru pertama bermain?',
+    quickBody: 'Coba latihan singkat untuk memahami timbangan. Bebas mencoba, tanpa kehilangan HP.',
+    quickAction: 'Coba latihan sekarang',
+    chapterHint: 'Pilih chapter untuk melihat langkah bermainnya.',
+    next: 'Berikutnya',
+    practiceStatus: ['Kurangi 1 di kedua ruas', 'Lanjutkan sampai x sendiri', 'Masukkan nilai x', 'Latihan selesai'],
     tabLabel: 'Bagian panduan',
     heroBadge: 'PANDUAN PEMAIN',
     heroNote: 'Belajar dulu, serang dengan yakin.',
@@ -18,7 +25,7 @@ const GUIDE = {
     startSteps: [
       { icon: 'map', title: 'Pilih chapter yang terbuka', body: 'Mulai dari Chapter 1. Selesaikan satu chapter untuk membuka chapter berikutnya.' },
       { icon: 'profile', title: 'Pilih karaktermu', body: 'Pilih Kazura atau Asuna di Chapter 1, lalu tekan Mulai Stage. Pilihan ini menemanimu sepanjang campaign.' },
-      { icon: 'sword', title: 'Selesaikan soal untuk menyerang', body: 'Buka simulasi dan selesaikan langkahnya. Chapter 1 dan 3 menyerang otomatis; chapter lain meminta nilai variabel sebelum Jawab & Serang.' },
+      { icon: 'sword', title: 'Selesaikan soal untuk menyerang', body: 'Buka simulasi dan selesaikan langkahnya. Chapter 1 sampai 3 menyerang otomatis setelah simulasi selesai; Chapter 4 dan 5 meminta nilai variabel sebelum Jawab & Serang.' },
       { icon: 'chart', title: 'Lihat hasil dan lanjutkan', body: 'Evaluasi menunjukkan jawaban, petunjuk yang dipakai, dan materi untuk diulang. Kalahkan boss untuk membuka chapter berikutnya.' },
     ],
     chapterTitle: 'Perjalanan chapter',
@@ -58,14 +65,14 @@ const GUIDE = {
     practiceDoneBody: 'Kamu menjaga persamaan tetap setara dan menemukan x = 7. Di arena, jawaban benar mengurangi HP boss.',
     practiceReset: 'Ulangi latihan',
     battleTitle: 'Kenali bagian arena',
-    battleIntro: 'Baca soal, buka simulasi, lalu ikuti petunjuk chapter. Pada Chapter 1 dan 3, serangan terjadi otomatis setelah persamaan selesai.',
+    battleIntro: 'Baca soal, buka simulasi, lalu ikuti petunjuk chapter. Pada Chapter 1 sampai 3, serangan terjadi otomatis setelah simulasi selesai.',
     battleCards: [
       { icon: 'book', title: 'Baca misi dan konsep', body: 'Perhatikan cerita, pertanyaan, dan petunjuk singkat pada panel soal. Pada Chapter 5, rakit persamaan dengan kepingan sebelum memakai timbangan.' },
       { icon: 'shield', title: 'Jaga kedua ruas setara', body: 'Terapkan operasi yang sama pada kedua ruas. Tombol Urungkan memulihkan langkah sebelumnya. Jawaban aktif setelah simulasi selesai.' },
       { icon: 'spark', title: 'Seret dan jatuhkan ubin', body: 'Pada mode timbangan, seret ubin dari kotak opsi ke piring. Pasangkan ubin bernilai lawan pada piring yang sama agar keduanya hilang; lakukan operasi setara pada ruas lain.' },
-      { icon: 'keyboard', title: 'Isi jawaban jika diminta', body: 'Di Chapter 2, 4, dan 5, ketik nilai variabel saja, misalnya 4, lalu tekan Jawab & Serang. Chapter 1 dan 3 tidak memakai kolom jawaban.' },
-      { icon: 'hint', title: 'Gunakan petunjuk saat buntu', body: 'Di chapter yang menyediakan petunjuk, tersedia maksimal 3 per soal dengan biaya 5, 10, lalu 15 HP.' },
-      { icon: 'retry', title: 'Salah? Baca umpan balik', body: 'Pilihan langkah atau jawaban yang keliru menampilkan penjelasan. Kesalahan itu tidak langsung mengurangi HP; perbaiki langkah lalu coba lagi.' },
+      { icon: 'keyboard', title: 'Isi jawaban jika diminta', body: 'Di Chapter 4 dan 5, ketik nilai variabel saja, misalnya 4, lalu tekan Jawab & Serang. Chapter 1 sampai 3 menyerang otomatis setelah simulasi selesai.' },
+      { icon: 'hint', title: 'Gunakan petunjuk saat buntu', body: 'Petunjuk tersedia di Chapter 4 dan 5, hingga 3 per soal. Biayanya bertambah: 5, 10, lalu 15 HP.' },
+      { icon: 'retry', title: 'Salah? Baca umpan balik', body: 'Langkah simulasi yang keliru dan jawaban salah memicu serangan boss, jadi kamu kehilangan HP. Baca penjelasan, lalu coba lagi dengan lebih cermat.' },
       { icon: 'trophy', title: 'Baca evaluasi', body: 'Setelah pertarungan, tinjau soal yang keliru dan saran belajar sebelum mencoba chapter berikutnya.' },
     ],
     battleCallout: 'Kolom jawaban terkunci? Ketuk kolom itu untuk membuka kembali simulasi, lalu selesaikan semua langkahnya.',
@@ -83,6 +90,13 @@ const GUIDE = {
   },
   en: {
     tabs: { start: 'Getting started', practice: 'Try a question', battle: 'In battle', multi: 'Multiplayer' },
+    tabNotes: { start: 'Discover your adventure', practice: 'Learn with a simulation', battle: 'Understand your attacks', multi: 'Challenge a friend or bot' },
+    quickTitle: 'Your first time playing?',
+    quickBody: 'Try a short practice to understand the balance. Experiment freely without losing HP.',
+    quickAction: 'Try the practice',
+    chapterHint: 'Choose a chapter to see how to play it.',
+    next: 'Up next',
+    practiceStatus: ['Subtract 1 from both sides', 'Continue until x is alone', 'Enter the value of x', 'Practice complete'],
     tabLabel: 'Guide sections',
     heroBadge: 'PLAYER GUIDE',
     heroNote: 'Learn the steps, then attack with confidence.',
@@ -92,7 +106,7 @@ const GUIDE = {
     startSteps: [
       { icon: 'map', title: 'Choose an unlocked chapter', body: 'Start with Chapter 1. Clear a chapter to unlock the next one.' },
       { icon: 'profile', title: 'Choose your fighter', body: 'Choose Kazura or Asuna in Chapter 1, then press Start Stage. Your choice stays with you throughout the campaign.' },
-      { icon: 'sword', title: 'Solve questions to attack', body: 'Open and finish the simulation. Chapters 1 and 3 attack automatically; other chapters ask for the variable value before Answer & Attack.' },
+      { icon: 'sword', title: 'Solve questions to attack', body: 'Open and finish the simulation. Chapters 1 to 3 attack automatically when the simulation is complete; Chapters 4 and 5 ask for the variable value before Answer & Attack.' },
       { icon: 'chart', title: 'Review and continue', body: 'The evaluation shows your answers, hints used, and topics to revisit. Defeat the boss to unlock the next chapter.' },
     ],
     chapterTitle: 'Chapter journey',
@@ -132,14 +146,14 @@ const GUIDE = {
     practiceDoneBody: 'You kept the equation balanced and found x = 7. In the arena, a correct answer reduces the boss HP.',
     practiceReset: 'Repeat practice',
     battleTitle: 'Know your arena',
-    battleIntro: 'Read the question, open the simulation, and follow the chapter guide. In Chapters 1 and 3, attacks happen automatically after solving the equation.',
+    battleIntro: 'Read the question, open the simulation, and follow the chapter guide. In Chapters 1 to 3, attacks happen automatically after completing the simulation.',
     battleCards: [
       { icon: 'book', title: 'Read the mission and concept', body: 'Check the story, question, and short tip in the question panel. In Chapter 5, assemble the equation with tiles before using the balance.' },
       { icon: 'shield', title: 'Keep both sides equal', body: 'Apply the same operation to both sides. Undo restores the previous step. The answer field unlocks after the simulation is complete.' },
       { icon: 'spark', title: 'Drag and drop tiles', body: 'In balance mode, drag a tile from the tray onto a pan. Opposite values on the same pan cancel each other; apply an equal operation to the other side.' },
-      { icon: 'keyboard', title: 'Enter an answer when asked', body: 'In Chapters 2, 4, and 5, type only the variable value, such as 4, then press Answer & Attack. Chapters 1 and 3 have no answer field.' },
-      { icon: 'hint', title: 'Use hints when stuck', body: 'Chapters with hints offer up to 3 per question at a cost of 5, 10, then 15 HP.' },
-      { icon: 'retry', title: 'Wrong? Read the feedback', body: 'An incorrect step or answer gives an explanation. It does not immediately cost HP; correct your work and try again.' },
+      { icon: 'keyboard', title: 'Enter an answer when asked', body: 'In Chapters 4 and 5, type only the variable value, such as 4, then press Answer & Attack. Chapters 1 to 3 attack automatically after the simulation is complete.' },
+      { icon: 'hint', title: 'Use hints when stuck', body: 'Hints are available in Chapters 4 and 5, up to 3 per question. The cost increases: 5, 10, then 15 HP.' },
+      { icon: 'retry', title: 'Wrong? Read the feedback', body: 'An incorrect simulation step or answer triggers a boss attack and costs HP. Read the explanation, then try again carefully.' },
       { icon: 'trophy', title: 'Read the evaluation', body: 'After battle, review missed questions and learning suggestions before trying the next chapter.' },
     ],
     battleCallout: 'Answer field locked? Tap it to reopen the simulation, then finish every step.',
@@ -172,6 +186,7 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
   const { closing, dismiss } = useAnimatedDismiss(onClose);
   const c = GUIDE[lang === 'en' ? 'en' : 'id'];
   const [section, setSection] = useState('start');
+  const [openChapter, setOpenChapter] = useState(null);
   const [practiceStep, setPracticeStep] = useState(0);
   const [practiceAnswer, setPracticeAnswer] = useState('');
   const [practiceMessage, setPracticeMessage] = useState(null);
@@ -311,21 +326,25 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
         </header>
 
         <nav className="tutorial-tabs" aria-label={c.tabLabel}>
-          {Object.entries(c.tabs).map(([key, label]) => <button key={key} type="button" className={section === key ? 'active' : ''} aria-pressed={section === key} onClick={() => openSection(key)}><PixelIcon name={TAB_ICONS[key]} size={17}/><span>{label}</span></button>)}
+          <span className="tutorial-nav-label">{c.tabLabel}</span>
+          {Object.entries(c.tabs).map(([key, label], index) => <button key={key} type="button" className={section === key ? 'active' : ''} aria-pressed={section === key} aria-controls="tutorial-content" onClick={() => openSection(key)}><span className="tutorial-tab-icon"><PixelIcon name={TAB_ICONS[key]} size={19}/></span><span className="tutorial-tab-copy"><b>{label}</b><small>{c.tabNotes[key]}</small></span><i>{String(index + 1).padStart(2, '0')}</i></button>)}
+          <div className="tutorial-nav-tip"><PixelIcon name="hint" size={22}/><p>{c.heroNote}</p></div>
         </nav>
 
-        <div className="tutorial-body" ref={bodyRef}>
+        <div className="tutorial-body" id="tutorial-content" ref={bodyRef}>
           {section === 'start' && <section className="tutorial-section" aria-label={c.overviewTitle}>
+            <div className="tutorial-quick-start"><span className="tutorial-quick-icon"><PixelIcon name="spark" size={26}/></span><div><h3>{c.quickTitle}</h3><p>{c.quickBody}</p></div><button type="button" onClick={() => openSection('practice')}>{c.quickAction}<PixelIcon name="right" size={17}/></button></div>
             <div className="tutorial-section-heading"><span className="tutorial-section-symbol"><PixelIcon name="map" size={23}/></span><div><h3>{c.overviewTitle}</h3><p>{c.overviewIntro}</p></div></div>
             <div className="tutorial-route" aria-label={c.route.join(' → ')}>{c.route.map((label, index) => <React.Fragment key={label}><span>{label}</span>{index < c.route.length - 1 && <PixelIcon name="right" size={14}/>}</React.Fragment>)}</div>
             <GuideCards items={c.startSteps}/>
-            <div className="tutorial-chapters"><b>{c.chapterTitle}</b><div>{LEVELS.map((level) => <article key={level.id}><small>{String(level.id).padStart(2, '0')} · {lang === 'en' ? level.titleEn : level.title}</small><p>{getChapterGuide(level.id, lang).brief}</p><ol>{getChapterGuide(level.id, lang).steps.map((step) => <li key={step}>{step}</li>)}</ol></article>)}</div></div>
+            <div className="tutorial-chapters"><b>{c.chapterTitle}</b><p className="tutorial-chapter-hint">{c.chapterHint}</p><div>{LEVELS.map((level) => <article key={level.id} className={openChapter === level.id ? 'is-open' : ''}><button className="tutorial-chapter-toggle" type="button" aria-expanded={openChapter === level.id} aria-controls={`guide-chapter-${level.id}`} onClick={() => setOpenChapter(openChapter === level.id ? null : level.id)}><span>{String(level.id).padStart(2, '0')}</span><b>{lang === 'en' ? level.titleEn : level.title}</b><PixelIcon name={openChapter === level.id ? 'close' : 'right'} size={16}/></button>{openChapter === level.id && <div className="tutorial-chapter-detail" id={`guide-chapter-${level.id}`}><p>{getChapterGuide(level.id, lang).brief}</p><ol>{getChapterGuide(level.id, lang).steps.map((step) => <li key={step}>{step}</li>)}</ol></div>}</article>)}</div></div>
+            <button className="tutorial-next-section" type="button" onClick={() => openSection('practice')}><span><small>{c.next}</small><b>{c.tabs.practice}</b></span><PixelIcon name="right" size={22}/></button>
           </section>}
 
           {section === 'practice' && <section className="tutorial-section" aria-label={c.practiceTitle}>
             <div className="tutorial-section-heading"><span className="tutorial-section-symbol"><PixelIcon name="shield" size={23}/></span><div><h3>{c.practiceTitle}</h3><p>{c.practiceIntro}</p></div></div>
             <div className="tutorial-practice">
-              <div className="tutorial-practice-top"><span>{c.practiceStep} {practiceSolved ? 3 : Math.min(2, pairedRemovals + 1)} / 3</span><div aria-label={`${pairedRemovals}/3`}>{[0, 1, 2].map((step) => <i key={step} className={3 - leftUnits > step && 10 - rightUnits > step ? 'done' : 3 - leftUnits === step || 10 - rightUnits === step ? 'current' : ''}/>)}</div></div>
+              <div className="tutorial-practice-top"><span>{c.practiceStatus[practiceStep === 3 ? 3 : practiceSolved ? 2 : pairedRemovals ? 1 : 0]}</span><div aria-label={`${pairedRemovals}/3`}>{[0, 1, 2].map((step) => <i key={step} className={3 - leftUnits > step && 10 - rightUnits > step ? 'done' : 3 - leftUnits === step || 10 - rightUnits === step ? 'current' : ''}/>)}</div></div>
               {practiceStep < 3 ? <>
                 <div className="tutorial-practice-equation" aria-label={`${practiceLeftExpression} = ${rightUnits}`}><span>{practiceLeftExpression}</span><b>=</b><span>{rightUnits}</span></div>
                 <p className="tutorial-practice-prompt">{c.practiceDragHint}</p>
@@ -347,7 +366,7 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
                   <div className="tutorial-balance-meter" role="status" aria-live="polite"><span className={balanceDelta > 0 ? 'left' : balanceDelta < 0 ? 'right' : 'center'}/><small>{balanceDelta > 0 ? c.practiceLeftHeavy : balanceDelta < 0 ? c.practiceRightHeavy : c.practiceBalance}</small></div>
                 </div>
                 <div className="tutorial-tile-tray"><strong>{c.practiceTileTray}</strong><div>{[1, -1].map((value) => <button key={value} type="button" className={`tutorial-unit-tile is-tray ${value < 0 ? 'is-negative' : ''} ${practiceSelectedTile === value ? 'is-selected' : ''}`} onPointerDown={(event) => handlePracticePointerDown(event, value)} onClick={() => setPracticeSelectedTile(value)} aria-label={`${value < 0 ? '−1' : '+1'} ${c.practiceTileTray}`}>{value < 0 ? '−1' : '+1'}</button>)}<button type="button" onClick={() => addPracticeUnit('left', practiceSelectedTile)}>{c.practiceAddLeft} {practiceSelectedTile < 0 ? '−1' : '+1'}</button><button type="button" onClick={() => addPracticeUnit('right', practiceSelectedTile)}>{c.practiceAddRight} {practiceSelectedTile < 0 ? '−1' : '+1'}</button></div></div>
-                <div className="tutorial-practice-actions"><button type="button" onClick={undoPractice} disabled={!practiceHistory.length}><PixelIcon name="retry" size={15}/>{c.practiceUndo}</button>{practiceSolved && <form className="tutorial-practice-answer" onSubmit={submitPractice}><label><PixelIcon name="keyboard" size={17}/><input value={practiceAnswer} onChange={(event) => setPracticeAnswer(event.target.value)} inputMode="numeric" autoComplete="off" aria-label={c.practiceAnswerPlaceholder} placeholder={c.practiceAnswerPlaceholder}/></label><button type="submit" disabled={!practiceAnswer.trim()}><PixelIcon name="sword" size={17}/>{c.practiceAttack}</button></form>}</div>
+                <div className="tutorial-practice-actions"><div className="tutorial-practice-tools"><button type="button" onClick={undoPractice} disabled={!practiceHistory.length}><PixelIcon name="retry" size={15}/>{c.practiceUndo}</button><button type="button" onClick={resetPractice}><PixelIcon name="reset" size={15}/>{c.practiceReset}</button></div>{practiceSolved && <form className="tutorial-practice-answer" onSubmit={submitPractice}><label><PixelIcon name="keyboard" size={17}/><input value={practiceAnswer} onChange={(event) => setPracticeAnswer(event.target.value)} inputMode="numeric" autoComplete="off" aria-label={c.practiceAnswerPlaceholder} placeholder={c.practiceAnswerPlaceholder}/></label><button type="submit" disabled={!practiceAnswer.trim()}><PixelIcon name="sword" size={17}/>{c.practiceAttack}</button></form>}</div>
                 {practiceMessage && <p className={`tutorial-practice-feedback ${practiceMessage.good ? 'good' : 'bad'}`} role="status">{practiceMessage.text}</p>}
               </> : <div className="tutorial-practice-done"><span><PixelIcon name="trophy" size={32}/></span><h4>{c.practiceDoneTitle}</h4><p>{c.practiceDoneBody}</p><button type="button" onClick={resetPractice}><PixelIcon name="retry" size={16}/>{c.practiceReset}</button></div>}
             </div>
@@ -357,6 +376,7 @@ export default function Tutorial({ t, lang = 'id', onClose, onPlay }) {
             <div className="tutorial-section-heading"><span className="tutorial-section-symbol"><PixelIcon name="sword" size={23}/></span><div><h3>{c.battleTitle}</h3><p>{c.battleIntro}</p></div></div>
             <GuideCards items={c.battleCards}/>
             <div className="tutorial-callout"><PixelIcon name="hint" size={19}/><p>{c.battleCallout}</p></div>
+            <button className="tutorial-next-section" type="button" onClick={() => openSection('multi')}><span><small>{c.next}</small><b>{c.tabs.multi}</b></span><PixelIcon name="right" size={22}/></button>
           </section>}
 
           {section === 'multi' && <section className="tutorial-section" aria-label={c.multiTitle}>

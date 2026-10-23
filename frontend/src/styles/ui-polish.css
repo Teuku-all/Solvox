@@ -377,3 +377,67 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
   .feedback-card .feedback-actions button { padding-inline: 10px; }
   .eval-card--detailed .eval-actions { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Keep the end-of-game evaluation readable and visually consistent. */
+.evaluation-backdrop > .eval-card--detailed {
+  --eval-text: #e6eeeb;
+  color: var(--eval-text);
+  font-family: var(--font-body-solvox), Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: .9375rem;
+  line-height: 1.55;
+}
+.eval-card--detailed :is(h2, h3, p, span, small, strong, b, button) { font-family: inherit; }
+.eval-card--detailed .eval-heading-row .eyebrow,
+.eval-card--detailed .eval-section-title h3,
+.eval-card--detailed .eval-review-head h3 { letter-spacing: 0; }
+.eval-card--detailed .eval-summary { grid-template-columns: minmax(0, 1fr) minmax(190px, 220px); gap: 18px; }
+.eval-card--detailed .eval-summary-copy h2 { line-height: 1.16; letter-spacing: -.025em; }
+.eval-card--detailed .eval-summary-copy p,
+.eval-card--detailed .eval-bullets p,
+.eval-card--detailed .eval-recommendation p,
+.eval-card--detailed .eval-question-full p,
+.eval-card--detailed .eval-history p,
+.eval-card--detailed .eval-note { font-size: .875rem; line-height: 1.6; }
+.eval-card--detailed .eval-metric span,
+.eval-card--detailed .eval-question-full span,
+.eval-card--detailed .eval-answer-grid span,
+.eval-card--detailed .eval-history > span { font-size: .75rem; line-height: 1.45; }
+.eval-card--detailed .eval-metric b,
+.eval-card--detailed .eval-answer-grid b { font-size: .9375rem; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.eval-card--detailed .eval-actions { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.eval-card--detailed .eval-actions > button {
+  display: inline-flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid rgba(128, 191, 177, .25);
+  border-radius: 9px;
+  font-size: .875rem;
+  font-weight: 750;
+  line-height: 1.35;
+  text-align: center;
+  transition: transform .16s ease, border-color .16s ease, filter .16s ease;
+}
+.eval-card--detailed .eval-actions > button:hover { transform: translateY(-1px); filter: brightness(1.08); }
+.eval-card--detailed .eval-actions .solvox-back-button { background: linear-gradient(145deg, #203a3b, #142a2e); color: #e6eeeb; }
+.eval-card--detailed .eval-actions .solvox-back-button img { display: none; }
+.eval-card--detailed .eval-actions .solvox-back-button .solvox-back-button-label { position: static; color: inherit; font: inherit; }
+.eval-card--detailed .eval-actions .rematch-btn { background: linear-gradient(145deg, #3d3346, #292538); color: #eee9f4; }
+.eval-card--detailed .eval-actions .primary-btn { border-color: rgba(91, 199, 190, .48); background: linear-gradient(145deg, #176274, #124754); color: #effbfa; }
+.eval-card--detailed .eval-actions > button:focus-visible,
+.eval-card--detailed .eval-detail summary:focus-visible { outline: 2px solid var(--solvox-focus); outline-offset: 3px; }
+@media (max-width: 600px) {
+  .eval-card--detailed .eval-summary { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .eval-card--detailed .eval-score { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 12px; text-align: left; }
+  .eval-card--detailed .eval-score-number { grid-row: span 3; font-size: 2.75rem; }
+  .eval-card--detailed .eval-accuracy-bar { margin: 5px 0 2px; }
+  .eval-card--detailed .eval-actions { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .eval-card--detailed .eval-actions > button { transition: none; }
+}

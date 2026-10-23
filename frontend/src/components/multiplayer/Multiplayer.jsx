@@ -337,7 +337,7 @@ useEffect(()=>{
     <div className="multi-ambient" aria-hidden="true"><span/><i/><b/></div>
     <div className="multi-header">
       <SolvoxBackButton className="multi-back-btn" labelClassName="solvox-back-label" onClick={dashboardOnly?onBack:leaveMultiplayer} label={t('back')} />
-      <div className="multi-header-copy"><div className="eyebrow">{GAME_META.title.toUpperCase()}</div><h1>{dashboardOnly?(lang==='en'?'Multiplayer Leaderboard':'Papan Peringkat Multiplayer'):t('battleWithFriend')}</h1><p>{dashboardOnly?t('dashboardHint'):t('arenaTip')}</p></div>
+      <div className="multi-header-copy"><div className="eyebrow">{GAME_META.title.toUpperCase()}</div><h1>{dashboardOnly?(lang==='en'?'Multiplayer Leaderboard':'Leaderboard Multiplayer'):t('battleWithFriend')}</h1><p>{dashboardOnly?t('dashboardHint'):t('arenaTip')}</p></div>
       {!dashboardOnly&&<div className={socketConnected?"multi-connection-status status-dot":"multi-connection-status status-dot is-connecting"} aria-live="polite"><i/> {socketConnected ? t('online') : (lang==='en' ? 'Connecting...' : 'Menghubungkan...')}</div>}
     </div>
     {errText&&<div className="error-banner">{errText}</div>}

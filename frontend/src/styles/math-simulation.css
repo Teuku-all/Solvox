@@ -243,6 +243,9 @@
 .math-sim-scale-post { position: absolute; z-index: 0; top: 27%; bottom: 13%; left: calc(50% - 10px); width: 20px; background: linear-gradient(90deg, #594126, #ac8b51 24%, #ddc17d 48%, #7b5a32 75%, #473322); clip-path: polygon(35% 0, 65% 0, 72% 74%, 100% 91%, 100% 96%, 0 96%, 0 91%, 28% 74%); filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .4)); }
 .math-sim-scale-pans { position: absolute; z-index: 2; top: 32%; left: 1%; right: 1%; display: grid; grid-template-columns: minmax(0, 1fr) 30px minmax(0, 1fr); align-items: start; gap: 7px; }
 .math-sim-scale-pan { position: relative; display: grid; justify-items: center; gap: 7px; min-width: 0; padding-top: 31px; }
+.math-sim-scale-pan.is-move-target { cursor: pointer; }
+.math-sim-scale-pan.is-move-target .math-sim-balance-pan-content { outline: 2px solid rgba(255, 232, 161, .8); outline-offset: 3px; box-shadow: 0 0 20px rgba(255, 221, 126, .28); }
+.math-sim-scale-pan.is-move-target:focus-visible { outline: 2px solid #fff0b0; outline-offset: 5px; border-radius: 10px; }
 .math-sim-scale-pan::before,
 .math-sim-scale-pan::after { content: ''; position: absolute; z-index: -1; top: -47px; height: 78px; width: 1px; background: linear-gradient(180deg, #d8bd7c, rgba(222, 196, 131, .72)); transform-origin: top; }
 .math-sim-scale-pan::before { left: 13%; transform: rotate(-19deg); }
@@ -456,6 +459,7 @@
 .math-sim-balance-scale.is-right-heavy .is-right .math-sim-balance-pan-content { transform: rotate(7deg); }
 .math-sim-balance-tiles { display: flex; max-width: 100%; flex-wrap: wrap; justify-content: center; gap: 3px; }
 .math-sim-balance-item { display: grid; min-width: 23px; min-height: 23px; place-items: center; padding: 1px 3px; border: 1px solid rgba(151,225,183,.72); border-radius: 4px; background: linear-gradient(145deg,#9be2ba,#58ba8d); color: #123c30; font: 900 11px/1 system-ui,sans-serif; cursor: grab; touch-action: none; user-select: none; }
+.math-sim-balance-item.is-selected-for-move { z-index: 3; outline: 3px solid #fff0b0; outline-offset: 3px; transform: translateY(-3px) scale(1.08); filter: drop-shadow(0 0 8px rgba(255, 225, 146, .8)); }
 .math-sim-balance-item.is-variable { min-width: 34px; border-color: rgba(196,169,226,.7); background: linear-gradient(145deg,#cbb0e8,#9b79bd); color: #352347; }
 .math-sim-balance-item.is-negative { border-color: rgba(232,164,171,.7); background: linear-gradient(145deg,#e9a8ae,#c86e7c); color: #4b1d27; }
 .math-sim-balance-item:active { cursor: grabbing; }
@@ -640,6 +644,7 @@
 .math-sim-drag-ghost {
   position: fixed;
   z-index: 9999;
+  pointer-events: none;
   display: grid;
   min-width: 42px;
   min-height: 42px;
@@ -1690,7 +1695,7 @@
 
 /* Chapter 5: story, equation tiles, then the balance. The middle area scrolls on short phones. */
 .math-sim-ch5-model-builder { display:grid;min-height:0;grid-template-rows:auto auto minmax(290px,1fr);gap:9px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#668d67 transparent; }
-.math-sim-ch5-journey { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px; }
+.math-sim-ch5-journey { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px; }
 .math-sim-ch5-journey span { display:flex;align-items:center;gap:7px;min-width:0;padding:7px 10px;border:1px solid rgba(173,202,144,.18);border-radius:8px;background:rgba(14,35,25,.8);color:#a9baaa;font-size:11px;font-weight:750; }
 .math-sim-ch5-journey b { display:grid;flex:none;width:21px;height:21px;place-items:center;border-radius:50%;background:#344436;color:#d9e8ca;font-size:11px; }
 .math-sim-ch5-journey .is-done { color:#cce7c4; }
@@ -1703,10 +1708,29 @@
 .math-sim-ch5-variable { display:inline-flex;align-items:center;gap:7px;margin-top:9px;padding:5px 9px;border:1px solid rgba(161,220,158,.32);border-radius:7px;background:rgba(7,22,16,.58);color:#bcd5bd;font-size:11px;line-height:1.3; }
 .math-sim-ch5-variable b { color:#e9d384;font:800 16px/1 Georgia,serif; }
 .math-sim-ch5-variable strong { color:#eff8e8; }
+.math-sim-ch5-variable-step { display:grid;gap:14px;align-content:start;padding:clamp(14px,2vw,22px);border:1px solid rgba(133,192,119,.42);border-radius:11px;background:radial-gradient(circle at 95% 0,rgba(147,191,96,.13),transparent 38%),linear-gradient(145deg,#132b23,#0b1d1b);color:#e8f2e2;box-shadow:inset 0 1px rgba(255,255,255,.07); }
+.math-sim-ch5-variable-prompt { display:flex;align-items:center;gap:12px; }
+.math-sim-ch5-variable-prompt > b { display:grid;flex:none;width:42px;height:42px;place-items:center;border:1px solid rgba(226,206,123,.55);border-radius:11px;background:linear-gradient(145deg,rgba(120,104,51,.5),rgba(29,62,41,.9));color:#f3df93;font:800 25px/1 Georgia,serif; }
+.math-sim-ch5-variable-prompt > div { display:grid;gap:4px; }
+.math-sim-ch5-variable-prompt strong { color:#f1e2a5;font:750 clamp(16px,1.6vw,21px)/1.2 Georgia,serif; }
+.math-sim-ch5-variable-prompt span { color:#c1d5c4;font-size:12px;line-height:1.4; }
+.math-sim-ch5-variable-choices { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px; }
+.math-sim-ch5-variable-choices button { display:flex;align-items:flex-start;gap:9px;min-height:62px;padding:11px;border:1px solid rgba(173,202,144,.3);border-radius:9px;background:rgba(14,35,25,.8);color:#e8f2e2;text-align:left;cursor:pointer;transition:border-color .15s ease,background .15s ease,transform .15s ease; }
+.math-sim-ch5-variable-choices button:hover { transform:translateY(-1px);border-color:rgba(226,206,123,.7); }
+.math-sim-ch5-variable-choices button > b { flex:none;color:#e9d384;font:800 16px/1.2 Georgia,serif; }
+.math-sim-ch5-variable-choices button > span { font-size:12px;font-weight:650;line-height:1.4; }
+.math-sim-ch5-variable-choices button.is-correct { border-color:#75bc89;background:rgba(45,91,60,.63); }
+.math-sim-ch5-variable-choices button.is-wrong { border-color:#c87969;background:rgba(103,47,39,.45); }
+.math-sim-ch5-variable-feedback { min-height:18px;margin:0;color:#e8deb0;font-size:11px;font-weight:700;line-height:1.4; }
+.math-sim-ch5-variable-continue { justify-self:end;display:inline-flex;align-items:center;gap:9px;min-height:39px;padding:8px 13px;border:1px solid rgba(180,213,140,.42);border-radius:8px;background:linear-gradient(135deg,#385d3c,#234331);color:#eff6d8;font-size:12px;font-weight:800; }
+.math-sim-ch5-variable-continue:disabled { opacity:.45;cursor:not-allowed; }
 .math-sim-ch5-model-area { display:grid;min-height:290px;grid-template-rows:auto auto auto minmax(80px,1fr) auto;gap:8px;padding:10px;border:1px solid rgba(133,192,119,.42);border-radius:11px;background:radial-gradient(circle at 95% 0,rgba(147,191,96,.1),transparent 36%),linear-gradient(145deg,#132b23,#0b1d1b);color:#e8f2e2;box-shadow:inset 0 1px rgba(255,255,255,.07); }
 .math-sim-ch5-model-head { display:flex;align-items:center;justify-content:space-between;gap:8px; }
 .math-sim-ch5-model-head strong { color:#f1e2a5;font:750 clamp(15px,1.45vw,19px)/1.2 Georgia,serif; }
+.math-sim-ch5-model-head > div { display:flex;align-items:center;gap:7px; }
 .math-sim-ch5-model-head span { flex:none;padding:4px 9px;border:1px solid rgba(180,213,140,.32);border-radius:999px;color:#d8e9bf;font-size:11px;font-weight:850; }
+.math-sim-ch5-model-head button { display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:5px 8px;border:1px solid rgba(180,213,140,.3);border-radius:7px;background:rgba(22,52,42,.8);color:#deebd1;font-size:10px;font-weight:800; }
+.math-sim-ch5-model-head button:disabled { opacity:.45; }
 .math-sim-ch5-instruction { margin:0;color:#c1d5c4;font-size:12px;line-height:1.35; }
 .math-sim-ch5-slots { display:flex;min-height:82px;flex-wrap:wrap;align-items:stretch;gap:6px;padding:8px;border:1px solid rgba(181,208,153,.18);border-radius:8px;background:rgba(3,14,12,.52); }
 .math-sim-ch5-slot { display:grid;min-width:68px;min-height:65px;align-content:start;gap:5px;padding:6px;border:1px dashed rgba(170,208,150,.55);border-radius:7px;background:rgba(31,64,44,.48);color:#b9d7b4;cursor:pointer;transition:background .15s ease,border .15s ease,transform .15s ease; }
@@ -1732,11 +1756,16 @@
 .math-sim-ch5-token:focus-visible,.math-sim-ch5-slot-token:focus-visible,.math-sim-ch5-slot:focus-visible,.math-sim-ch5-slot:focus-within { outline:2px solid #f1dc88;outline-offset:2px; }
 @media (max-width:760px) {
   .math-sim-ch5-model-builder { grid-template-rows:auto auto minmax(290px,1fr);gap:6px; }
+  .math-sim-ch5-journey { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .math-sim-ch5-journey span { justify-content:center;padding:5px 3px;font-size:9px;text-align:center; }
   .math-sim-ch5-journey b { width:18px;height:18px;font-size:9px; }
   .math-sim-ch5-story { padding:8px 10px; }
   .math-sim-ch5-story p { font-size:12px;line-height:1.3; }
   .math-sim-ch5-variable { margin-top:6px;font-size:10px; }
+  .math-sim-ch5-variable-step { gap:10px;padding:10px; }
+  .math-sim-ch5-variable-choices { grid-template-columns:1fr;gap:6px; }
+  .math-sim-ch5-variable-choices button { min-height:48px;padding:8px; }
+  .math-sim-ch5-variable-choices button > span { font-size:11px; }
   .math-sim-ch5-model-area { gap:6px;padding:8px; }
   .math-sim-ch5-instruction { font-size:11px; }
   .math-sim-ch5-slots { min-height:70px;gap:4px;padding:5px; }
@@ -1839,9 +1868,18 @@
 .math-sim-distributive-result > strong { color: #9dcfff; font-size: clamp(14px, 1.7vw, 20px); }
 .math-sim-distributive-result.is-ready { border-color: #5bd6ad; background: rgba(12, 62, 53, .66); }
 .math-sim-distributive-result.is-ready > strong { color: #aaffd9; }
+.math-sim-distributive-combine { display: grid; gap: 7px; padding: 9px 11px; border: 1px solid rgba(255,184,107,.45); border-radius: 9px; background: rgba(54,39,36,.7); }
+.math-sim-distributive-combine > strong { color: #fff0cf; font-size: 12px; }
+.math-sim-distributive-combine > div { display: flex; flex-wrap: wrap; gap: 7px; }
+.math-sim-distributive-combine button { min-width: 64px; min-height: 38px; padding: 6px 12px; border: 1px solid rgba(255,194,126,.55); border-radius: 7px; background: rgba(102,65,44,.82); color: #fff0cf; font-size: 15px; font-weight: 900; cursor: pointer; }
+.math-sim-distributive-combine button:hover,.math-sim-distributive-combine button:focus-visible { border-color: #ffe0a5; background: rgba(145,86,51,.9); }
+.math-sim-distributive-combine > small { color: #ffc7ac; font-size: 11px; }
 .math-sim-distributive > footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #c1d5e8; font-size: 11px; }
+.math-sim-distributive-actions { display: flex; flex: 0 0 auto; flex-wrap: wrap; justify-content: flex-end; gap: 7px; }
 .math-sim-distributive > footer button { min-height: 36px; padding: 6px 12px; border: 1px solid #62b6ff; border-radius: 8px; background: linear-gradient(180deg, #2876bd, #164a82); box-shadow: inset 0 1px rgba(255,255,255,.32), 0 3px 0 #0d2e54; color: white; font-weight: 900; cursor: pointer; }
 .math-sim-distributive > footer button:disabled { border-color: #41576b; background: #25374a; box-shadow: none; color: #8195a8; cursor: default; }
+.math-sim-distributive > footer .math-sim-distributive-back { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-color: rgba(213,184,145,.42); background: rgba(42,37,39,.85); box-shadow: none; color: #e5d8c8; }
+.math-sim-distributive > footer .math-sim-distributive-back:disabled { opacity: .45; }
 .math-sim-distributive-original { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .math-sim-distributive.is-drag-drop { grid-template-rows:auto auto minmax(0,1fr) auto auto; border-color:rgba(255,123,203,.58); background:radial-gradient(ellipse at 50% 0,rgba(206,73,159,.2),transparent 68%),linear-gradient(145deg,rgba(51,34,68,.98),rgba(20,21,43,.98)); }
 .math-sim-distributive.is-drag-drop > header > span { color:#ff9cda; }
@@ -2294,6 +2332,8 @@
 .math-sim-balance-reference.chapter-2 { --balance-accent:#72eee0; --balance-glow:rgba(67,223,207,.4); --balance-metal-top:#d5fff3; --balance-metal-mid:#62b9ad; --balance-metal-deep:#1b555b; --balance-pan-top:#367e7d; --balance-pan-bottom:#153a4c; }
 .math-sim-balance-reference.chapter-3 { --balance-accent:#ffb86b; --balance-glow:rgba(255,153,65,.4); --balance-metal-top:#ffe0a7; --balance-metal-mid:#c98149; --balance-metal-deep:#613627; --balance-pan-top:#885336; --balance-pan-bottom:#3d2b2a; }
 .math-sim-balance-reference.chapter-4 { --balance-accent:#ff7bcb; --balance-glow:rgba(255,91,194,.4); --balance-metal-top:#ffd8f0; --balance-metal-mid:#bd68a3; --balance-metal-deep:#57345f; --balance-pan-top:#794a80; --balance-pan-bottom:#362747; }
+.math-sim-balance-reference.chapter-4 .math-sim-balance-item { cursor: default; }
+.math-sim-balance-reference.chapter-4 .math-sim-drop-hint.is-pan-transfer-locked { border-color: rgba(255, 123, 203, .36); color: #ffe2f2; }
 .math-sim-balance-reference.chapter-5 { --balance-accent:#c68cff; --balance-glow:rgba(181,92,255,.42); --balance-metal-top:#ecd7ff; --balance-metal-mid:#a56bd0; --balance-metal-deep:#47305f; --balance-pan-top:#68477e; --balance-pan-bottom:#302342; }
 
 .battle-reference-arena .math-sim-balance-reference.chapter-1 { border-color:#3689aa; background:radial-gradient(circle at 20% 0,rgba(77,231,255,.16),transparent 40%),linear-gradient(145deg,#153c5d,#0a203b 52%,#07172d); box-shadow:inset 0 0 0 2px rgba(5,17,39,.86),inset 0 2px rgba(180,244,255,.17),0 20px 48px rgba(1,8,22,.58),0 0 24px rgba(77,231,255,.12); }
