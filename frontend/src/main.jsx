@@ -32,6 +32,7 @@ import './styles/ui-polish.css';
 import './styles/game-design-system.css';
 import './styles/feedback-contact.css';
 import './styles/chapter-popup-themes.css';
+import './styles/outside-battle-buttons.css';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>

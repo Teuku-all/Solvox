@@ -1,0 +1,103 @@
+/* Shared neutral button accent for screens and dialogs outside combat. */
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) {
+  --outside-button:#F4F0DF;
+  --outside-button-dark:#1b201d;
+  --outside-button-hover:#2b302a;
+}
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) button { color:var(--outside-button) !important; }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) button .pixel-icon { color:var(--outside-button) !important; }
+
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) :is(
+  .home-menu-item,.home-profile-trigger,.mode-select-back,.mode-card,
+  .chapter-select-back,.chapter-card,.character-select-back,
+  .character-showcase-choice,.character-showcase-strip button,.character-start-button,
+  .global-action,.primary-btn,.secondary-btn,.danger-btn,.dialog-icon-close,
+  .profile-screen-nav,.profile-save-btn,.profile-primary-action,.profile-text-action,
+  .tutorial-close,.tutorial-dismiss,.tutorial-action,.tutorial-next-section,
+  .settings-card button,.feedback-card button,.feedback-contact-option,
+  .multi-back-btn,.multi-actions button,.mode-choice button,.leaderboard-duel-btn
+) {
+  color:var(--outside-button) !important;
+  border-color:color-mix(in srgb,var(--outside-button) 42%,transparent) !important;
+  outline-color:var(--outside-button);
+}
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) :is(
+  .tutorial-card button:not(.tutorial-unit-tile),
+  .profile-screen button,.leaderboard-overview-action button,
+  .leaderboard-refresh-btn,.leaderboard-empty-actions button
+) { border-color:color-mix(in srgb,var(--outside-button) 42%,transparent) !important; background:var(--outside-button-dark) !important; color:var(--outside-button) !important; }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) :is(
+  .tutorial-card button:not(.tutorial-unit-tile),
+  .profile-screen button,.leaderboard-overview-action button,
+  .leaderboard-refresh-btn,.leaderboard-empty-actions button
+):hover:not(:disabled) { border-color:var(--outside-button) !important; background:var(--outside-button-hover) !important; }
+
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) :is(
+  .mode-select-back,.chapter-select-back,.character-select-back,
+  .character-start-button,.global-action,.primary-btn,.secondary-btn,.danger-btn,
+  .profile-save-btn,.profile-primary-action,.tutorial-dismiss,.tutorial-action,
+  .settings-card button,.feedback-card .feedback-category button,
+  .feedback-card .feedback-actions button,.feedback-contact-option,
+  .multi-back-btn,.multi-actions button,.mode-choice button,.leaderboard-duel-btn
+) {
+  background:var(--outside-button-dark) !important;
+  box-shadow:inset 0 1px color-mix(in srgb,var(--outside-button) 12%,transparent),0 7px 18px #0004;
+}
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) :is(
+  .mode-select-back,.chapter-select-back,.character-select-back,.character-start-button,
+  .global-action,.primary-btn,.secondary-btn,.danger-btn,.profile-save-btn,
+  .profile-primary-action,.tutorial-dismiss,.tutorial-action,.settings-card button,
+  .feedback-card .feedback-category button,.feedback-card .feedback-actions button,
+  .feedback-contact-option,.multi-back-btn,.multi-actions button,.mode-choice button,
+  .leaderboard-duel-btn
+):hover:not(:disabled) { background:var(--outside-button-hover) !important; border-color:var(--outside-button) !important; }
+
+/* Large illustrated choice cards keep their artwork while sharing the same control accent. */
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .mode-card { --accent:#F4F0DF !important; }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .chapter-card { --chapter-accent:#F4F0DF !important; }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .character-showcase-choice { --character-accent:#F4F0DF !important; }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .character-showcase-strip button { --character-accent:#F4F0DF !important; }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) :is(.mode-card,.mode-card.multi,.chapter-card) { background:linear-gradient(140deg,#222820,#101510) !important; }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) :is(.home-profile-trigger,.character-showcase-choice,.character-showcase-choice.is-active) { background:var(--outside-button-dark) !important; }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) :is(.mode-card:hover,.chapter-card.is-open:hover,.character-showcase-choice:hover,.character-showcase-choice.is-active) { border-color:var(--outside-button) !important; }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) :is(
+  .home-menu-item,.home-menu-item:hover,.home-menu-item.is-active,
+  .home-profile-trigger-copy b,.home-profile-trigger-arrow,.mode-card-copy > small,
+  .mode-card-action,.mode-card-tag,.mode-select-header > span,
+  .chapter-card-copy small,.chapter-card-how svg,.chapter-select-title small,
+  .character-start-button svg,.profile-text-action svg,
+  .feedback-contact-icon,.feedback-contact-option--wa .feedback-contact-icon,
+  .feedback-contact-arrow,.feedback-card .stars button.on
+) { color:var(--outside-button) !important; }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .home-menu-item { border:0 !important; background:transparent !important; }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .home-menu-item.is-active .home-menu-marker { border-color:var(--outside-button); background:color-mix(in srgb,var(--outside-button) 22%,transparent); box-shadow:0 0 14px color-mix(in srgb,var(--outside-button) 25%,transparent); }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .home-profile-avatar { border-color:var(--outside-button); background:var(--outside-button-dark); color:var(--outside-button); }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .mode-card-action b,
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .feedback-contact-icon { border-color:color-mix(in srgb,var(--outside-button) 42%,transparent); background:color-mix(in srgb,var(--outside-button) 10%,var(--outside-button-dark)); }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .chapter-card-meter b { background:var(--outside-button); }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .feedback-card .feedback-category button.active,
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .settings-card button.active,
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .settings-card button.on,
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .mode-choice button.active,
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .tutorial-card button.active,
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .profile-screen button.active { border-color:var(--outside-button) !important; background:color-mix(in srgb,var(--outside-button) 20%,var(--outside-button-dark)) !important; }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .tutorial-unit-tile { border-color:var(--outside-button) !important; background:var(--outside-button-dark) !important; color:var(--outside-button) !important; }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .feedback-card .stars button { color:var(--outside-button) !important; opacity:.48; }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) .feedback-card .stars button.on { opacity:1; }
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) :is(.feedback-card button,.settings-card button,.primary-btn,.secondary-btn,.danger-btn):focus-visible { outline:2px solid var(--outside-button) !important; outline-offset:3px; }
+
+@media (max-width:380px) {
+  .app-shell:not(.battle-active):not(.multiplayer-battle-active) :is(.mode-card,.chapter-card) { min-width:0; }
+  .app-shell:not(.battle-active):not(.multiplayer-battle-active) :is(.mode-card-action,.chapter-card-copy,.chapter-card-how) { min-width:0; overflow-wrap:anywhere; }
+}
+
+/* Results sit outside the arena even while the battle screen is mounted. */
+.app-shell.battle-active .evaluation-backdrop :is(.primary-btn,.secondary-btn,.dialog-icon-close) {
+  border-color:color-mix(in srgb,#F4F0DF 42%,transparent) !important;
+  background:#1b201d !important;
+  color:#F4F0DF !important;
+}
+.app-shell.battle-active .evaluation-backdrop :is(.primary-btn,.secondary-btn,.dialog-icon-close):hover:not(:disabled) {
+  border-color:#F4F0DF !important;
+  background:#2b302a !important;
+}
