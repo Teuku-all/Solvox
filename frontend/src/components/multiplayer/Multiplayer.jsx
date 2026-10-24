@@ -8,7 +8,6 @@ import ArenaBackground from '../battle/ArenaBackground';
 import BattleQuestionPanel from '../battle/BattleQuestionPanel';
 import HitEffect from '../battle/HitEffect';
 import SolvoxBackButton from '../shared/SolvoxBackButton';
-import MobileLandscapeTip from '../shared/MobileLandscapeTip';
 import {GAME_META} from '../../config/game';
 import {LEVELS} from '../../data/levels';
 import { playCharacterAttack, playSound, setMultiplayerLobbyMusicActive } from '../../services/sound';
@@ -442,7 +441,6 @@ useEffect(()=>{
 {room.status==='battle'&&room.question&&<div className="battle-page battle-reference multiplayer-battle-page">
   <div className="battle-world">
     <div className="battle-ui multiplayer-battle-ui">
-      <MobileLandscapeTip lang={lang} />
       <ArenaBackground levelId={room.levelId||level}/>
       <header className="battle-top-rail">
         <SolvoxBackButton className="battle-home-back solvox-back-button--compact" onClick={leaveMultiplayer} ariaLabel={t('back')} title={t('back')} />

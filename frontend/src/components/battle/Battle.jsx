@@ -14,7 +14,6 @@ import { getBoss } from '../../data/bosses';
 import { getBossImpactMs, getBossPreviewSrc, getBossSequenceDurationMs } from '../../data/bossAssets';
 import PixelIcon from '../shared/PixelIcon';
 import SolvoxBackButton from '../shared/SolvoxBackButton';
-import MobileLandscapeTip from '../shared/MobileLandscapeTip';
 import { playBossAttack, playSound } from '../../services/sound';
 
 export default function Battle({ levelId, playerId = 'traveler', lang, t, onComplete, onBack }) {
@@ -457,7 +456,6 @@ export default function Battle({ levelId, playerId = 'traveler', lang, t, onComp
         {!autoResolveChapter && <ArenaBackground levelId={levelId} paused={isBalanceQuestion && !hideBalancePopup} />}
 
         <div className={`battle-ui theme-level-${levelId}${autoResolveChapter ? ' is-auto-resolve' : ''}`}>
-          <MobileLandscapeTip lang={lang} />
           {autoResolveChapter && <ArenaBackground levelId={levelId} paused={isBalanceQuestion && !hideBalancePopup} />}
           {/* Top HUD */}
           <div className="battle-top-rail">
