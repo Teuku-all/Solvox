@@ -1211,7 +1211,7 @@ body:has(.cutscene) .mobile-landscape-tip,
   .mobile-landscape-tip {
     position:fixed;
     z-index:90;
-    top:calc(env(safe-area-inset-top, 0px) + 88px);
+    top:calc(env(safe-area-inset-top, 0px) + 100px);
     left:50%;
     display:flex;
     width:min(390px,calc(100vw - 24px));
