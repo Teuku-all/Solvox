@@ -3,7 +3,7 @@ import PixelIcon from '../shared/PixelIcon';
 import useDialogKeyboard from '../shared/useDialogKeyboard';
 import useAnimatedDismiss from '../shared/useAnimatedDismiss';
 
-const EMAIL = 't.al.jumanatul.ali53@gmail.com';
+const EMAIL = 'yannizuhilda@gmail.com';
 const WHATSAPP = '6282162934592';
 
 export default function Feedback({ onClose, lang, t }) {
