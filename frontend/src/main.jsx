@@ -33,6 +33,7 @@ import './styles/game-design-system.css';
 import './styles/feedback-contact.css';
 import './styles/chapter-popup-themes.css';
 import './styles/outside-battle-buttons.css';
+import './styles/profile-redesign.css';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
