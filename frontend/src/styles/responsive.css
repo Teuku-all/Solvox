@@ -941,11 +941,11 @@ body { min-width: 320px; }
     max-width: 100% !important;
   }
   .battle-reference-arena .fighter-player .sprite-wrap {
-    width: clamp(74px, 27vw, 116px) !important;
+    width: clamp(108px, 35vw, 145px) !important;
     max-width: 100% !important;
   }
   .battle-reference-arena .fighter-boss .asset-boss-sprite {
-    width: clamp(84px, 31vw, 128px) !important;
+    width: clamp(120px, 39vw, 160px) !important;
     max-width: 100% !important;
   }
 
@@ -1067,8 +1067,8 @@ body { min-width: 320px; }
     height: 23dvh !important;
     max-height: 210px !important;
   }
-  .battle-reference-arena .fighter-player .sprite-wrap { width: clamp(68px, 27vw, 92px) !important; }
-  .battle-reference-arena .fighter-boss .asset-boss-sprite { width: clamp(76px, 31vw, 104px) !important; }
+  .battle-reference-arena .fighter-player .sprite-wrap { width: clamp(108px, 34vw, 126px) !important; }
+  .battle-reference-arena .fighter-boss .asset-boss-sprite { width: clamp(120px, 38vw, 142px) !important; }
   .battle-question-panel .battle-question-main { min-height: 212px !important; }
   .battle-question-panel .hint-rail { min-height: 115px !important; }
   .battle-question-panel .attack-btn { flex-basis: 104px !important; }
