@@ -1,4 +1,4 @@
-import React,{Suspense,lazy,useEffect,useState} from 'react';
+import React,{Suspense,lazy,useEffect,useRef,useState} from 'react';
 import HomeMenu from './components/menu/HomeMenu';
 const Battle = lazy(() => import('./components/battle/Battle'));
 const Evaluation = lazy(() => import('./components/screens/Evaluation'));
@@ -26,6 +26,8 @@ const STORAGE='solvox.progress.v1';
 const PLAYER_STORAGE='solvox.singlePlayer.character.v1';
 const PLAYER_LOCK_STORAGE='solvox.singlePlayer.characterLocked.v1';
 const VISITED_CHAPTERS_STORAGE='solvox.singlePlayer.visitedChapters.v1';
+const MENU_SCREENS=new Set(['home','modes','chapters','character','about']);
+const MENU_EXIT_MS=150;
 const LEGACY_STORAGES=['numericore.v35.progress','aljabarmaster.v34.progress','aljabarmaster.v33.progress','aljabarmaster.v32.progress','aljabarmaster.v31.progress','aljabarmaster.v30.progress','aljabarmaster.v29.progress','aljabarmaster.v28.progress','aljabarmaster.v23.progress','aljabarmaster.v20.progress','aljabarmaster.v16final.progress'];
 const DEFAULT={playerName:'Player',playerEXP:0,completedLevels:[],analytics:[],profile:{name:'Player',avatar:'pixelNinja',createdAt:Date.now()}};
 function normalizeCompleted(raw){
@@ -48,7 +50,31 @@ function loadLanguage(){
   return saved==='en'?'en':'id';
 }
 export default function App(){
-  const [state,setState]=useState(load),[screen,setScreen]=useState('home'),[level,setLevel]=useState(1),[playerId,setPlayerId]=useState(()=>localStorage.getItem(PLAYER_STORAGE)||'traveler'),[playerSelectionLocked,setPlayerSelectionLocked]=useState(()=>localStorage.getItem(PLAYER_LOCK_STORAGE)==='1'),[battleSession,setBattleSession]=useState(0),[evaluation,setEvaluation]=useState(null),[feedback,setFeedback]=useState(false),[settings,setSettings]=useState(false),[profileOpen,setProfileOpen]=useState(false),[tutorialOpen,setTutorialOpen]=useState(false),[multiplayerBattle,setMultiplayerBattle]=useState(false),[lang,setLang]=useState(loadLanguage);
+  const [state,setState]=useState(load),[screen,setScreenState]=useState('home'),[screenLeaving,setScreenLeaving]=useState(false),[level,setLevel]=useState(1),[playerId,setPlayerId]=useState(()=>localStorage.getItem(PLAYER_STORAGE)||'traveler'),[playerSelectionLocked,setPlayerSelectionLocked]=useState(()=>localStorage.getItem(PLAYER_LOCK_STORAGE)==='1'),[battleSession,setBattleSession]=useState(0),[evaluation,setEvaluation]=useState(null),[feedback,setFeedback]=useState(false),[settings,setSettings]=useState(false),[profileOpen,setProfileOpen]=useState(false),[tutorialOpen,setTutorialOpen]=useState(false),[multiplayerBattle,setMultiplayerBattle]=useState(false),[lang,setLang]=useState(loadLanguage);
+  const screenRef=useRef(screen);
+  const screenExitTimer=useRef(null);
+  screenRef.current=screen;
+  const setScreen=(next)=>{
+    window.clearTimeout(screenExitTimer.current);
+    screenExitTimer.current=null;
+    if(next===screenRef.current){setScreenLeaving(false);return;}
+    const reducedMotion=document.documentElement.classList.contains('reduced-motion')
+      ||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if(MENU_SCREENS.has(screenRef.current)&&MENU_SCREENS.has(next)&&!reducedMotion){
+      setScreenLeaving(true);
+      screenExitTimer.current=window.setTimeout(()=>{
+        screenRef.current=next;
+        setScreenState(next);
+        setScreenLeaving(false);
+        screenExitTimer.current=null;
+      },MENU_EXIT_MS);
+      return;
+    }
+    screenRef.current=next;
+    setScreenLeaving(false);
+    setScreenState(next);
+  };
+  useEffect(()=>()=>window.clearTimeout(screenExitTimer.current),[]);
   const [activeCutscene,setActiveCutscene]=useState(null);
   const [visitedChapters,setVisitedChapters]=useState(loadVisitedChapters);
   const t=(k,vars)=>{let value=T[lang]?.[k] ?? T.id?.[k] ?? k; if(vars) Object.entries(vars).forEach(([name,val])=>{value=value.replaceAll(`{${name}}`,String(val))}); return value;};
@@ -183,7 +209,7 @@ export default function App(){
   const rematch=()=>{const sameLevel=Number(evaluation?.chapterId||level);setEvaluation(null);launchBattle(sameLevel)};
   const changeLang=(next)=>setLang(v=>{const n=next|| (v==='id'?'en':'id');localStorage.setItem('solvox.lang',n);return n});
   const saveProfile=(profile)=>{const clean={...state.profile,...profile,name:String(profile?.name||state.profile?.name||'Player').trim().slice(0,18)||'Player'};setState(v=>({...v,profile:clean,playerName:clean.name}));setProfileOpen(false)};
-  return <div className={`app-shell ${screen==='battle'?'battle-active':''} ${screen==='multi'&&multiplayerBattle?'multiplayer-battle-active':''}`} data-screen={screen}>
+  return <div className={`app-shell ${screen==='battle'?'battle-active':''} ${screen==='multi'&&multiplayerBattle?'multiplayer-battle-active':''}`} data-screen={screen} data-screen-transition={screenLeaving?'exiting':undefined}>
     {screen!=='battle'&&!(screen==='multi'&&multiplayerBattle)&&screen!=='home'&&screen!=='modes'&&screen!=='chapters'&&screen!=='character'&&screen!=='about'&&screen!=='dashboard'&&<header className="global-bar"><div className="global-brand"><SolvoxBrandLogo compact/><span className="global-brand-copy"><b>{t('online')}</b><small>{t('subtitle')}</small></span></div><nav className="global-actions" aria-label={lang==='en'?'Game options':'Pengaturan game'}><button className="global-action" title={t('feedback')} aria-label={t('feedback')} onClick={()=>setFeedback(true)}><PixelIcon name="feedback" size={17}/><span>{t('feedback')}</span></button><button className="global-action" title={t('settingsTitle')} aria-label={t('settingsTitle')} onClick={()=>setSettings(true)}><PixelIcon name="gear" size={17}/><span>{t('settingsTitle')}</span></button></nav></header>}
     <Suspense fallback={<div className="loading-screen" role="status"><p>{t('loading')}</p></div>}>
     {screen==='home'&&<HomeMenu t={t} profileName={state.profile?.name||state.playerName} onMain={()=>setScreen('modes')} onTutorial={()=>setTutorialOpen(true)} onSettings={()=>setSettings(true)} onFeedback={()=>setFeedback(true)} onDashboard={()=>setScreen('dashboard')} onProfile={()=>setProfileOpen(true)}/>} 

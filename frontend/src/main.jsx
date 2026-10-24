@@ -34,6 +34,7 @@ import './styles/feedback-contact.css';
 import './styles/chapter-popup-themes.css';
 import './styles/outside-battle-buttons.css';
 import './styles/profile-redesign.css';
+import './styles/motion-transitions.css';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
