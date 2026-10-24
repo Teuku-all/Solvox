@@ -1,0 +1,72 @@
+.utility-dialog-backdrop > .feedback-card {
+  width: min(580px, 100%);
+  max-width: 580px;
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  padding: clamp(20px, 3vw, 30px);
+  border: 1px solid rgba(151, 222, 192, .3);
+  border-radius: 20px;
+  background: linear-gradient(155deg, #122820, #0b1a1c 58%, #0b171b);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, .55), inset 0 1px rgba(255, 255, 255, .05);
+  text-align: left;
+}
+
+.feedback-card .feedback-head { padding-bottom: 20px !important; }
+.feedback-card .feedback-head h2 { color: #f6f3df; }
+.feedback-intro { max-width: 440px; margin: 10px 0 0; color: #acc4bb !important; font-size: .88rem; line-height: 1.55; }
+.feedback-card .feedback-field { margin-top: 22px; }
+.feedback-card .feedback-field legend,
+.feedback-card .feedback-field label { color: #e6eee5; font-size: .86rem; }
+.feedback-card .feedback-category { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.feedback-card .feedback-category button {
+  border-color: rgba(153, 210, 180, .22);
+  background: rgba(5, 25, 24, .75);
+  color: #bdd0c5;
+  transition: background .18s, border-color .18s, transform .18s;
+}
+.feedback-card .feedback-category button:hover { transform: translateY(-1px); border-color: rgba(200, 218, 138, .55); }
+.feedback-card .feedback-category button.active { border-color: #b6d689; background: #254637; color: #f8f5dc; box-shadow: inset 0 0 0 1px rgba(182, 214, 137, .18); }
+.feedback-card .stars button { color: #6e8077; }
+.feedback-card .stars button.on { color: #f5cb72; }
+.feedback-card .stars button:hover { border-color: rgba(245, 203, 114, .55); }
+.feedback-card .feedback-rating-value { color: #e3dab1; }
+.feedback-required { color: #f5cb72; }
+.feedback-card textarea { width: 100%; min-height: 112px; max-height: 220px; margin-bottom: 0; border-color: rgba(153, 210, 180, .28); background: #091b1b; color: #f4f8f1; }
+.feedback-card textarea::placeholder { color: #819a8e; }
+.feedback-card textarea:focus { border-color: #b6d689; }
+.feedback-input-meta { display: flex; justify-content: space-between; gap: 14px; margin-top: 8px; color: #91aca0; font-size: .74rem; line-height: 1.45; }
+.feedback-input-meta span:last-child { flex: none; font-variant-numeric: tabular-nums; }
+.feedback-card .feedback-send-error { margin-top: 10px; }
+.feedback-delivery { margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(149, 216, 201, .16); }
+.feedback-delivery-title { margin: 0 0 12px !important; color: #e6eee5 !important; font-size: .86rem !important; font-weight: 700; }
+.feedback-contact-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.feedback-contact-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  min-height: 74px;
+  padding: 12px;
+  border: 1px solid rgba(163, 211, 192, .28);
+  border-radius: 12px;
+  background: rgba(13, 41, 38, .78);
+  color: #f2f8ed;
+  text-decoration: none;
+  transition: border-color .18s, background .18s, transform .18s;
+}
+.feedback-contact-option:hover { transform: translateY(-2px); border-color: #c1da9b; background: #1a4038; }
+.feedback-contact-option:focus-visible { outline: 2px solid var(--solvox-focus); outline-offset: 3px; }
+.feedback-contact-option--wa { border-color: rgba(111, 221, 168, .36); }
+.feedback-contact-icon { display: grid; flex: none; place-items: center; width: 40px; height: 40px; border-radius: 10px; background: rgba(191, 217, 151, .13); color: #d3e8ae; }
+.feedback-contact-option--wa .feedback-contact-icon { background: rgba(102, 219, 158, .14); color: #8be6aa; }
+.feedback-contact-copy { display: grid; min-width: 0; gap: 3px; }
+.feedback-contact-copy strong { font-size: .9rem; }
+.feedback-contact-copy small { overflow-wrap: anywhere; color: #a9c6b7; font-size: .7rem; line-height: 1.25; }
+.feedback-contact-arrow { flex: none; margin-left: auto; color: #b8d3b1; }
+.feedback-delivery-note { margin: 12px 0 0 !important; color: #a7bdb2 !important; font-size: .76rem !important; line-height: 1.45; }
+
+@media (max-width: 600px) {
+  .utility-dialog-backdrop > .feedback-card { max-height: calc(100dvh - 20px); }
+  .feedback-contact-options { grid-template-columns: 1fr; }
+  .feedback-contact-option { min-height: 62px; }
+}

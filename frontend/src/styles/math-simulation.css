@@ -1864,9 +1864,9 @@
 
 /* Interactive distributive-property lesson shown before the balance phase. */
 .math-sim-distributive {
-  display: grid;
+  display: flex;
   min-height: 0;
-  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  flex-direction: column;
   gap: 8px;
   padding: 10px;
   overflow: hidden;
@@ -1879,9 +1879,7 @@
 .math-sim-distributive > header > span { color: #8bcbff; font-size: 9px; font-weight: 950; letter-spacing: .13em; }
 .math-sim-distributive > header > strong { font-size: clamp(14px, 1.7vw, 19px); }
 .math-sim-distributive > header > p { margin: 0; color: #b7cce1; font-size: 12px; }
-.math-sim-distributive-prelude { justify-self: start; padding: 7px 10px; border: 1px solid #5ba8cf; border-radius: 8px; background: rgba(21, 66, 93, .8); color: #e6f8ff; font-weight: 800; cursor: pointer; }
-.math-sim-distributive-prelude.is-done { border-color: #5bd6ad; background: rgba(23, 89, 76, .65); color: #a8ffe0; }
-.math-sim-distributive-board { display: flex; min-height: 0; flex-direction: column; justify-content: center; gap: 9px; overflow: auto; padding: 7px; border: 1px solid rgba(112, 171, 218, .32); border-radius: 10px; background: rgba(3, 15, 31, .48); }
+.math-sim-distributive-board { display: flex; flex: 1 0 150px; min-height: 150px; flex-direction: column; justify-content: flex-start; gap: 9px; overflow: auto; padding: 7px; border: 1px solid rgba(112, 171, 218, .32); border-radius: 10px; background: rgba(3, 15, 31, .48); }
 .math-sim-distributive-group { display: grid; grid-template-columns: 54px minmax(0, 1fr); align-items: stretch; gap: 8px; }
 .math-sim-distributive-factor { display: grid; place-items: center; align-self: center; min-height: 46px; border: 1px solid #f2d38c; border-radius: 10px; background: linear-gradient(145deg, #876d39, #594824); box-shadow: inset 0 1px rgba(255,255,255,.38), 0 3px 0 #302b1e; color: #fff2c4; font-size: 17px; font-weight: 950; }
 .math-sim-distributive-copies { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 5px; align-items: stretch; }
@@ -1913,7 +1911,7 @@
 .math-sim-distributive > footer .math-sim-distributive-back { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-color: rgba(213,184,145,.42); background: rgba(42,37,39,.85); box-shadow: none; color: #e5d8c8; }
 .math-sim-distributive > footer .math-sim-distributive-back:disabled { opacity: .45; }
 .math-sim-distributive-original { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.math-sim-distributive.is-drag-drop { grid-template-rows:auto auto minmax(0,1fr) auto auto; border-color:rgba(255,123,203,.58); background:radial-gradient(ellipse at 50% 0,rgba(206,73,159,.2),transparent 68%),linear-gradient(145deg,rgba(51,34,68,.98),rgba(20,21,43,.98)); }
+.math-sim-distributive.is-drag-drop { border-color:rgba(255,123,203,.58); background:radial-gradient(ellipse at 50% 0,rgba(206,73,159,.2),transparent 68%),linear-gradient(145deg,rgba(51,34,68,.98),rgba(20,21,43,.98)); }
 .math-sim-distributive.is-drag-drop > header > span { color:#ff9cda; }
 .math-sim-distributive-bank { display:grid; gap:5px; padding:7px 9px; border:1px solid rgba(255,123,203,.38); border-radius:9px; background:rgba(37,26,54,.72); }
 .math-sim-distributive-bank > strong { color:#ffe0f2; font-size:10px; }
@@ -1985,7 +1983,6 @@
   .math-sim-distributive-term { min-height: 25px; padding: 2px 4px; font-size: 10px; }
   .math-sim-distributive > footer { font-size: 9px; }
   .math-sim-distributive > footer button { min-height: 32px; padding: 5px 8px; font-size: 10px; }
-  .math-sim-distributive.is-drag-drop { grid-template-rows:auto auto minmax(0,1fr) auto auto; }
   .math-sim-distributive-bank { padding:5px 7px; }
   .math-sim-distributive-source { min-width:42px; min-height:34px; padding:4px 9px; }
   .math-sim-distributive-board.is-drop-board { gap:5px; padding:5px; }
@@ -2450,10 +2447,12 @@
 .math-sim-distributive,
 .math-sim-distributive > *,
 .math-sim-distributive button { min-width: 0; max-width: 100%; box-sizing: border-box; }
+.math-sim-distributive > :is(header, .math-sim-distributive-result, .math-sim-distributive-combine, footer) { flex: none; }
 .math-sim-distributive > header > :is(strong, p) { overflow-wrap: anywhere; }
 .math-sim-distributive { overflow-y: auto; overscroll-behavior: contain; }
 .math-sim-distributive > footer { display: grid; grid-template-columns: minmax(0, 1fr); align-items: stretch; }
 .math-sim-distributive-actions { display: grid; width: 100%; min-width: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.math-sim-distributive.is-like-terms .math-sim-distributive-actions { grid-template-columns: minmax(0, 1fr); }
 .math-sim-distributive > footer button,
 .math-sim-distributive-combine button {
   min-width: 0;
@@ -2470,7 +2469,6 @@
 .math-sim-distributive button :is(span, b, strong) { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
 .math-sim-distributive .math-sim-distributive-term { height: auto; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
 .math-sim-distributive .math-sim-distributive-term > b { font-size: inherit; line-height: 1.4; }
-.math-sim-distributive .math-sim-distributive-prelude { width: 100%; white-space: normal; overflow-wrap: anywhere; text-align: left; }
 .math-sim-distributive > footer > span { min-width: 0; overflow-wrap: anywhere; line-height: 1.5; }
 .math-sim-distributive > footer button { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; }
 .math-sim-distributive > footer button > :is(svg, b) { flex: none; }
