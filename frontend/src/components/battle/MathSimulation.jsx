@@ -291,7 +291,7 @@ const halfDecimalTiles = [0.5, -0.5].map((value) => ({
   key: `number-${value}`, type: 'unit', value, parts: 2,
   label: `${value < 0 ? '-' : '+'}0,5`, shape: value < 0 ? 'triangle' : 'square',
 }));
-const tenThousandTiles = (lang) => [10000, -10000].map((value) => ({
+const chapter5LargeNumberTiles = (lang) => [10000, -10000, 5000, -5000].map((value) => ({
   key: `number-${value}`, type: 'unit', value,
   label: `${value < 0 ? '−' : '+'}${Math.abs(value).toLocaleString(lang === 'en' ? 'en-US' : 'id-ID')}`,
   shape: value < 0 ? 'triangle' : 'square',
@@ -822,7 +822,7 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
   const previousEquation = stepIndex ? localizeEquation(stepIndex === 1 ? config.equation : config.steps[stepIndex - 2].after, lang) : null;
   const [left, right] = splitEquation(equation);
   const variableSymbol = config.equation.match(/[a-z]/i)?.[0] || 'x';
-  const balanceNumberTiles = [...numberTiles, ...(chapter5Question ? tenThousandTiles(lang) : []), ...(questionNumber === 6 ? halfDecimalTiles : questionNumber === 7 ? halfNumberTiles : []), ...(questionNumber === 6 ? [] : decimalNumberTiles(config, lang))];
+  const balanceNumberTiles = [...numberTiles, ...(chapter5Question ? chapter5LargeNumberTiles(lang) : []), ...(questionNumber === 6 ? halfDecimalTiles : questionNumber === 7 ? halfNumberTiles : []), ...(questionNumber === 6 ? [] : decimalNumberTiles(config, lang))];
   const balanceTileCatalog = [...balanceNumberTiles, ...(questionNumber === 6 ? [] : variableTiles(variableSymbol))];
   const selectedTileOption = balanceTileCatalog.find((tile) => tile.key === selectedTile) || numberTiles[0];
   const balanceEquation = `${formatBalanceSide(balanceRows[0], lang)} = ${formatBalanceSide(balanceRows[1], lang)}`;
@@ -1355,6 +1355,8 @@ export default function MathSimulation({ questionId, lang, busy, onProgress, onB
 
   const referenceEquation = questionNumber === 30 && distributiveSolvedEquation
     ? localizeEquation(distributiveSolvedEquation, lang)
+    : questionNumber === 45 && stepIndex === 0
+    ? localizeEquation(config.equation, lang)
     : balanceEquation;
 
   if (config && !chapter2Symbolic) {

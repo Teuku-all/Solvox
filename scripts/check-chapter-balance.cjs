@@ -230,9 +230,13 @@ for (const lang of ['id', 'en']) {
   const storyArithmetic = mount(45, lang);
   storyArithmetic.find((node) => node.type?.name === 'Chapter5ModelBuilder')[0].props.onComplete();
   storyArithmetic.render();
-  assert.equal(storyArithmetic.find(storyArithmetic.has('math-sim-operation-options')).length, 0, 'Chapter 5 must not show a manual simplify button');
-  storyArithmetic.finishAutoSimplify();
-  assert.equal(storyArithmetic.scale().equation, lang === 'en' ? '5x = 35,000' : '5x = 35.000');
+  assert.equal(storyArithmetic.text(storyArithmetic.find(storyArithmetic.has('math-sim-reference-equation'))[0]), lang === 'en' ? '50,000 - 5x = 15,000' : '50.000 - 5x = 15.000');
+  const largeTiles = storyArithmetic.find(storyArithmetic.has('math-sim-picker-tile')).map((node) => node.props['aria-label']);
+  assert.ok(largeTiles.includes(lang === 'en' ? '+5,000' : '+5.000'));
+  assert.ok(largeTiles.includes(lang === 'en' ? '−5,000' : '−5.000'));
+  assert.equal(storyArithmetic.find(storyArithmetic.has('math-sim-operation-options')).length, 1);
+  storyArithmetic.operation('−'); storyArithmetic.apply(0); storyArithmetic.apply(1);
+  assert.equal(storyArithmetic.scale().equation, lang === 'en' ? '−5x = −35,000' : '−5x = −35.000');
   assert.equal(storyArithmetic.progress().stepsCompleted, 1);
 
   const storyLikeTerms = mount(49, lang);
@@ -297,9 +301,9 @@ for (const lang of ['id', 'en']) {
           sim.dragTile(label, side);
           sim.finishZeroPairs();
         }
-      } else if (id >= 41 && step.operation === 'simplify') {
+      } else if (step.operation === 'simplify') {
         sim.finishAutoSimplify();
-      } else if (['expand', 'simplify'].includes(step.operation)) {
+      } else if (step.operation === 'expand') {
         const button = sim.find(sim.has('math-sim-operation-options'))[0]?.props.children[0];
         assert.ok(button, `Question ${id} step ${index + 1}: transformation button exists`);
         sim.click(button);

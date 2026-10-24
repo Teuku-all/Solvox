@@ -31,6 +31,7 @@ import './styles/leaderboard.css';
 import './styles/ui-polish.css';
 import './styles/game-design-system.css';
 import './styles/feedback-contact.css';
+import './styles/chapter-popup-themes.css';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
