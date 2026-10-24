@@ -854,7 +854,7 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
     min-height: 0 !important;
     max-height: 100dvh !important;
     grid-template-columns: minmax(0, 1fr) !important;
-    grid-template-rows: 50px minmax(90px, 1fr) minmax(138px, min(47dvh, calc(100dvh - 156px))) !important;
+    grid-template-rows: 50px minmax(90px, 1fr) minmax(138px, min(46dvh, calc(100dvh - 156px))) !important;
     align-content: stretch !important;
     gap: 4px !important;
     padding: 4px !important;
@@ -870,15 +870,27 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
     gap: 2px !important;
   }
   .battle-reference .battle-top-rail > .stage-crown {
+    width: max-content !important;
+    max-width: min(60vw, 280px) !important;
+    min-width: 0 !important;
+    justify-self: center !important;
     height: 16px !important;
     min-height: 16px !important;
     padding: 0 5px !important;
+    border: 1px solid rgba(178, 198, 191, .24) !important;
+    border-radius: 999px !important;
+    background: rgba(5, 17, 20, .84) !important;
+    clip-path: none !important;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, .22) !important;
+    backdrop-filter: blur(8px);
   }
   .battle-reference .battle-top-rail > .stage-crown span { display: none !important; }
   .battle-reference .battle-top-rail > .stage-crown b {
     max-width: 100%;
     overflow: hidden;
-    font-size: 10px !important;
+    font: 800 9px/1 system-ui, sans-serif !important;
+    letter-spacing: .12em;
+    color: #e0e9e5 !important;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -906,25 +918,63 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
     grid-template-columns: minmax(0, 1fr) minmax(126px, .38fr) !important;
     grid-template-rows: minmax(0, 1fr) !important;
     overflow: hidden !important;
+    border-color: rgba(133, 191, 181, .28) !important;
+    border-radius: 13px !important;
+    background: linear-gradient(145deg, rgba(9, 24, 27, .98), rgba(3, 12, 15, .985)) !important;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .28), inset 0 1px rgba(255, 255, 255, .045) !important;
   }
   .battle-reference .battle-question-panel .battle-question-main {
     grid-column: 1 !important;
     grid-row: 1 !important;
     height: 100% !important;
     min-height: 0 !important;
-    grid-template-rows: 32px minmax(0, 1fr) 44px 0px !important;
+    grid-template-rows: 34px minmax(0, 1fr) 44px 0px !important;
+    border-right-color: rgba(133, 191, 181, .16) !important;
+    background: linear-gradient(140deg, rgba(10, 28, 30, .96), rgba(4, 14, 17, .98)) !important;
   }
-  .battle-reference .battle-question-panel .question-header { gap: 5px !important; padding: 3px 8px !important; }
-  .battle-reference .battle-question-panel .question-chip { min-height: 21px !important; padding: 2px 6px !important; font-size: 10px !important; }
+  .battle-reference .battle-question-panel .question-header {
+    gap: 6px !important;
+    padding: 3px 10px !important;
+    border-bottom-color: rgba(133, 191, 181, .16) !important;
+    background: rgba(14, 34, 36, .62) !important;
+  }
+  .battle-reference .battle-question-panel .question-chip {
+    min-height: 22px !important;
+    padding: 2px 7px !important;
+    border-color: rgba(133, 191, 181, .18) !important;
+    background: rgba(3, 13, 16, .56) !important;
+    font-size: 10px !important;
+  }
   .battle-reference .battle-question-panel .question-content {
     min-height: 0 !important;
     overflow: auto !important;
-    padding: 6px 12px !important;
+    padding: 7px 13px !important;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(120, 190, 177, .45) transparent;
   }
-  .battle-reference .battle-question-panel .question-content .question-text,
+  .battle-reference .battle-question-panel .question-content .question-kicker {
+    font-size: 9px !important;
+    letter-spacing: .12em !important;
+  }
   .battle-reference .battle-question-panel .question-content .question-context {
-    font-size: clamp(12px, 1.8vw, 16px) !important;
-    line-height: 1.34 !important;
+    margin-top: 4px !important;
+    margin-bottom: 5px !important;
+    color: #b2c5bf !important;
+    font-size: clamp(12px, 1.45vw, 13px) !important;
+    line-height: 1.42 !important;
+  }
+  .battle-reference .battle-question-panel .question-content .question-text {
+    color: #f4f7f3 !important;
+    font: 650 clamp(13px, 1.8vw, 16px)/1.42 system-ui, sans-serif !important;
+    letter-spacing: 0 !important;
+    text-wrap: pretty !important;
+  }
+  .battle-reference .battle-question-panel .question-content::before {
+    left: 7px !important;
+    top: 8px !important;
+    bottom: 8px !important;
+    width: 2px !important;
+    box-shadow: none !important;
   }
   .battle-reference .battle-question-panel .hint-rail { display: none !important; }
   .battle-reference .battle-question-panel .battle-keypad-side {
@@ -951,16 +1001,18 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
   }
   .battle-reference .battle-question-panel.is-auto-resolve .question-answer-auto {
     min-height: 0 !important;
-    padding: 3px 8px !important;
-    font-size: 12px !important;
-    line-height: 1.2 !important;
+    padding: 4px 10px !important;
+    font-size: 13px !important;
+    line-height: 1.3 !important;
+    border-top-color: rgba(133, 191, 181, .16) !important;
+    background: rgba(4, 14, 17, .88) !important;
   }
   .battle-reference.multiplayer-battle-page .multiplayer-battle-ui .battle-question-panel {
     grid-template-columns: minmax(0, 1fr) !important;
   }
   .battle-reference.multiplayer-battle-page .multiplayer-battle-ui .battle-question-panel .battle-question-main,
   .battle-reference.multiplayer-battle-page .multiplayer-battle-ui .battle-question-panel .battle-question-main.is-story-main {
-    grid-template-rows: 32px minmax(0, 1fr) 44px 0px !important;
+    grid-template-rows: 34px minmax(0, 1fr) 44px 0px !important;
   }
   .battle-reference.multiplayer-battle-page .multiplayer-battle-ui .battle-question-panel .question-answer {
     min-height: 0 !important;
