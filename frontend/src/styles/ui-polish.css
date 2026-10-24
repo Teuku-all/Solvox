@@ -742,6 +742,8 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap !important;
+    font-family: var(--font-body-solvox), system-ui, sans-serif !important;
+    font-size: 9px !important;
   }
   .multiplayer-battle-ui .battle-question-panel .question-tools .keypad-toggle span {
     font-size: 8px;
