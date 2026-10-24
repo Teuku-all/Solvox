@@ -59,7 +59,9 @@ export default function SinglePlayerIdleSprite({ asset, reducedMotion, onReady, 
       const frame = framesRef.current[index] || framesRef.current.find(Boolean);
       if (!frame || (index === previousFrame && frame.image === previousImage)) return;
       const canvas = canvasRef.current;
+      if (!canvas) return;
       const context = canvas.getContext('2d');
+      if (!context) return;
       const height = (asset.selectionIdle?.referenceSize || asset.referenceSize).height;
       // Extra transparent space accommodates cape / idle effects without clipping.
       const width = Math.ceil(height * 1.6);
@@ -78,8 +80,9 @@ export default function SinglePlayerIdleSprite({ asset, reducedMotion, onReady, 
     };
     redrawRef.current = draw;
     const tick = (now) => {
+      if (!canvasRef.current) return;
       if (!document.hidden) draw(now);
-      raf = requestAnimationFrame(tick);
+      if (canvasRef.current) raf = requestAnimationFrame(tick);
     };
     draw();
     if (!reducedMotion) raf = requestAnimationFrame(tick);

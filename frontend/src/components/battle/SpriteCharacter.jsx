@@ -111,14 +111,11 @@ const SpriteCharacter = forwardRef(function SpriteCharacter(
     const tick = (now) => {
       const canvas = canvasRef.current;
       const state = stateRef.current;
-      if (pausedRef.current) {
-        rafRef.current = requestAnimationFrame(tick);
-        return;
-      }
       if (!canvas) {
         rafRef.current = requestAnimationFrame(tick);
         return;
       }
+      const frameTime = pausedRef.current ? pauseStartedAtRef.current || now : now;
 
       const dpr = Math.min(window.devicePixelRatio || 1.5, 2);
       const logicalW = size;
@@ -140,6 +137,10 @@ const SpriteCharacter = forwardRef(function SpriteCharacter(
       canvas.style.height = `${logicalH * visualScale}px`;
 
       const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, logicalW, logicalH);
       ctx.imageSmoothingEnabled = true;
@@ -147,15 +148,15 @@ const SpriteCharacter = forwardRef(function SpriteCharacter(
 
       let mode = state.mode;
       let frames = state.images[mode] || [];
-      let elapsed = Math.max(0, now - state.startedAt);
+      let elapsed = Math.max(0, frameTime - state.startedAt);
       const step = durationFor(mode);
       const total = frames.length * step;
 
       // One-shot states return to idle in the same render tick. There is no
       // cleared frame between the attack/hurt animation and idle.
-      if (ONE_SHOT_MODES.has(mode) && mode !== 'die' && elapsed >= total) {
+      if (!pausedRef.current && ONE_SHOT_MODES.has(mode) && mode !== 'die' && elapsed >= total) {
         state.mode = 'idle';
-        state.startedAt = now;
+        state.startedAt = frameTime;
         state.impactFired = false;
         mode = 'idle';
         frames = state.images.idle || [];
@@ -166,13 +167,13 @@ const SpriteCharacter = forwardRef(function SpriteCharacter(
         const activeStep = durationFor(mode);
         const activeTotal = frames.length * activeStep;
         const rawFrame = Math.floor(elapsed / activeStep);
-        const frameIndex = mode === 'die'
+        const frameIndex = mode === 'die' || pausedRef.current
           ? Math.min(frames.length - 1, rawFrame)
           : rawFrame % frames.length;
 
         // Trigger gameplay impact from the same discrete frame timeline used
         // to render the sprite. This prevents timing drift between art and hit.
-        if (mode === 'attack' && !state.impactFired) {
+        if (!pausedRef.current && mode === 'attack' && !state.impactFired) {
           const impactFrame = asset.sequences.attack?.impactFrame ?? Math.max(0, frames.length - 2);
           if (frameIndex >= impactFrame) {
             state.impactFired = true;

@@ -136,14 +136,11 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
     const tick = (now) => {
       const canvas = canvasRef.current;
       const state = stateRef.current;
-      if (pausedRef.current) {
-        rafRef.current = requestAnimationFrame(tick);
-        return;
-      }
       if (!canvas) {
         rafRef.current = requestAnimationFrame(tick);
         return;
       }
+      const frameTime = pausedRef.current ? pauseStartedAtRef.current || now : now;
 
       const dpr = Math.min(window.devicePixelRatio || 1.5, 2);
       const logicalW = Math.round(size * (centered ? 1 : 1.42));
@@ -182,13 +179,13 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
 
       let mode = state.mode;
       let frames = state.images[mode] || [];
-      let elapsed = Math.max(0, now - state.startedAt);
+      let elapsed = Math.max(0, frameTime - state.startedAt);
       const step = durationFor(mode);
       const total = frames.length * step;
 
-      if ((mode === 'attack' || mode === 'hurt') && elapsed >= total) {
+      if (!pausedRef.current && (mode === 'attack' || mode === 'hurt') && elapsed >= total) {
         state.mode = 'idle';
-        state.startedAt = now;
+        state.startedAt = frameTime;
         state.impactFired = false;
         mode = 'idle';
         frames = state.images.idle || [];
@@ -203,12 +200,12 @@ const WebPBossSprite = forwardRef(function WebPBossSprite({ size, boss, onImpact
       const activeStep = durationFor(mode);
       const activeTotal = frames.length * activeStep;
       const rawFrame = Math.floor(elapsed / activeStep);
-      const frame = mode === 'die'
+      const frame = mode === 'die' || pausedRef.current
         ? Math.min(frames.length - 1, rawFrame)
         : rawFrame % frames.length;
       const image = frames[frame];
 
-      if (mode === 'attack' && !state.impactFired) {
+      if (!pausedRef.current && mode === 'attack' && !state.impactFired) {
         const impactMs = getBossImpactMs(boss.spriteId, 'attack', 320);
         if (elapsed >= impactMs) {
           state.impactFired = true;

@@ -369,9 +369,9 @@ useEffect(()=>{
         </header>
         {dashboardLoading && !dashboard ? <div className="leaderboard-loading"><PixelIcon name="spark" size={26}/><span>{t('loading')}</span></div> : dashboard?.summary?.playerEntries ? <>
           <div className="leaderboard-overview" aria-label={lang==='en'?'Arena summary':'Ringkasan arena'}>
-            <div><small>{lang==='en'?'PLAYERS':'PEMAIN'}</small><strong>{Number(dashboard.summary.uniquePlayers||0).toLocaleString(lang==='en'?'en-US':'id-ID')}</strong></div>
-            <div><small>{lang==='en'?'MATCHES':'PERTANDINGAN'}</small><strong>{Number(dashboard.summary.matches||0).toLocaleString(lang==='en'?'en-US':'id-ID')}</strong></div>
-            <div><small>{lang==='en'?'YOUR RANK':'PERINGKATMU'}</small><strong>{myStats?`#${myRank+1}`:'—'}</strong></div>
+            <div><small aria-label={lang==='en'?'PLAYERS':'PEMAIN'}><span className="leaderboard-overview-full">{lang==='en'?'PLAYERS':'PEMAIN'}</span><span className="leaderboard-overview-short" aria-hidden="true">{lang==='en'?'PLAYERS':'PEMAIN'}</span></small><strong>{Number(dashboard.summary.uniquePlayers||0).toLocaleString(lang==='en'?'en-US':'id-ID')}</strong></div>
+            <div><small aria-label={lang==='en'?'MATCHES':'PERTANDINGAN'}><span className="leaderboard-overview-full">{lang==='en'?'MATCHES':'PERTANDINGAN'}</span><span className="leaderboard-overview-short" aria-hidden="true">{lang==='en'?'MATCH':'LAGA'}</span></small><strong>{Number(dashboard.summary.matches||0).toLocaleString(lang==='en'?'en-US':'id-ID')}</strong></div>
+            <div><small aria-label={lang==='en'?'YOUR RANK':'PERINGKATMU'}><span className="leaderboard-overview-full">{lang==='en'?'YOUR RANK':'PERINGKATMU'}</span><span className="leaderboard-overview-short" aria-hidden="true">{lang==='en'?'RANK':'POSISI'}</span></small><strong>{myStats?`#${myRank+1}`:'—'}</strong></div>
             <div className="leaderboard-overview-action"><button type="button" onClick={loadDashboard} disabled={dashboardLoading} aria-label={t('dashboardRefresh')} title={t('dashboardRefresh')}><PixelIcon name="retry" size={17}/></button></div>
           </div>
           <div className="leaderboard-rival">

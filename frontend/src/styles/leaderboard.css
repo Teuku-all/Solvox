@@ -110,6 +110,7 @@
 .leaderboard-overview { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; gap: 8px; margin: 0 0 16px; }
 .leaderboard-overview > div:not(.leaderboard-overview-action) { display: flex; min-width: 0; flex-direction: column; gap: 4px; padding: 12px 15px; border: 1px solid rgba(170, 223, 215, .13); border-radius: 9px; background: linear-gradient(145deg, rgba(26, 58, 55, .56), rgba(9, 28, 29, .46)); }
 .leaderboard-overview small { color: #a2bcb2; font-size: .64rem; font-weight: 800; letter-spacing: .1em; overflow-wrap: anywhere; }
+.leaderboard-overview-short { display: none; }
 .leaderboard-overview strong { color: #f2f6e6; font-size: clamp(1.25rem, 2.5vw, 1.8rem); line-height: 1.1; font-variant-numeric: tabular-nums; }
 .leaderboard-overview-action { display: grid; place-items: center; }
 .leaderboard-overview-action button, .leaderboard-refresh-btn { display: inline-flex; min-width: 40px; min-height: 40px; align-items: center; justify-content: center; gap: 8px; padding: 8px 12px; border: 1px solid rgba(139, 207, 193, .3); border-radius: 8px; background: rgba(14, 42, 42, .8); color: #c5eadd; font-weight: 750; }
@@ -198,6 +199,11 @@
   .leaderboard-rival .leaderboard-duel-btn { font-size: .67rem; }
   .leaderboard-rival div > span { font-size: .62rem; }
   .leaderboard-empty { min-height: 310px; padding-inline: 10px; }
+}
+
+@media (max-width: 430px) {
+  .leaderboard-overview-full { display: none; }
+  .leaderboard-overview-short { display: inline; }
 }
 
 @media (prefers-reduced-motion: reduce) {
