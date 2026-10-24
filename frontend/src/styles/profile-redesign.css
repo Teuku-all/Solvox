@@ -45,6 +45,13 @@
 .profile-primary-action:hover,
 .profile-text-action:hover,
 .profile-tabs button:hover { border-color: #f4f0df !important; background: #303a37 !important; }
+.profile-screen button.solvox-back-button.profile-screen-back,
+.profile-screen button.solvox-back-button.profile-screen-back:hover:not(:disabled) {
+  border: 0 !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
 .profile-screen button .pixel-icon,
 .profile-screen button svg { color: #f4f0df !important; }
 .profile-screen button:focus-visible,

@@ -91,6 +91,15 @@
   .app-shell:not(.battle-active):not(.multiplayer-battle-active) :is(.mode-card-action,.chapter-card-copy,.chapter-card-how) { min-width:0; overflow-wrap:anywhere; }
 }
 
+/* The illustrated Back buttons already contain their own frame. */
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) button.solvox-back-button:is(.mode-select-back,.chapter-select-back,.about-back),
+.app-shell:not(.battle-active):not(.multiplayer-battle-active) button.solvox-back-button:is(.mode-select-back,.chapter-select-back,.about-back):hover:not(:disabled) {
+  border:0 !important;
+  background:transparent !important;
+  backdrop-filter:none !important;
+  box-shadow:none !important;
+}
+
 /* Results sit outside the arena even while the battle screen is mounted. */
 .app-shell.battle-active .evaluation-backdrop :is(.primary-btn,.secondary-btn,.dialog-icon-close) {
   border-color:color-mix(in srgb,#F4F0DF 42%,transparent) !important;
