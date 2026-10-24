@@ -67,6 +67,13 @@
 
 @media (max-width: 600px) {
   .utility-dialog-backdrop > .feedback-card { max-height: calc(100dvh - 20px); }
+  .feedback-card .feedback-head {
+    position: sticky;
+    top: -20px;
+    z-index: 3;
+    padding-top: 8px !important;
+    background: linear-gradient(180deg, #122820 0%, #10241f 100%);
+  }
   .feedback-contact-options { grid-template-columns: 1fr; }
   .feedback-contact-option { min-height: 62px; }
 }
