@@ -741,6 +741,7 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
     max-width: 38vw !important;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap !important;
   }
   .multiplayer-battle-ui .battle-question-panel .question-tools .keypad-toggle span {
     font-size: 8px;
@@ -1042,5 +1043,50 @@ html.reduced-motion *, html.reduced-motion *::before, html.reduced-motion *::aft
     width: clamp(110px, 17vw, 150px) !important;
     height: auto !important;
     aspect-ratio: 5 / 6;
+  }
+}
+
+/* Very short landscape viewports reserve a smaller arena so the fighters never touch the question dock. */
+@media (max-width: 900px) and (max-height: 360px) and (orientation: landscape) {
+  .battle-reference:not(.multiplayer-battle-page) .battle-ui,
+  .battle-reference.multiplayer-battle-page .multiplayer-battle-ui {
+    grid-template-rows: 44px minmax(92px, 1fr) minmax(128px, min(54dvh, calc(100dvh - 152px))) !important;
+  }
+  .battle-reference:not(.multiplayer-battle-page) .battle-ui > .battle-reference-arena,
+  .battle-reference.multiplayer-battle-page .multiplayer-battle-ui > .multiplayer-arena {
+    height: clamp(92px, calc(46dvh - 60px), 120px) !important;
+    min-height: 0 !important;
+    max-height: 120px !important;
+    padding-top: 0 !important;
+    --mobile-stage-height: 100%;
+  }
+  .battle-reference .battle-reference-arena .combat-stage {
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+  .battle-reference .battle-top-rail {
+    grid-template-rows: minmax(24px, 1fr) 14px !important;
+  }
+  .battle-reference .battle-top-rail > .stage-crown {
+    height: 14px !important;
+    min-height: 14px !important;
+  }
+  .battle-reference .battle-question-panel .battle-question-main,
+  .battle-reference.multiplayer-battle-page .multiplayer-battle-ui .battle-question-panel .battle-question-main,
+  .battle-reference.multiplayer-battle-page .multiplayer-battle-ui .battle-question-panel .battle-question-main.is-story-main {
+    grid-template-rows: 32px minmax(0, 1fr) 44px 0px !important;
+  }
+  .battle-reference .battle-question-panel.is-auto-resolve .battle-question-main {
+    grid-template-rows: 32px minmax(0, 1fr) 44px !important;
+  }
+  .battle-reference .battle-ui.is-auto-resolve .fighter-player .sprite-wrap,
+  .battle-reference .multiplayer-battle-ui .fighter-player .sprite-wrap,
+  .battle-reference .multiplayer-battle-ui .fighter-boss .sprite-wrap {
+    width: clamp(68px, 13vw, 86px) !important;
+  }
+  .battle-reference .battle-ui.is-auto-resolve .fighter-boss .asset-boss-sprite,
+  .battle-reference .multiplayer-battle-ui .fighter-player .asset-boss-sprite,
+  .battle-reference .multiplayer-battle-ui .fighter-boss .asset-boss-sprite {
+    width: clamp(76px, 14vw, 92px) !important;
   }
 }
